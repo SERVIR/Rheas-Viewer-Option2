@@ -4,6 +4,12 @@ head,body{
   margin:0;
   padding:0;
 }
+body{
+  background: #f5f5f5;
+  min-height: 100%;
+  min-width: 100%;
+  overflow-x:hidden;
+}
 .demoheight{
   min-height:60%;
   background:lightgray;
@@ -46,6 +52,9 @@ head,body{
 .icimod img{
   height:100%;
 }
+#inner-app-content{
+  padding:0;
+}
 .graph-section{
   padding:0;
 }
@@ -65,6 +74,7 @@ head,body{
   height:40%;
 }
 #crop-calendar{
+  font-size:90%;
   height:100%;
   margin:auto;
   overflow-y: auto;
@@ -102,14 +112,17 @@ head,body{
 }
 .form-control{
   font-size:90%;
-  height:27px;
+  height:90%;
 }
 h4{
   font-size:12px;
   font-weight:bold;
 }
+.graphshell{
+  height:100%;
+}
 .panel{
-  height: 40%;
+  height: 100%;
   padding-left: 1px;
   padding-right: 1px;
   /* border: solid 1px; */
@@ -133,9 +146,6 @@ h4{
   fill:#1308af;
   opacity:0.7;
 } */
-.highcharts-menu hr{
-  margin:0;
-}
 .highcharts-credits{
   display:none;
 }
@@ -171,7 +181,7 @@ h4{
   background-color:#44BBA4;
 }
 .crop-all-year{
-  padding: 20px;
+  /* padding: 20px; */
   text-align: center;
   vertical-align: middle;
 }
@@ -218,4 +228,120 @@ h4{
   cursor:default;
   background-color:white;
   box-shadow:0px 1px 5px rgba(0, 0, 0, 0.4);
+}
+#app-content-wrapper #app-content #app-navigation{
+  background:#2c3e50;
+  color:white;
+}
+#app-content-wrapper #app-content{
+  padding-bottom:0;
+}
+.navilinkbar{
+  height:30px;
+  width:100%;
+  position:relative;
+  background:#CEE5F2;
+  padding:0;
+}
+.navilink{
+  float:left;
+  background:#ACCBE1;
+  height:100%;
+  margin:0;
+  padding:5px 25px;
+  font-size:20px;
+  line-height:20px;
+  text-align:center;
+}
+.navilink:hover{
+  background: #7C98B3;
+  color:white;
+}
+.navilink.active{
+  background:#2C3E50;
+}
+.navilink a{
+  color:black;
+  cursor:pointer;
+  text-decoration: none;
+}
+.navilink.active a{
+  color:white;
+  text-decoration: none;
+}
+.graph-section{
+  width: calc(100% + 4px);
+  height: calc(40% - 21px);
+}
+.no-graph{
+  width: 100%;
+  height: calc(40% - 21px);
+  text-align: center;
+  overflow-y:hidden;
+}
+.no-graph h4{
+  position: relative;
+  top:50%;
+  transform:translateY(-50%);
+}
+.card {
+  background:white;
+  margin:4px;
+  box-shadow:2px 2px 3px #ccc;
+}
+.maincomp{
+  height:calc(100% - 30px);
+  overflow-y:auto;
+}
+#app-navigation{
+  padding:40px 0 0 0 !important;
+}
+#app-actions{
+  display:none !important;
+}
+#app-content{
+  height:100%;
+}
+#map-container{
+  position:relative;
+  padding:0;
+  margin:0;
+  height:100%;
+  width:100%;
+}
+#top-map-container{
+  pointer-events:none;
+  position:absolute;
+  padding:0;
+  margin:0;
+  height:100%;
+  width:100%;
+  top:0;
+  left:0;
+  background: transparent;
+}
+.panel{
+  overflow:hidden;
+}
+.panel-heading{
+  height:auto;
+}
+#crop-calendar{
+  overflow: hidden;
+}
+.select2.select2-container{
+  width:100% !important;
+}
+.sidebar{
+  padding-left:4px;
+}
+.form-container .form-horizontal{
+  padding-top:5px;
+  padding-bottom:5px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+  color:black;
+}
+.bound-dropdown{
+  margin-bottom:4px;
 }

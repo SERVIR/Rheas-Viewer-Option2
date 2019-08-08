@@ -1,51 +1,147 @@
-{% extends "rheasvieweroption2/base.html" %}
+<html>
+{% load staticfiles %}
 {% load tethys_gizmos %}
 
-{% block header_buttons %}
-  <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
-    <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
-  </div>
-{% endblock %}
+<head>
 
-{% block app_content %}
-  <h1>Welcome to your Tethys App!</h1>
-  <p>Take advantage of beautiful typography to organize the content of your app:</p>
-  <h1>Heading 1</h1>
-  <h2>Heading 2</h2>
-  <h3>Heading 3</h3>
-  <h4>Heading 4</h4>
-  <h5>Heading 5</h5>
-  <h6>Heading 6</h6>
-{% endblock %}
+    {% block content_dependent_styles %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="{% static 'rheasvieweroption2/css/ol3-ext.min.css' %}">
+    <link rel="stylesheet" href="{% static 'rheasvieweroption2/css/styles.css' %}" />
+    {% endblock %}
 
-{# Use the after_app_content block for modals #}
-{% block after_app_content %}
-  <!-- Example Modal -->
-  <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h5 class="modal-title" id="help-modal-label">Example Modal</h5>
-        </div>
-        <div class="modal-body">
-          <p>You can add custom buttons to the app header using the <code>header_buttons</code> block. Use anchor/link tags for the button and wrap it in a div with the class <code>header-button</code>. For buttons with the gliphyicons, add the <code>glyphicon-button</code> class as well.</p>
-          <p>Ever have trouble using a modal in a Tethys app? Use the <code>after_app_content</code> block for modal content to allow them to function properly. See: <a href="https://getbootstrap.com/javascript/#modals">Bootstrap Modals</a></p>
-          <p>Add tooltips to any element by adding the <code>data-toggle</code>, <code>data-placement</code>, and <code>title</code> attributes to the button. See: <a href="https://getbootstrap.com/javascript/#tooltips">Bootstrap Tooltips</a></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
-        </div>
-      </div>
-    </div>
-  </div>
-{% endblock %}
+    {% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="{% static 'rheasvieweroption2/js/main.js' %}" type="text/javascript"></script>
+    <script src="{% static 'rheasvieweroption2/js/vic.js' %}" type="text/javascript"></script>
 
-{% block app_actions %}
-  {% gizmo save_button %}
-  {% gizmo edit_button %}
-  {% gizmo remove_button %}
-  {% gizmo previous_button %}
-  {% gizmo next_button %}
-{% endblock %}
+    {% endblock %}
+</head>
+
+<body>
+
+    </head>
+
+    <body>
+        <h2>RHEAS Viewer 2</h2>
+        <div class="topnav">
+            <a id="home" href="#home">Current</a>
+            <a id="outlook" href="#outlook">Outlook</a>
+
+            <div class="topnav-right">
+                <a data-toggle="modal" data-target="#myModal">About</a>
+                <a href="#help">Help</a>
+            </div>
+        </div>
+
+
+
+        <div class="container-fluid">
+            </br>
+
+
+
+            <div class="row" style="height:calc(70vh - 200px);">
+                <div class="m-5 col-lg-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Parameters</div>
+                        <div class="panel-body">
+                            <label>
+                                Select a database of interest
+                            </label>
+                            <select class="db_table" name="db_table" id="db_table" style="width: 100%">
+                                {% for db in rheas_dbs %}
+                                <option value="{{db}}">{{db}}</option>
+                                {% endfor %}
+                            </select>
+
+                            <label>
+                                Select a schema of interest
+                            </label>
+                            <select class="schema_table" name="schema_table" id="schema_table" style="width: 100%">
+                                {% for schema in db_schemas %}
+                                <option value="{{schema}}">{{schema}}</option>
+                                {% endfor %}
+                            </select>
+                            <br>
+                            <label>
+                                Select a variable
+                            </label>
+                            <select class="var_table" name="var_table" id="var_table" style="width: 100%">
+                            </select>
+                            <br>
+                            <label>
+                                Select a date
+                            </label>
+                            <select class="time_table" name="time_table" id="time_table" style="width: 100%">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-5 col-lg-9">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Map</div>
+                        <div class="panel-body">
+                            <div id="map" class="map"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="height:20vh;">
+                <div class="m-5 col-lg-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">VIC graph SPI3</div>
+                        <div class="panel-body">Panel Content</div>
+                    </div>
+                </div>
+                <div class="m-5 col-lg-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">VIC graph CDI</div>
+                        <div class="panel-body">Panel Content</div>
+                    </div>
+                </div>
+                <div class="m-5 col-lg-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">VIC graph Temperature</div>
+                        <div class="panel-body">Panel Content</div>
+                    </div>
+                </div>
+                <div class="m-5 col-lg-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">DSSAT graph LAI</div>
+                        <div class="panel-body">Panel Content</div>
+                    </div>
+                </div>
+            </div>
+            <div id="variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-geoserver-url="{{geoserver_wms_url}}" data-rest-url="{{geoserver_rest_url}}" data-geoserver-workspace="{{geoserver_workspace}}"></div>
+            <div id="dssat" class="dssat" name="dssat" style="display:none;" data-geoserver-url="{{geoserver_wfs_url}}" data-geoserver-workspace="{{geoserver_workspace}}" data-rest-url="{{geoserver_rest_url}}"></div>
+
+
+            <div class="modal fade" id="myModal" role="dialog">
+                <div class="modal-dialog">
+
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">About RHEAS Viewer</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Description about VIC and DSSAT.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        </div>

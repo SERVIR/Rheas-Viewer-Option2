@@ -1,0 +1,51 @@
+Variable_Id|Variable_Display_Name|Description|Units
+net_long|Net Downward Longwave Flux|W/m2|red|blue
+net_short|Net Downward Shortwave Flux|W/m2|red|blue
+snow_cover|Fractional Area of Snow Cover|fraction|red|blue
+salbedo|Snow Pack Albedo|fraction|blue|red
+snow_depth|Depth of Snow Pack|cm|red|blue
+tdepth|Depth of Thawing Fronts |cm for each thawing front|red|blue
+fdepth|Depth of Freezing Fronts |cm for each freezing front|red|blue
+rootmoist|Root Zone Soil Moisture|mm|red|blue
+smfrozfrac|Fraction of Soil Moisture (by mass)|ice, for each soil layer|red|blue
+smliqfrac|Fraction of Soil Moisture (by mass)|liquid, for each soil layer|red|blue
+snow_canopy|Snow Interception Storage in Canopy|mm|red|blue
+soil_moist|Soil Total Moisture Content|mm for each soil layer|red|blue
+soil_wet|Vertical Average of (Soil Moisture - Wilting Point)/(Maximum Soil Moisture - Wilting Point)|mm/mm|red|blue
+surfstor|Storage of Liquid Water and Ice (not snow) on Surface (ponding)|mm|red|blue
+swe|Snow Water Equivalent in Snow Pack (including vegetation-intercepted snow)|mm|red|blue
+wdew|Total Moisture Interception Storage in Canopy|mm|red|blue
+baseflow|Baseflow out of the bottom layer|mm|red|blue
+evap|Total Net Evaporation|mm|red|green
+evap_bare|Net Evaporation from Bare Soil|mm|red|green
+evap_canop|Net Evaporation from Canopy Interception|mm|red|green
+prec|Incoming Precipitation|mm|red|blue
+rainf|Rainfall|mm|red|blue
+refreeze|Refreezing of Water in the Snow|mm|blue|red
+runoff|Surface Runoff|mm|red|blue
+snow_melt|Snow Melt|mm|red|blue
+snowf|Snowfall|mm|red|blue
+transp_veg|Net Transpiration from Vegetation|mm|red|green
+albedo|Average Surface Albedo|fraction|blue|red
+baresoilt|Bare Soil Surface Temperature|C|blue|red
+snow_surf_temp|Snow Surface Temperature|C|blue|red
+soil_temp|Soil Temperature|C for each soil layer|blue|red 
+surf_temp|Average Surface Temperature|C|blue|red
+vegt|Average Vegetation Canopy Temperature|C|blue|red
+advection|Advected Energy|W/m2|blue|red 
+grnd_flux|Net Heat Flux into Ground|W/m2|blue|red 
+latent|Net Upward Latent Heat Flux|W/m2|blue|red
+melt_energy|Energy of Fusion (melting) in Snowpack|W/m2|blue|red
+rfrz_energy|Net Energy used to refreeze liquid water in snowpack|W/m2|blue|red
+sensible|Net Upward sensible heat flux|W/m2 |blue|red
+aero_cond|"Scene" Aerodynamic Conductance|m/s|blue|red
+air_temp|Air Temperature|C|blue|red
+longwave|Incoming Longwave|W/m2|blue|red
+shortwave|Incoming Shortwave|W/m2|blue|red
+spi|Standardized Precipitation Index|Index|red|blue
+sri|Standardized Runoff Index|Index|red|blue
+dryspells|Dry Spells|Number of Dry Spells from Beginning of Simulation(14 days of consecutive no rain)|blue|red
+tmax|Temperature Max|k|blue|red
+tmin|Temperature Min|k|blue|red
+severity|Drought Severity|Index|red|blue
+smdi|Soil Moisture Deficit Index|Index|red|blue
