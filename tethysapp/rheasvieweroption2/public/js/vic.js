@@ -171,6 +171,7 @@ var LIBRARY_OBJECT = (function() {
                 draw.on('drawend', function (e) {
                     lastFeature = e.feature;
 
+
                 });
 
                 draw.on('drawstart', function (e) {
@@ -186,14 +187,19 @@ var LIBRARY_OBJECT = (function() {
             var feature_json = saveData();
             var parsed_feature = JSON.parse(feature_json);
             var feature_type = parsed_feature["features"][0]["geometry"]["type"];
+	console.log("add feat");
             if (feature_type == 'Point'){
+console.log("from point");
+
                 $plotModal.find('.info').html('');
                 var coords = parsed_feature["features"][0]["geometry"]["coordinates"];
+console.log(coords);
                 var proj_coords = ol.proj.transform(coords, 'EPSG:3857','EPSG:4326');
                 $("#point-lat-lon").val(proj_coords);
                 $plotModal.find('.info').html('<b>You have selected a point at '+proj_coords[1].toFixed(2)+','+proj_coords[0].toFixed(2)+'. Click on Show plot to view the Time series.</b>');
                 $plotModal.modal('show');
             } else if (feature_type == 'Polygon'){
+console.log("from polygon");
                 $plotModal.find('.info').html('');
                 var coords = parsed_feature["features"][0]["geometry"]["coordinates"][0];
                 proj_coords = [];
@@ -201,11 +207,14 @@ var LIBRARY_OBJECT = (function() {
                     var transformed = ol.proj.transform(coord,'EPSG:3857','EPSG:4326');
                     proj_coords.push('['+transformed+']');
                 });
+console.log(proj_coords);
+
                 var json_object = '{"type":"Polygon","coordinates":[['+proj_coords+']]}';
                 $("#poly-lat-lon").val(json_object);
                 $plotModal.find('.info').html('<b>You have selected the following polygon object '+proj_coords+'. Click on Show plot to view the Time series.</b>');
                 $plotModal.modal('show');
             }
+get_plot();
         });
 
         function saveData() {
@@ -238,6 +247,7 @@ var LIBRARY_OBJECT = (function() {
                 vector_layer.getSource().clear();
             }else if(featureType == 'Point')
             {
+console.log("jhkjh");
                 clear_coords();
                 addInteraction(featureType);
             }else if(featureType == 'Polygon'){
@@ -422,22 +432,21 @@ var LIBRARY_OBJECT = (function() {
     };
 
     get_plot = function(){
+console.log("from get plot");
         var db = $("#db_table option:selected").val();
         var region = $("#schema_table option:selected").val();
-        var variable = $("#variable_table_plot option:selected").val();
+        var variable = $("#var_table option:selected").val();
         var point = $("#point-lat-lon").val();
         var polygon = $("#poly-lat-lon").val();
-
-        var $loading = $('#view-file-loading');
-        $loading.removeClass('hidden');
-        $("#plotter").addClass('hidden');
-        $("#summary").addClass('hidden');
-        $vicplotModal.modal('show');
+console.log(point);
+console.log(polygon);
+console.log(variable);
         var xhr = ajax_update_database("get-vic-plot",{"db":db,"region":region,"variable":variable,"point":point,"polygon":polygon});
         xhr.done(function(data) {
             $vicplotModal.find('.info').html('');
             $vicplotModal.find('.warning').html('');
             $vicplotModal.find('.table').html('');
+	
             if("success" in data) {
                 if(data.interaction == "point" || data.interaction == "polygon"){
                     //var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
@@ -485,19 +494,19 @@ var LIBRARY_OBJECT = (function() {
                     $vicplotModal.find('.table').append('<tr><td>'+data.mean+'</td><td>'+data.stddev+'</td><td>'+data.min+'</td><td>'+data.max+'</td></tr>');
                     $("#plotter").removeClass('hidden');
                     $("#summary").removeClass('hidden');
-                    $loading.addClass('hidden');
+
 
                 }
 
             } else {
                 $vicplotModal.find('.warning').html('<b>'+data.error+'</b>');
                 console.log(data.error);
-                $loading.addClass('hidden');
+
             }
         });
     };
 
-    $("#btn-get-vic-plot").click(get_plot);
+    
 
     /************************************************************************
      *                        DEFINE PUBLIC INTERFACE
@@ -552,7 +561,6 @@ var LIBRARY_OBJECT = (function() {
             var region = $("#schema_table option:selected").val();
             $("#var_table").html('');
             $("#variable_table_plot").html('');
-		console.log(region);
             var xhr = ajax_update_database("variables",{"region":region,"db":db});
             xhr.done(function(data) {
                 if("success" in data) {
@@ -612,17 +620,16 @@ var LIBRARY_OBJECT = (function() {
             var region = $("#schema_table option:selected").val();
             var date = $("#time_table option:selected").val();
             $(".error").html('');
-            var $loading = $('#view-wms-loading');
-            $loading.removeClass('hidden');
+         
             var xhr = ajax_update_database("raster",{"db":db,"variable":variable,"region":region,"date":date});
 
             xhr.done(function(data) {
                 if("success" in data) {
                     add_wms(data);
-                    $loading.addClass('hidden');
+
                 } else {
                     $(".error").html('<h3>Error Retrieving the layer</h3>');
-                    $loading.addClass('hidden');
+
 
                 }
             });

@@ -59,6 +59,21 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/api/getVICDates',
                 controller='rheasvieweroption2.api.api_get_dates'
             ),
+            UrlMap(
+                name='get-vic-plot',
+                url='rheasvieweroption2/get-vic-plot',
+                controller='rheasvieweroption2.ajax_controllers.get_vic_plot'
+           ),
+           UrlMap(
+                name='raster',
+                url='rheasvieweroption2/raster',
+                controller='rheasvieweroption2.ajax_controllers.get_raster'
+          ),
+          UrlMap(
+                name='bounds',
+                url='rheasvieweroption2/bounds',
+                controller='rheasvieweroption2.ajax_controllers.get_bounds'
+          ),
         )
 
         return url_maps
