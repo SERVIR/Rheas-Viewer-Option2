@@ -187,19 +187,19 @@ var LIBRARY_OBJECT = (function() {
             var feature_json = saveData();
             var parsed_feature = JSON.parse(feature_json);
             var feature_type = parsed_feature["features"][0]["geometry"]["type"];
-	console.log("add feat");
+	        console.log("add feat");
             if (feature_type == 'Point'){
-console.log("from point");
+            console.log("from point");
 
                 $plotModal.find('.info').html('');
                 var coords = parsed_feature["features"][0]["geometry"]["coordinates"];
-console.log(coords);
+            console.log(coords);
                 var proj_coords = ol.proj.transform(coords, 'EPSG:3857','EPSG:4326');
                 $("#point-lat-lon").val(proj_coords);
                 $plotModal.find('.info').html('<b>You have selected a point at '+proj_coords[1].toFixed(2)+','+proj_coords[0].toFixed(2)+'. Click on Show plot to view the Time series.</b>');
                 $plotModal.modal('show');
             } else if (feature_type == 'Polygon'){
-console.log("from polygon");
+            console.log("from polygon");
                 $plotModal.find('.info').html('');
                 var coords = parsed_feature["features"][0]["geometry"]["coordinates"][0];
                 proj_coords = [];
@@ -207,7 +207,7 @@ console.log("from polygon");
                     var transformed = ol.proj.transform(coord,'EPSG:3857','EPSG:4326');
                     proj_coords.push('['+transformed+']');
                 });
-console.log(proj_coords);
+            console.log(proj_coords);
 
                 var json_object = '{"type":"Polygon","coordinates":[['+proj_coords+']]}';
                 $("#poly-lat-lon").val(json_object);
@@ -258,6 +258,8 @@ console.log("jhkjh");
         }).change();
 
     };
+
+
 
     init_events = function(){
     
@@ -316,6 +318,7 @@ console.log("jhkjh");
             });
             map.getTargetElement().style.cursor = hit ? 'pointer' : '';
         });
+
     };
 
     init_all = function(){
@@ -524,6 +527,13 @@ console.log(variable);
     // the DOM tree finishes loading
     $(function() {
         init_all();
+           $('#vicslider').change(function(e){
+           // alert("vic moved");
+            current_layer.setOpacity(0.3);
+        });
+             $('#dssatslider').change(function(e){
+          //  alert("dssat moved");
+        });
         $("#interaction").on('click',function(){
             $interactionModal.modal('show');
         });
@@ -635,6 +645,7 @@ console.log(variable);
             });
 
         });
+
 
     });
 
