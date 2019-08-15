@@ -28,7 +28,11 @@ var LIBRARY_OBJECT = (function() {
         rest_url,
         variable_data,
         $vicplotModal,
-        wms_workspace,
+
+ $vicplotModal1,
+          $vicplotModal2,
+           $vicplotModal3,
+           wms_workspace,
         wms_url,
         wms_layer,
         wms_source;
@@ -64,6 +68,10 @@ var LIBRARY_OBJECT = (function() {
         $interactionModal = $("#interaction-modal");
         $plotModal = $("#plot-modal");
         $vicplotModal = $("#vic-plot-modal");
+         $vicplotModal1 = $("#vic-plot-modal1");
+          $vicplotModal2 = $("#vic-plot-modal2");
+           $vicplotModal3 = $("#vic-plot-modal3");
+
         var $var_element = $("#variable");
         variable_data = $var_element.attr('data-variable-info');
         variable_data = JSON.parse(variable_data);
@@ -449,6 +457,18 @@ console.log(variable);
             $vicplotModal.find('.info').html('');
             $vicplotModal.find('.warning').html('');
             $vicplotModal.find('.table').html('');
+
+              $vicplotModal1.find('.info').html('');
+            $vicplotModal1.find('.warning').html('');
+            $vicplotModal1.find('.table').html('');
+
+              $vicplotModal2.find('.info').html('');
+            $vicplotModal2.find('.warning').html('');
+            $vicplotModal2.find('.table').html('');
+
+              $vicplotModal3.find('.info').html('');
+            $vicplotModal3.find('.warning').html('');
+            $vicplotModal3.find('.table').html('');
 	
             if("success" in data) {
                 if(data.interaction == "point" || data.interaction == "polygon"){
@@ -457,6 +477,117 @@ console.log(variable);
                     var display_name = variable_data[index]["display_name"];
                     var units = variable_data[index]["units"];
                     $("#plotter").highcharts({
+                        chart: {
+                            type:'area',
+                            zoomType: 'x'
+                        },
+                        title: {
+                            text:display_name+" for "+region
+                            // style: {
+                            //     fontSize: '13px',
+                            //     fontWeight: 'bold'
+                            // }
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                format: '{value:%d %b %Y}'
+                                // rotation: 90,
+                                // align: 'left'
+                            },
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: units
+                            }
+
+                        },
+                        exporting: {
+                            enabled: true
+                        },
+                        series: [{
+                            data:data.time_series,
+                            name: display_name
+                        }]
+                    });
+                     $("#plotter1").highcharts({
+                        chart: {
+                            type:'area',
+                            zoomType: 'x'
+                        },
+                        title: {
+                            text:display_name+" for "+region
+                            // style: {
+                            //     fontSize: '13px',
+                            //     fontWeight: 'bold'
+                            // }
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                format: '{value:%d %b %Y}'
+                                // rotation: 90,
+                                // align: 'left'
+                            },
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: units
+                            }
+
+                        },
+                        exporting: {
+                            enabled: true
+                        },
+                        series: [{
+                            data:data.time_series,
+                            name: display_name
+                        }]
+                    });
+                     $("#plotter2").highcharts({
+                        chart: {
+                            type:'area',
+                            zoomType: 'x'
+                        },
+                        title: {
+                            text:display_name+" for "+region
+                            // style: {
+                            //     fontSize: '13px',
+                            //     fontWeight: 'bold'
+                            // }
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                format: '{value:%d %b %Y}'
+                                // rotation: 90,
+                                // align: 'left'
+                            },
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: units
+                            }
+
+                        },
+                        exporting: {
+                            enabled: true
+                        },
+                        series: [{
+                            data:data.time_series,
+                            name: display_name
+                        }]
+                    });
+                     $("#plotter3").highcharts({
                         chart: {
                             type:'area',
                             zoomType: 'x'
@@ -529,7 +660,8 @@ console.log(variable);
         init_all();
            $('#vicslider').change(function(e){
            // alert("vic moved");
-            current_layer.setOpacity(0.3);
+           console.log(wms_layer);
+            wms_layer.setOpacity(1);
         });
              $('#dssatslider').change(function(e){
           //  alert("dssat moved");
