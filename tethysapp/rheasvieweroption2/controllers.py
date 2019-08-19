@@ -43,3 +43,14 @@ def home(request):
     }
 
     return render(request, 'rheasvieweroption2/home.html', context)
+
+def vicdssat(request):
+    geoserver_wms_url = cfg.geoserver['wms_url']
+    geoserver_rest_url = cfg.geoserver['rest_url']
+    geoserver_workspace = cfg.geoserver['workspace']
+    context={
+        "geoserver_wms_url":geoserver_wms_url,
+        "geoserver_rest_url":geoserver_rest_url,
+        "geoserver_workspace":geoserver_workspace
+    }
+    return render(request,'rheasvieweroption2/vicdssat.html', context)
