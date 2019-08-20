@@ -31,4 +31,9 @@ body {
   float: right;
 }
 
+#dssatmap,#vicmap{
+height:70vh;
+width:100%;
+}
+
 
