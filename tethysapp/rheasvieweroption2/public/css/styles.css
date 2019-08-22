@@ -36,4 +36,13 @@ height:70vh;
 width:100%;
 }
 
+#map{
+height:50vh;
+width:100%;
+}
+
+#chart,#chart1,#chart2,#chart3{
+height:47.5vh;
+width:100%;
+}
 

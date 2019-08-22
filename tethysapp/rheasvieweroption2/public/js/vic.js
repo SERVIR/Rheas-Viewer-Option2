@@ -85,12 +85,14 @@ var LIBRARY_OBJECT = (function() {
     init_dropdown = function () {
         $(".db_table").select2();
         $(".schema_table").select2();
-        $(".var_table").select2();
+        $(".var_table1").select2();
+         $(".var_table2").select2();
+          $(".var_table3").select2();
+           $(".var_table4").select2();
         $(".time_table").select2();
 
         $(".interaction").select2();
         $(".region_table_plot").select2();
-        $(".variable_table_plot").select2();
         $(".date_table_plot").select2();
     };
 
@@ -137,7 +139,7 @@ var LIBRARY_OBJECT = (function() {
                 })
             })
         });
-
+console.log(wms_layer);
 
         layers = [baseLayer,wms_layer,vector_layer];
 
@@ -431,7 +433,7 @@ console.log("jhkjh");
             serverType: 'geoserver',
             crossOrigin: 'Anonymous'
         });
-
+console.log(wms_source);
         wms_layer = new ol.layer.Image({
             source: wms_source
         });
@@ -443,37 +445,27 @@ console.log("jhkjh");
     };
 
     get_plot = function(){
-console.log("from get plot");
         var db = $("#db_table option:selected").val();
         var region = $("#schema_table option:selected").val();
-        var variable = $("#var_table option:selected").val();
+        var variable1 = $("#var_table1 option:selected").val();
+        var variable2 = $("#var_table2 option:selected").val();
+        var variable3 = $("#var_table3 option:selected").val();
+        var variable4 = $("#var_table4 option:selected").val();
         var point = $("#point-lat-lon").val();
         var polygon = $("#poly-lat-lon").val();
-console.log(point);
-console.log(polygon);
-console.log(variable);
-        var xhr = ajax_update_database("get-vic-plot",{"db":db,"region":region,"variable":variable,"point":point,"polygon":polygon});
-        xhr.done(function(data) {
+        var xhr1 = ajax_update_database("get-vic-plot",{"db":db,"region":region,"variable":variable1,"point":point,"polygon":polygon});
+        var xhr2 = ajax_update_database("get-vic-plot",{"db":db,"region":region,"variable":variable2,"point":point,"polygon":polygon});
+        var xhr3 = ajax_update_database("get-vic-plot",{"db":db,"region":region,"variable":variable3,"point":point,"polygon":polygon});
+        var xhr4 = ajax_update_database("get-vic-plot",{"db":db,"region":region,"variable":variable4,"point":point,"polygon":polygon});
+
+        xhr1.done(function(data) {
             $vicplotModal.find('.info').html('');
             $vicplotModal.find('.warning').html('');
             $vicplotModal.find('.table').html('');
-
-              $vicplotModal1.find('.info').html('');
-            $vicplotModal1.find('.warning').html('');
-            $vicplotModal1.find('.table').html('');
-
-              $vicplotModal2.find('.info').html('');
-            $vicplotModal2.find('.warning').html('');
-            $vicplotModal2.find('.table').html('');
-
-              $vicplotModal3.find('.info').html('');
-            $vicplotModal3.find('.warning').html('');
-            $vicplotModal3.find('.table').html('');
-	
             if("success" in data) {
                 if(data.interaction == "point" || data.interaction == "polygon"){
                     //var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
-                    var index = find_var_index(variable,variable_data);
+                    var index = find_var_index(variable1,variable_data);
                     var display_name = variable_data[index]["display_name"];
                     var units = variable_data[index]["units"];
                     $("#plotter").highcharts({
@@ -512,130 +504,187 @@ console.log(variable);
                             data:data.time_series,
                             name: display_name
                         }]
-                    });
-                     $("#plotter1").highcharts({
-                        chart: {
-                            type:'area',
-                            zoomType: 'x'
-                        },
-                        title: {
-                            text:display_name+" for "+region
-                            // style: {
-                            //     fontSize: '13px',
-                            //     fontWeight: 'bold'
-                            // }
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            labels: {
-                                format: '{value:%d %b %Y}'
-                                // rotation: 90,
-                                // align: 'left'
-                            },
-                            title: {
-                                text: 'Date'
-                            }
-                        },
-                        yAxis: {
-                            title: {
-                                text: units
-                            }
-
-                        },
-                        exporting: {
-                            enabled: true
-                        },
-                        series: [{
-                            data:data.time_series,
-                            name: display_name
-                        }]
-                    });
-                     $("#plotter2").highcharts({
-                        chart: {
-                            type:'area',
-                            zoomType: 'x'
-                        },
-                        title: {
-                            text:display_name+" for "+region
-                            // style: {
-                            //     fontSize: '13px',
-                            //     fontWeight: 'bold'
-                            // }
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            labels: {
-                                format: '{value:%d %b %Y}'
-                                // rotation: 90,
-                                // align: 'left'
-                            },
-                            title: {
-                                text: 'Date'
-                            }
-                        },
-                        yAxis: {
-                            title: {
-                                text: units
-                            }
-
-                        },
-                        exporting: {
-                            enabled: true
-                        },
-                        series: [{
-                            data:data.time_series,
-                            name: display_name
-                        }]
-                    });
-                     $("#plotter3").highcharts({
-                        chart: {
-                            type:'area',
-                            zoomType: 'x'
-                        },
-                        title: {
-                            text:display_name+" for "+region
-                            // style: {
-                            //     fontSize: '13px',
-                            //     fontWeight: 'bold'
-                            // }
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            labels: {
-                                format: '{value:%d %b %Y}'
-                                // rotation: 90,
-                                // align: 'left'
-                            },
-                            title: {
-                                text: 'Date'
-                            }
-                        },
-                        yAxis: {
-                            title: {
-                                text: units
-                            }
-
-                        },
-                        exporting: {
-                            enabled: true
-                        },
-                        series: [{
-                            data:data.time_series,
-                            name: display_name
-                        }]
-                    });
+                       });
                     $vicplotModal.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
                     $vicplotModal.find('.table').append('<tr><td>'+data.mean+'</td><td>'+data.stddev+'</td><td>'+data.min+'</td><td>'+data.max+'</td></tr>');
                     $("#plotter").removeClass('hidden');
                     $("#summary").removeClass('hidden');
-
-
                 }
-
             } else {
                 $vicplotModal.find('.warning').html('<b>'+data.error+'</b>');
                 console.log(data.error);
+            }
+        });
+                xhr2.done(function(data) {
+            $vicplotModal1.find('.info').html('');
+            $vicplotModal1.find('.warning').html('');
+            $vicplotModal1.find('.table').html('');
+            if("success" in data) {
+                if(data.interaction == "point" || data.interaction == "polygon"){
+                    //var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
+                    var index = find_var_index(variable2,variable_data);
+                    console.log(variable_data);
+                    var display_name = variable_data[index]["display_name"];
+                    var units = variable_data[index]["units"];
+                    $("#plotter1").highcharts({
+                        chart: {
+                            type:'area',
+                            zoomType: 'x'
+                        },
+                        title: {
+                            text:display_name+" for "+region
+                            // style: {
+                            //     fontSize: '13px',
+                            //     fontWeight: 'bold'
+                            // }
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                format: '{value:%d %b %Y}'
+                                // rotation: 90,
+                                // align: 'left'
+                            },
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: units
+                            }
 
+                        },
+                        exporting: {
+                            enabled: true
+                        },
+                        series: [{
+                            data:data.time_series,
+                            name: display_name
+                        }]
+                       });
+                    $vicplotModal1.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
+                    $vicplotModal1.find('.table').append('<tr><td>'+data.mean+'</td><td>'+data.stddev+'</td><td>'+data.min+'</td><td>'+data.max+'</td></tr>');
+                    $("#plotter1").removeClass('hidden');
+                    $("#summary").removeClass('hidden');
+                }
+            } else {
+                $vicplotModal1.find('.warning').html('<b>'+data.error+'</b>');
+                console.log(data.error);
+            }
+        });
+                xhr3.done(function(data) {
+            $vicplotModal2.find('.info').html('');
+            $vicplotModal2.find('.warning').html('');
+            $vicplotModal2.find('.table').html('');
+            if("success" in data) {
+                if(data.interaction == "point" || data.interaction == "polygon"){
+                    //var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
+                    var index = find_var_index(variable3,variable_data);
+                    var display_name = variable_data[index]["display_name"];
+                    var units = variable_data[index]["units"];
+                    $("#plotter2").highcharts({
+                        chart: {
+                            type:'area',
+                            zoomType: 'x'
+                        },
+                        title: {
+                            text:display_name+" for "+region
+                            // style: {
+                            //     fontSize: '13px',
+                            //     fontWeight: 'bold'
+                            // }
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                format: '{value:%d %b %Y}'
+                                // rotation: 90,
+                                // align: 'left'
+                            },
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: units
+                            }
+
+                        },
+                        exporting: {
+                            enabled: true
+                        },
+                        series: [{
+                            data:data.time_series,
+                            name: display_name
+                        }]
+                       });
+                    $vicplotModal2.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
+                    $vicplotModal2.find('.table').append('<tr><td>'+data.mean+'</td><td>'+data.stddev+'</td><td>'+data.min+'</td><td>'+data.max+'</td></tr>');
+                    $("#plotter2").removeClass('hidden');
+                    $("#summary").removeClass('hidden');
+                }
+            } else {
+                $vicplotModal2.find('.warning').html('<b>'+data.error+'</b>');
+                console.log(data.error);
+            }
+        });
+                xhr4.done(function(data) {
+            $vicplotModal3.find('.info').html('');
+            $vicplotModal3.find('.warning').html('');
+            $vicplotModal3.find('.table').html('');
+            if("success" in data) {
+                if(data.interaction == "point" || data.interaction == "polygon"){
+                    //var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
+                    var index = find_var_index(variable4,variable_data);
+                    var display_name = variable_data[index]["display_name"];
+                    var units = variable_data[index]["units"];
+                    $("#plotter3").highcharts({
+                        chart: {
+                            type:'area',
+                            zoomType: 'x'
+                        },
+                        title: {
+                            text:display_name+" for "+region
+                            // style: {
+                            //     fontSize: '13px',
+                            //     fontWeight: 'bold'
+                            // }
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                format: '{value:%d %b %Y}'
+                                // rotation: 90,
+                                // align: 'left'
+                            },
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: units
+                            }
+
+                        },
+                        exporting: {
+                            enabled: true
+                        },
+                        series: [{
+                            data:data.time_series,
+                            name: display_name
+                        }]
+                       });
+                    $vicplotModal3.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
+                    $vicplotModal3.find('.table').append('<tr><td>'+data.mean+'</td><td>'+data.stddev+'</td><td>'+data.min+'</td><td>'+data.max+'</td></tr>');
+                    $("#plotter3").removeClass('hidden');
+                    $("#summary").removeClass('hidden');
+                }
+            } else {
+                $vicplotModal3.find('.warning').html('<b>'+data.error+'</b>');
+                console.log(data.error);
             }
         });
     };
@@ -701,37 +750,55 @@ console.log(variable);
         $("#schema_table").change(function(){
             var db = $("#db_table option:selected").val();
             var region = $("#schema_table option:selected").val();
-            $("#var_table").html('');
-            $("#variable_table_plot").html('');
+            $("#var_table1").html('');
+            $("#var_table2").html('');
+            $("#var_table3").html('');
+            $("#var_table4").html('');
             var xhr = ajax_update_database("variables",{"region":region,"db":db});
             xhr.done(function(data) {
                 if("success" in data) {
-			console.log(data.variables);
                     var variables = data.variables;
                     variables.forEach(function(variable,i){
                         var new_option = new Option(variable,variable);
                         if(i==0){
-                            $("#var_table").append(new_option).trigger('change');
+                            $("#var_table1").append(new_option).trigger('change');
                         }else{
-                            $("#var_table").append(new_option);
+                            $("#var_table1").append(new_option);
                         }
                     });
                     variables.forEach(function(variable,i){
                         var new_option = new Option(variable,variable);
-                        $("#variable_table_plot").append(new_option);
+                        if(i==0){
+                            $("#var_table2").append(new_option).trigger('change');
+                        }else{
+                            $("#var_table2").append(new_option);
+                        }
                     });
-
+                    variables.forEach(function(variable,i){
+                        var new_option = new Option(variable,variable);
+                        if(i==0){
+                            $("#var_table3").append(new_option).trigger('change');
+                        }else{
+                            $("#var_table3").append(new_option);
+                        }
+                    });
+                    variables.forEach(function(variable,i){
+                        var new_option = new Option(variable,variable);
+                        if(i==0){
+                            $("#var_table4").append(new_option).trigger('change');
+                        }else{
+                            $("#var_table4").append(new_option);
+                        }
+                    });
                 } else {
                     console.log("error");
-
                 }
             });
-
         }).change();
 
-        $("#var_table").change(function(){
+        $("#var_table1").change(function(){
             var db = $("#db_table option:selected").val();
-            var variable = $("#var_table option:selected").val();
+            var variable = $("#var_table1 option:selected").val();
             var region = $("#schema_table option:selected").val();
 
             var xhr = ajax_update_database("dates",{"variable":variable,"region":region,"db":db});
@@ -740,8 +807,98 @@ console.log(variable);
                     var dates = data.dates;
                     $("#time_table").html('');
                     dates.forEach(function(date,i){
+
                         var new_option = new Option(date[0],date[1]);
                         if(i==0){
+                            console.log(date[0]);
+                            console.log(date[1]);
+                            $("#time_table").append(new_option).trigger('change');
+                        }else{
+                            $("#time_table").append(new_option);
+                        }
+                    });
+
+                } else {
+                    console.log("error");
+
+                }
+            });
+
+        });
+           $("#var_table2").change(function(){
+            var db = $("#db_table option:selected").val();
+            var variable = $("#var_table2 option:selected").val();
+            var region = $("#schema_table option:selected").val();
+
+            var xhr = ajax_update_database("dates",{"variable":variable,"region":region,"db":db});
+            xhr.done(function(data) {
+                if("success" in data) {
+                    var dates = data.dates;
+                    $("#time_table").html('');
+                    dates.forEach(function(date,i){
+
+                        var new_option = new Option(date[0],date[1]);
+                        if(i==0){
+                            console.log(date[0]);
+                            console.log(date[1]);
+                            $("#time_table").append(new_option).trigger('change');
+                        }else{
+                            $("#time_table").append(new_option);
+                        }
+                    });
+
+                } else {
+                    console.log("error");
+
+                }
+            });
+
+        });
+           $("#var_table3").change(function(){
+            var db = $("#db_table option:selected").val();
+            var variable = $("#var_table3 option:selected").val();
+            var region = $("#schema_table option:selected").val();
+
+            var xhr = ajax_update_database("dates",{"variable":variable,"region":region,"db":db});
+            xhr.done(function(data) {
+                if("success" in data) {
+                    var dates = data.dates;
+                    $("#time_table").html('');
+                    dates.forEach(function(date,i){
+
+                        var new_option = new Option(date[0],date[1]);
+                        if(i==0){
+                            console.log(date[0]);
+                            console.log(date[1]);
+                            $("#time_table").append(new_option).trigger('change');
+                        }else{
+                            $("#time_table").append(new_option);
+                        }
+                    });
+
+                } else {
+                    console.log("error");
+
+                }
+            });
+
+        });
+           $("#var_table4").change(function(){
+            var db = $("#db_table option:selected").val();
+            var variable = $("#var_table4 option:selected").val();
+            var region = $("#schema_table option:selected").val();
+
+            var xhr = ajax_update_database("dates",{"variable":variable,"region":region,"db":db});
+            xhr.done(function(data) {
+                if("success" in data) {
+                    var dates = data.dates;
+                    $("#time_table").html('');
+                    dates.forEach(function(date,i){
+
+                        var new_option = new Option(date[0],date[1]);
+                        if(i==0){
+                            console.log(date[0]);
+                            console.log(date[1]);
                             $("#time_table").append(new_option).trigger('change');
                         }else{
                             $("#time_table").append(new_option);
@@ -758,7 +915,7 @@ console.log(variable);
 
         $("#time_table").change(function(){
             var db = $("#db_table option:selected").val();
-            var variable = $("#var_table option:selected").val();
+            var variable = $("#var_table1 option:selected").val();
             var region = $("#schema_table option:selected").val();
             var date = $("#time_table option:selected").val();
             $(".error").html('');

@@ -90,6 +90,11 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/bounds',
                 controller='rheasvieweroption2.ajax_controllers.get_bounds'
           ),
+          UrlMap(
+                name='bounds1',
+                url='rheasvieweroption2/vicdssat/bounds1',
+                controller='rheasvieweroption2.ajax_controllers.get_bounds'
+          ),
         )
 
         return url_maps

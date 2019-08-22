@@ -72,10 +72,29 @@
                                 {% endfor %}
                             </select>
                             <br>
+                                <div>
+                            VIC: <input id="vicslider" type="range" min="0" max="1" step="0.1"/><br>
+                            DSSAT: <input id="dssatslider" type="range" min="0" max="1" step="0.1"/>
+                            </div>
                             <label>
-                                Select a variable
+                                Graph1
                             </label>
-                            <select class="var_table" name="var_table" id="var_table" style="width: 100%">
+                            <select class="var_table" name="var_table1" id="var_table1" style="width: 100%">
+                            </select>
+                             <label>
+                                Graph2
+                            </label>
+                            <select class="var_table" name="var_table2" id="var_table2" style="width: 100%">
+                            </select>
+                             <label>
+                                Graph3
+                            </label>
+                            <select class="var_table" name="var_table3" id="var_table3" style="width: 100%">
+                            </select>
+                             <label>
+                                Graph4
+                            </label>
+                            <select class="var_table" name="var_table4" id="var_table4" style="width: 100%">
                             </select>
                             <br>
                             <label>
@@ -94,29 +113,25 @@
                     		<input type="text" name="poly-lat-lon" id="poly-lat-lon" hidden>
 			    <p>Note: The map interaction has to be set to None to be able to view the pixel values for a clicked point.</p>
 				<canvas id="cv" width="500px" height="50px"></canvas>
+
                         </div>
                     </div>
                 </div>
-                <div class="m-5 col-lg-9">
+                <div class="m-3 col-lg-6">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Map</div>
                         <div class="panel-body">
                             <div id="map" class="map"></div>
-                            <div>
-                            VIC: <input id="vicslider" type="range" min="0" max="1" step="0.1"/><br>
-                            DSSAT: <input id="dssatslider" type="range" min="0" max="1" step="0.1"/>
-                            </div>
+
                         </div>
                     </div>
                 </div>
-            </div>
-<br>
-            <div class="row" style="height:20vh;">
-                <div class="m-5 col-lg-3">
+
+                <div class="m-5 col-lg-3" >
                     <div class="panel panel-primary">
-                        <div class="panel-heading">VIC graph SPI3</div>
+                        <div class="panel-heading">Graph 1</div>
                         <div class="panel-body" id="vic-plot-modal">
-				<div>
+				<div id="chart">
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
@@ -125,24 +140,27 @@
 				    </div>
 				</div>
 				<br/>
-				<div id="summary">
-				    <h4>Summary Statistics</h4>
-				    <div class="table-responsive">
-				        <table class="table">
+<!--				<div id="summary">-->
+<!--				    <h4>Summary Statistics</h4>-->
+<!--				    <div class="table-responsive">-->
+<!--				        <table class="table">-->
 
-				        </table>
-				        <div class="info"></div>
-				        <div class="warning"></div>
-				    </div>
-				</div>
+<!--				        </table>-->
+<!--				        <div class="info"></div>-->
+<!--				        <div class="warning"></div>-->
+<!--				    </div>-->
+<!--				</div>-->
                     </div>
                 </div>
 </div>
+                            </div>
+<br>
+            <div class="row" style="height:20vh;">
                 <div class="m-5 col-lg-3">
                     <div class="panel panel-primary">
-                        <div class="panel-heading">VIC graph CDI</div>
+                        <div class="panel-heading">Graph 2</div>
                           <div class="panel-body" id="vic-plot-modal1">
-				<div>
+				<div id="chart1">
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
@@ -151,24 +169,24 @@
 				    </div>
 				</div>
 				<br/>
-				<div id="summary">
-				    <h4>Summary Statistics</h4>
-				    <div class="table-responsive">
-				        <table class="table">
+<!--				<div id="summary">-->
+<!--				    <h4>Summary Statistics</h4>-->
+<!--				    <div class="table-responsive">-->
+<!--				        <table class="table">-->
 
-				        </table>
-				        <div class="info"></div>
-				        <div class="warning"></div>
-				    </div>
-				</div>
+<!--				        </table>-->
+<!--				        <div class="info"></div>-->
+<!--				        <div class="warning"></div>-->
+<!--				    </div>-->
+<!--				</div>-->
                     </div>
                     </div>
                 </div>
                 <div class="m-5 col-lg-3">
                     <div class="panel panel-primary">
-                        <div class="panel-heading">VIC graph Temperature</div>
+                        <div class="panel-heading">Graph 3</div>
                            <div class="panel-body" id="vic-plot-modal2">
-				<div>
+				<div id="chart2">
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
@@ -177,24 +195,24 @@
 				    </div>
 				</div>
 				<br/>
-				<div id="summary">
-				    <h4>Summary Statistics</h4>
-				    <div class="table-responsive">
-				        <table class="table">
+<!--				<div id="summary">-->
+<!--				    <h4>Summary Statistics</h4>-->
+<!--				    <div class="table-responsive">-->
+<!--				        <table class="table">-->
 
-				        </table>
-				        <div class="info"></div>
-				        <div class="warning"></div>
-				    </div>
-				</div>
+<!--				        </table>-->
+<!--				        <div class="info"></div>-->
+<!--				        <div class="warning"></div>-->
+<!--				    </div>-->
+<!--				</div>-->
                     </div>
                     </div>
                 </div>
                 <div class="m-5 col-lg-3">
                     <div class="panel panel-primary">
-                        <div class="panel-heading">DSSAT graph LAI</div>
+                        <div class="panel-heading">Graph 4</div>
                            <div class="panel-body" id="vic-plot-modal3">
-				<div>
+				<div id="chart3">
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
@@ -203,16 +221,16 @@
 				    </div>
 				</div>
 				<br/>
-				<div id="summary">
-				    <h4>Summary Statistics</h4>
-				    <div class="table-responsive">
-				        <table class="table">
+<!--				<div id="summary">-->
+<!--				    <h4>Summary Statistics</h4>-->
+<!--				    <div class="table-responsive">-->
+<!--				        <table class="table">-->
 
-				        </table>
-				        <div class="info"></div>
-				        <div class="warning"></div>
-				    </div>
-				</div>
+<!--				        </table>-->
+<!--				        <div class="info"></div>-->
+<!--				        <div class="warning"></div>-->
+<!--				    </div>-->
+<!--				</div>-->
                     </div>
                     </div>
                 </div>

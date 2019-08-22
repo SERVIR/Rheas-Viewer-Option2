@@ -42,7 +42,6 @@ def get_vars(request):
 
         except Exception as e:
             return_obj["error"] = e
-
         return JsonResponse(return_obj)
 @csrf_exempt
 def get_dates(request):
@@ -65,7 +64,6 @@ def get_dates(request):
 
         except Exception as e:
             return_obj["error"] = e
-
         return JsonResponse(return_obj)
 @csrf_exempt
 def get_raster(request):

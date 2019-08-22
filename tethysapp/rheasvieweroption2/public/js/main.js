@@ -124,7 +124,7 @@ function ajax_update_database(ajax_url, ajax_data) {
     if (ajax_url.substr(-1) !== "/") {
         ajax_url = ajax_url.concat("/");
     }
-
+console.log(ajax_data);
     //update database
     var xhr = jQuery.ajax({
         type: "POST",
