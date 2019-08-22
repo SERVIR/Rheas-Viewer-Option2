@@ -763,9 +763,13 @@ console.log(wms_source);
                         if(i==0){
                             $("#var_table1").append(new_option).trigger('change');
                         }else{
+
                             $("#var_table1").append(new_option);
                         }
+
+
                     });
+
                     variables.forEach(function(variable,i){
                         var new_option = new Option(variable,variable);
                         if(i==0){
