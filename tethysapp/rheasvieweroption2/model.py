@@ -183,11 +183,8 @@ def get_vic_polygon(db,region,variable,polygon):
         return e
 
 def get_database():
-    print("get database")
     try:
-        print("before db conn")
         conn = psycopg2.connect(user=cfg.connection['user'],host= cfg.connection['host'],password=cfg.connection['password'])
-        print("after db conn")
         cur = conn.cursor()
         sql = """SELECT datname FROM pg_database WHERE datistemplate = false"""
         cur.execute(sql)
@@ -195,7 +192,6 @@ def get_database():
 
         rheas_dbs = [db[0] for db in data if 'postgres' not in db[0]]
         conn.close()
-        print(" end get database")
         return rheas_dbs
 
     except Exception as e:
@@ -203,11 +199,8 @@ def get_database():
         return e
 
 def get_schemas(db):
-    print("get schemas")
     try:
-        print("new conn")
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
-        print("new conn made")
         cur = conn.cursor()
         sql = """select schema_name from information_schema.schemata"""
         cur.execute(sql)
@@ -217,7 +210,6 @@ def get_schemas(db):
 
         conn.close()
         regions.sort()
-        print("get scehmas end")
         return regions
 
     except Exception as e:
