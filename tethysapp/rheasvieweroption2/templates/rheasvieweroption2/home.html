@@ -44,14 +44,13 @@
 
 
 
-        <div class="container-fluid">
+        <div class="container-fluid" id="container">
             </br>
 
 
 
-            <div class="row" style="height:calc(70vh - 300px);">
-                <div class="m-5 col-lg-3">
-                    <div class="panel panel-primary">
+                <div class="m-5 col-lg-3" id="paramscontainer">
+                    <div class="panel panel-primary"  style="height:100%;">
                         <div class="panel-heading">Parameters</div>
                         <div class="panel-body"  id="params">
                             <label>
@@ -117,17 +116,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="m-3 col-lg-6">
-                    <div class="panel panel-primary">
+                <div class="m-3 col-lg-6"  id="mapcontainer">
+                    <div class="panel panel-primary" id="mappanel">
                         <div class="panel-heading">Map</div>
-                        <div class="panel-body">
+                        <div class="panel-body" id="mappanelbody">
                             <div id="map" class="map"></div>
 
                         </div>
                     </div>
                 </div>
 
-                <div class="m-5 col-lg-3" >
+                <div class="m-5 col-lg-3" id="chartpanel" style="height:45vh;">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Graph 1</div>
                         <div class="panel-body" id="vic-plot-modal">
@@ -153,9 +152,7 @@
                     </div>
                 </div>
 </div>
-                            </div>
-<br style="clear:both;">
-            <div class="row" style="height:20vh;">
+
                 <div class="m-5 col-lg-3">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Graph 2</div>
@@ -234,7 +231,6 @@
                     </div>
                     </div>
                 </div>
-            </div>
             <div id="variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-geoserver-url="{{geoserver_wms_url}}" data-rest-url="{{geoserver_rest_url}}" data-geoserver-workspace="{{geoserver_workspace}}"></div>
             <div id="dssat" class="dssat" name="dssat" style="display:none;" data-geoserver-url="{{geoserver_wfs_url}}" data-geoserver-workspace="{{geoserver_workspace}}" data-rest-url="{{geoserver_rest_url}}"></div>
 

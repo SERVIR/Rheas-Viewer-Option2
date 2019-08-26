@@ -28,11 +28,13 @@ def home(request):
 @csrf_exempt
 def vicdssat(request):
     variable_info = get_variables_meta()
+    geoserver_wfs_url = cfg.geoserver['wfs_url']
     geoserver_wms_url = cfg.geoserver['wms_url']
     geoserver_rest_url = cfg.geoserver['rest_url']
     geoserver_workspace = cfg.geoserver['workspace']
     context={
         "variable_info":json.dumps(variable_info),
+        "geoserver_wfs_url":geoserver_wfs_url,
         "geoserver_wms_url":geoserver_wms_url,
         "geoserver_rest_url":geoserver_rest_url,
         "geoserver_workspace":geoserver_workspace

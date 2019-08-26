@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 import json
 from tethysapp.rheasvieweroption2.model import *
+from django.views.decorators.csrf import csrf_exempt
+
 def api_get_dbs(request):
     return_obj = {}
 
@@ -239,7 +241,7 @@ def api_get_ens_values(request):
 
             return JsonResponse(return_obj)
 
-
+@csrf_exempt
 def api_get_schema_yield(request):
     return_obj = {}
 

@@ -225,7 +225,7 @@ def get_ens_values(request):
             return JsonResponse(return_obj)
 
 
-
+@csrf_exempt
 def get_schema_yield(request):
     return_obj = {}
 

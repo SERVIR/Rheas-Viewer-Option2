@@ -95,6 +95,11 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/vicdssat/bounds1',
                 controller='rheasvieweroption2.ajax_controllers.get_bounds'
           ),
+          UrlMap(
+                name='dsyield',
+                url='rheasvieweroption2/vicdssat/get-schema-yield',
+                controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
+          ),
         )
 
         return url_maps
