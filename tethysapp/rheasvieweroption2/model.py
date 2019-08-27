@@ -344,7 +344,7 @@ def get_dssat_values(db,gid,schema,ensemble):
 
             cur.execute(sql1)
             data1 = cur.fetchall()
-
+            print(data1)
             medianens = data1[math.ceil(len(data1)/2) - 1]
             lowens = data1[math.ceil(len(data1)/4) - 1]
             highens = data1[math.ceil(len(data1)* 3/4) - 1]
@@ -366,13 +366,11 @@ def get_dssat_values(db,gid,schema,ensemble):
         return e
 
 def get_dssat_ens_values(cur,gid,schema,ensemble):
-
-    sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat WHERE gid={1} AND ensemble={2} ORDER BY fdate;""".format(
+    sql = """SELECT planting,wsgd,lai,gwad FROM {0}.dssat WHERE gid={1} AND ensemble={2} ORDER BY planting;""".format(
         schema, int(gid), int(ensemble))
 
     cur.execute(sql)
     data = cur.fetchall()
-
     wsgd_series, lai_series, gwad_series = parse_dssat_data(data)
 
     return wsgd_series, lai_series, gwad_series
@@ -397,7 +395,6 @@ def calculate_yield(db,schema):
 
                 print("Store exists")
         except Exception  as e:
-            print('Entering geoserver code')
             temp_dir = tempfile.mkdtemp()
             pg_sql = """SELECT * FROM {0}.agareas""".format(schema)
 

@@ -7,10 +7,7 @@
  var date="";
  var projection = ol.proj.get('EPSG:3857');
     var baseLayer = new ol.layer.Tile({
-        source: new ol.source.BingMaps({
-            key: '5TC0yID7CYaqv3nVQLKe~xWVt4aXWMJq2Ed72cO4xsA~ApdeyQwHyH_btMjQS1NJ7OHKY8BK-W-EMQMrIavoQUMYXeZIQOUURnKGBOC7UCt4',
-            imagerySet: 'AerialWithLabels' // Options 'Aerial', 'AerialWithLabels', 'Road'
-        })
+         source: new ol.source.OSM()
     });
     var view = new ol.View({
         center: ol.proj.transform([39.669571,-4.036878], 'EPSG:4326','EPSG:3857'),
@@ -79,15 +76,15 @@
                 }
             });
             var yield_data;
-                var store;
-                 function get_cal(bounds){
-                 console.log("from get cal");
-                var layer_extent = bounds;
-                var transformed_extent = ol.proj.transformExtent(layer_extent,'EPSG:4326','EPSG:3857');
-                dssatmap.getView().fit(transformed_extent,dssatmap.getSize());
-                dssatmap.updateSize();
-                console.log("updated map");
-            };
+            var store;
+            function get_cal(bounds){
+            console.log("from get cal");
+            var layer_extent = bounds;
+            var transformed_extent = ol.proj.transformExtent(layer_extent,'EPSG:4326','EPSG:3857');
+            dssatmap.getView().fit(transformed_extent,dssatmap.getSize());
+            dssatmap.updateSize();
+            console.log("updated map");
+     };
    function add_dssat(data){
         console.log("from dsat");
 
@@ -132,6 +129,15 @@
     var mid = [108,152,64,0.81];
     var low = [152,108,64,0.81];
     var poor = [196,32,32,0.81];
+    var default_style = new ol.style.Style({
+        fill: new ol.style.Fill({
+            color: [250,250,250,1]
+        }),
+        stroke: new ol.style.Stroke({
+            color: [220,220,220,1],
+            width: 4
+        })
+    });
    function styleFunction(feature, resolution) {
         // get the incomeLevel from the feature properties
         var level = feature.getId().split(".")[1];

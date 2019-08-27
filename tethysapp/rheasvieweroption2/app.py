@@ -96,9 +96,30 @@ class Rheasvieweroption2(TethysAppBase):
                 controller='rheasvieweroption2.ajax_controllers.get_bounds'
           ),
           UrlMap(
+                name='boundshome',
+                url='rheasvieweroption2/boundshome',
+                controller='rheasvieweroption2.ajax_controllers.get_bounds'
+          ),
+          UrlMap(
                 name='dsyield',
                 url='rheasvieweroption2/vicdssat/get-schema-yield',
                 controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
+          ),
+
+          UrlMap(
+                name='dsyield1',
+                url='rheasvieweroption2/get-schema-yield',
+                controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
+          ),
+          UrlMap(
+                name='dsensemble',
+                url='rheasvieweroption2/get-ensemble',
+                controller='rheasvieweroption2.ajax_controllers.get_ensemble'
+          ),
+          UrlMap(
+                name='dsensval',
+                url='rheasvieweroption2/get-ens-values',
+                controller='rheasvieweroption2.ajax_controllers.get_ens_values'
           ),
         )
 

@@ -9,7 +9,7 @@
 /*****************************************************************************
  *                      LIBRARY WRAPPER
  *****************************************************************************/
-
+var gwms,gmap;
 var LIBRARY_OBJECT = (function() {
     // Wrap the library in a package function
     "use strict"; // And enable strict mode for this library
@@ -26,13 +26,13 @@ var LIBRARY_OBJECT = (function() {
         $plotModal,
         public_interface,			// Object returned by the module
         rest_url,
+        selectedFeatures,
         variable_data,
         $vicplotModal,
-
- $vicplotModal1,
-          $vicplotModal2,
-           $vicplotModal3,
-           wms_workspace,
+        $vicplotModal1,
+        $vicplotModal2,
+        $vicplotModal3,
+        wms_workspace,
         wms_url,
         wms_layer,
         wms_source;
@@ -42,9 +42,10 @@ var LIBRARY_OBJECT = (function() {
     /************************************************************************
      *                    PRIVATE FUNCTION DECLARATIONS
      *************************************************************************/
-    var add_wms,
+    var add_vic,
         clear_coords,
         get_bounds,
+        get_bounds1,
         get_plot,
         get_styling,
         gen_color_bar,
@@ -53,7 +54,20 @@ var LIBRARY_OBJECT = (function() {
         init_dropdown,
         init_all,
         init_map;
-
+         var styleCache = {};
+    var high = [64,196,64,0.81];
+    var mid = [108,152,64,0.81];
+    var low = [152,108,64,0.81];
+    var poor = [196,32,32,0.81];
+  var default_style = new ol.style.Style({
+        fill: new ol.style.Fill({
+            color: [250,250,250,1]
+        }),
+        stroke: new ol.style.Stroke({
+            color: [220,220,220,1],
+            width: 4
+        })
+    });
 
     /************************************************************************
      *                    PRIVATE FUNCTION IMPLEMENTATIONS
@@ -104,6 +118,7 @@ var LIBRARY_OBJECT = (function() {
                 imagerySet: 'AerialWithLabels' // Options 'Aerial', 'AerialWithLabels', 'Road'
             })
         });
+
         var fullScreenControl = new ol.control.FullScreen();
         var view = new ol.View({
             center: ol.proj.transform([39.669571,-4.036878], 'EPSG:4326','EPSG:3857'),
@@ -120,6 +135,9 @@ var LIBRARY_OBJECT = (function() {
             wrapX: false
         });
 
+        var baseLayer1 = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
         var vector_layer = new ol.layer.Vector({
             name: 'my_vectorlayer',
             source: vector_source,
@@ -139,18 +157,26 @@ var LIBRARY_OBJECT = (function() {
                 })
             })
         });
-console.log(wms_layer);
+  gwms=wms_layer;
 
-        layers = [baseLayer,wms_layer,vector_layer];
-
+        layers = [baseLayer,vector_layer];
+ // layers = [baseLayer,wms_layer,vector_layer,vectorLayer1];
         map = new ol.Map({
             target: document.getElementById("map"),
             layers: layers,
             view: view
         });
-
+gmap=map;
   
-
+        $('#vicslider').change(function(e){
+             map.getLayers().forEach(lyr => {
+            if(lyr.get("id")=="viclayer"){
+                lyr.setOpacity(0.5);
+                }
+        });  });
+        $('#dssatslider').change(function(e){
+           vectorLayer1.setOpacity(0.5);
+        });
         //Code for adding interaction for drawing on the map
         var lastFeature, draw, featureType;
 
@@ -197,13 +223,10 @@ console.log(wms_layer);
             var feature_json = saveData();
             var parsed_feature = JSON.parse(feature_json);
             var feature_type = parsed_feature["features"][0]["geometry"]["type"];
-	        console.log("add feat");
             if (feature_type == 'Point'){
-            console.log("from point");
 
                 $plotModal.find('.info').html('');
                 var coords = parsed_feature["features"][0]["geometry"]["coordinates"];
-            console.log(coords);
                 var proj_coords = ol.proj.transform(coords, 'EPSG:3857','EPSG:4326');
                 $("#point-lat-lon").val(proj_coords);
                 $plotModal.find('.info').html('<b>You have selected a point at '+proj_coords[1].toFixed(2)+','+proj_coords[0].toFixed(2)+'. Click on Show plot to view the Time series.</b>');
@@ -217,7 +240,6 @@ console.log(wms_layer);
                     var transformed = ol.proj.transform(coord,'EPSG:3857','EPSG:4326');
                     proj_coords.push('['+transformed+']');
                 });
-            console.log(proj_coords);
 
                 var json_object = '{"type":"Polygon","coordinates":[['+proj_coords+']]}';
                 $("#poly-lat-lon").val(json_object);
@@ -257,7 +279,6 @@ get_plot();
                 vector_layer.getSource().clear();
             }else if(featureType == 'Point')
             {
-console.log("jhkjh");
                 clear_coords();
                 addInteraction(featureType);
             }else if(featureType == 'Polygon'){
@@ -373,6 +394,76 @@ console.log("jhkjh");
         return bbox;
 
     };
+  function styleFunction(feature, resolution) {
+        // get the incomeLevel from the feature properties
+        var level = feature.getId().split(".")[1];
+        if(yield_data != null){
+            // var index = yield_data.findIndex(function(x) { return x[0]==level });
+            var index = -1;
+            for (var i = 0; i < yield_data.length; ++i) {
+                if (yield_data[i][0] == level) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index=="-1") {
+                return [default_style];
+            }
+            // check the cache and create a new style for the income
+            // level if its not been created before.
+            if (index!="-1") {
+                var avg_val = yield_data[index][1];
+
+                if(avg_val > 2000){
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: high
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                }else if(avg_val > 1500 && avg_val < 2000){
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: mid
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                }else if(avg_val > 1000 && avg_val < 1500){
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: low
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                }else if(avg_val < 1000){
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: poor
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                }
+
+            }
+            return [styleCache[index]];
+        }else{
+            return [default_style];
+        }
+
+    };
 
     get_styling = function(variable,min,max,scale){
 
@@ -383,33 +474,176 @@ console.log("jhkjh");
 
         var sld_color_string = '';
         if(scale[scale.length-1] == 0){
-            var colors = chroma.scale([start,start]).mode('lab').correctLightness().colors(20);
+            var colors = chroma.scale([start,start]).mode('lch').correctLightness().colors(20);
             gen_color_bar(colors,scale);
-            var color_map_entry = '<ColorMapEntry color="'+colors[0]+'" quantity="'+scale[0]+'" label="label1" opacity="0.7"/>';
+            var color_map_entry = '<ColorMapEntry color="'+colors[0]+'" quantity="'+scale[0]+'" label="label1" opacity="1"/>';
             sld_color_string += color_map_entry;
         }else{
-            var colors = chroma.scale([start,end]).mode('lab').correctLightness().colors(20);
+            var colors = chroma.scale([start,end]).mode('lch').correctLightness().colors(20);
             gen_color_bar(colors,scale);
             colors.forEach(function(color,i){
-                var color_map_entry = '<ColorMapEntry color="'+color+'" quantity="'+scale[i]+'" label="label'+i+'" opacity="0.7"/>';
+                var color_map_entry = '<ColorMapEntry color="'+color+'" quantity="'+scale[i]+'" label="label'+i+'" opacity="1"/>';
                 sld_color_string += color_map_entry;
             });
         }
 
         return sld_color_string
     };
+       get_bounds1 = function(ws,store,url,callback){
+        // console.log(ws,store,url);
+        var lastChar = url.substr(-1); // Selects the last character
+        if (lastChar != '/') {         // If the last character is not a slash
+            url = url + '/';            // Append a slash to it.
+        }
+        // var bbox_url = url+'workspaces/'+ws+'/coveragestores/'+store+'/coverages/'+store+'.xml';
+        var bbox;
+        var xhr_dssat = ajax_update_database("bounds",{"url":url,"store":store,"workspace":ws,'type':'vector'});
 
+        xhr_dssat.done(function(data) {
+            if("success" in data) {
+                callback(data.bounds);
+            } else {
+                console.log("not succes");
+            }
+        });
 
-    add_wms = function(data){
-        // gs_layer_list.forEach(function(item){
+        return bbox;
 
-        function get_cal(bounds){
+    };
+    var yield_data;
+    var store;
+    function get_cal(bounds){
             var layer_extent = bounds;
             var transformed_extent = ol.proj.transformExtent(layer_extent,'EPSG:4326','EPSG:3857');
             map.getView().fit(transformed_extent,map.getSize());
             map.updateSize();
         };
+         var  vectorLayer1 = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: styleFunction
+        });
+function add_dssat(data){
+          yield_data = data.yield;
+         store = data.storename;
+         var bbox = get_bounds1(wms_workspace,store,rest_url,get_cal);
 
+            vectorLayer1.setSource(new ol.source.Vector({
+                format: new ol.format.GeoJSON(),
+                url: function(extent) {
+                    return wms_url+'?service=WFS&' +
+                        'version=1.1.0&request=GetFeature&typename='+wms_workspace+':'+store+'&' +
+                        'outputFormat=application/json&srsname=EPSG:3857&' +
+                        'bbox=' + extent.join(',') + ',EPSG:3857';
+                },
+                strategy: ol.loadingstrategy.bbox,
+                wrapX: false,
+
+            }));
+            vectorLayer1.setZIndex(3);
+            map.addLayer(vectorLayer1);
+                map.crossOrigin = 'anonymous';
+        var select_interaction = new ol.interaction.Select({
+            layers: [vectorLayer1],
+            style:new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(0, 0, 255, 1.0)',
+                    width: 6
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(48, 252, 7,1.0)'
+                })
+            }),
+            wrapX: false
+        });
+         map.addInteraction(select_interaction);
+        select_interaction.on('select', function (e) {
+            var gid = e.selected[0].getId().split(".")[1];;
+            var db = $("#db_table option:selected").val();
+            var schema = $("#schema_table option:selected").val();
+         var xhr = ajax_update_database("get-ens-values",{"db":db,"gid":gid,"schema":schema,"ensemble":"1"});
+
+            xhr.done(function(data) {
+                if("success" in data) {
+        $("#plotter3").highcharts({
+            chart: {
+                zoomType: 'x'
+            },
+            title: {
+                text:'Leaf Area Index'
+            },
+            plotOptions: {
+                series: {
+                    marker: {
+                        enabled: false
+                    }
+                }
+            },
+            xAxis: {
+                type: 'datetime',
+                labels: {
+                    format: '{value:%d %b}'
+                },
+                title: {
+                    text: 'Date'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'LAI (m2/m2)'
+                }
+
+            },
+            exporting: {
+                enabled: true
+            },
+            series: [{
+                data:data.lai_series,
+                name: 'LAI (m2/m2)',
+                type:'line',
+                lineWidth:5,
+                color:"green"
+            }]
+        });
+         } else {
+                    $(".error").append('<h3>Error Processing Request. Please be sure to select an area with data.</h3>');
+
+                }
+                });
+
+
+
+        });
+   selectedFeatures = select_interaction.getFeatures();
+        selectedFeatures.on('add', function(event) {
+            $(".error").html('');
+            var feature = event.target.item(0);
+            var gid = feature.getId().split(".")[1];
+            var schema = $("#schema_table option:selected").val();
+            var db = $("#db_table option:selected").val();
+            $("#gid").val(gid);
+            $("#schema").val(schema);
+
+            var name_0 = feature.getProperties().name;
+            // var name_1 = feature.getProperties().name_1;
+            // var name_2 = feature.getProperties().name_2;
+
+            // var heading = $("<div>").append( $("<h3>").text(name_0));
+            // var content = $("<div>")
+            //     .append(heading);
+            // $(".feature-info").html('<h4 style="display: inline;">Current Feature: '+name_0+'&#8594</h4>&nbsp&nbsp<h5 style="display: inline;">'+name_1+'&#8594</h5>&nbsp&nbsp<h6 style="display: inline;">'+name_2+'</h6>');
+            $(".feature-info").html('<h4 style="display: inline;">Current Feature: '+name_0+'</h6>');
+
+
+        });
+
+        // when a feature is removed, clear the feature-info div
+        selectedFeatures.on('remove', function(event) {
+            $(".feature-info").html("");
+           // hide_charts();
+            $(".feature-info").html("<p>Please select a feature to View the relevant metadata.</p>");
+        });
+     }
+    add_vic = function(data){
         map.removeLayer(wms_layer);
         var layer_name = wms_workspace+":"+data.storename;
         var styling = get_styling(data.variable,data.min,data.max,data.scale);
@@ -433,14 +667,14 @@ console.log("jhkjh");
             serverType: 'geoserver',
             crossOrigin: 'Anonymous'
         });
-console.log(wms_source);
         wms_layer = new ol.layer.Image({
-            source: wms_source
+            source: wms_source,
+            id:"viclayer",
+            opacity:0.7,
+
         });
-
+        wms_layer.setZIndex(2);
         map.addLayer(wms_layer);
-        // var layer_extent = [11.3,-26.75,58.9,14.0];
-
 
     };
 
@@ -523,7 +757,6 @@ console.log(wms_source);
                 if(data.interaction == "point" || data.interaction == "polygon"){
                     //var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
                     var index = find_var_index(variable2,variable_data);
-                    console.log(variable_data);
                     var display_name = variable_data[index]["display_name"];
                     var units = variable_data[index]["units"];
                     $("#plotter1").highcharts({
@@ -630,63 +863,6 @@ console.log(wms_source);
                 console.log(data.error);
             }
         });
-                xhr4.done(function(data) {
-            $vicplotModal3.find('.info').html('');
-            $vicplotModal3.find('.warning').html('');
-            $vicplotModal3.find('.table').html('');
-            if("success" in data) {
-                if(data.interaction == "point" || data.interaction == "polygon"){
-                    //var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
-                    var index = find_var_index(variable4,variable_data);
-                    var display_name = variable_data[index]["display_name"];
-                    var units = variable_data[index]["units"];
-                    $("#plotter3").highcharts({
-                        chart: {
-                            type:'area',
-                            zoomType: 'x'
-                        },
-                        title: {
-                            text:display_name+" for "+region
-                            // style: {
-                            //     fontSize: '13px',
-                            //     fontWeight: 'bold'
-                            // }
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            labels: {
-                                format: '{value:%d %b %Y}'
-                                // rotation: 90,
-                                // align: 'left'
-                            },
-                            title: {
-                                text: 'Date'
-                            }
-                        },
-                        yAxis: {
-                            title: {
-                                text: units
-                            }
-
-                        },
-                        exporting: {
-                            enabled: true
-                        },
-                        series: [{
-                            data:data.time_series,
-                            name: display_name
-                        }]
-                       });
-                    $vicplotModal3.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
-                    $vicplotModal3.find('.table').append('<tr><td>'+data.mean+'</td><td>'+data.stddev+'</td><td>'+data.min+'</td><td>'+data.max+'</td></tr>');
-                    $("#plotter3").removeClass('hidden');
-                    $("#summary").removeClass('hidden');
-                }
-            } else {
-                $vicplotModal3.find('.warning').html('<b>'+data.error+'</b>');
-                console.log(data.error);
-            }
-        });
     };
 
     
@@ -707,11 +883,7 @@ console.log(wms_source);
     // the DOM tree finishes loading
     $(function() {
         init_all();
-           $('#vicslider').change(function(e){
-           // alert("vic moved");
-           console.log(wms_layer);
-            wms_layer.setOpacity(1);
-        });
+
              $('#dssatslider').change(function(e){
           //  alert("dssat moved");
         });
@@ -810,8 +982,6 @@ console.log(wms_source);
 
                         var new_option = new Option(date[0],date[1]);
                         if(i==0){
-                            console.log(date[0]);
-                            console.log(date[1]);
                             $("#time_table").append(new_option).trigger('change');
                         }else{
                             $("#time_table").append(new_option);
@@ -839,8 +1009,6 @@ console.log(wms_source);
 
                         var new_option = new Option(date[0],date[1]);
                         if(i==0){
-                            console.log(date[0]);
-                            console.log(date[1]);
                             $("#time_table").append(new_option).trigger('change');
                         }else{
                             $("#time_table").append(new_option);
@@ -868,8 +1036,6 @@ console.log(wms_source);
 
                         var new_option = new Option(date[0],date[1]);
                         if(i==0){
-                            console.log(date[0]);
-                            console.log(date[1]);
                             $("#time_table").append(new_option).trigger('change');
                         }else{
                             $("#time_table").append(new_option);
@@ -897,8 +1063,7 @@ console.log(wms_source);
 
                         var new_option = new Option(date[0],date[1]);
                         if(i==0){
-                            console.log(date[0]);
-                            console.log(date[1]);
+
                             $("#time_table").append(new_option).trigger('change');
                         }else{
                             $("#time_table").append(new_option);
@@ -924,14 +1089,20 @@ console.log(wms_source);
 
             xhr.done(function(data) {
                 if("success" in data) {
-                    add_wms(data);
+                    add_vic(data);
+
 
                 } else {
                     $(".error").html('<h3>Error Retrieving the layer</h3>');
-
-
                 }
             });
+             ajax_update_database("get-schema-yield",{"db":db,"schema":region}).done(function(data) {
+                if("success" in data) {
+               add_dssat(data);
+              } else {
+            $(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
+        }
+});
 
         });
 

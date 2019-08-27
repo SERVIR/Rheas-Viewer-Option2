@@ -50,9 +50,7 @@ overflow-x:hidden;
  overflow-y: auto;
 
  }
-#params1{
- height: calc(100vh - 150px);
- }
+
 #chart,#chart2,#chart3{
 height:47.5vh;
 width:100%;
