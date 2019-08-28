@@ -37,22 +37,20 @@ width:100%;
 }
 
 #map{
-
-height:50vh;
-width:100%;
- height: 45vh;
-    overflow: hidden;
-    margin-bottom: 50px;
+  width:100%;
+  height: 100%;
+  overflow: hidden;
+  margin-bottom: 50px;
 }
 
 #params{
-overflow-x:hidden;
- overflow-y: auto;
+overflow-y:auto;
+height:100%;
 
  }
 
-#chart,#chart2,#chart3{
-height:47.5vh;
+#chart1,#chart2,#chart3{
+height:40vh;
 width:100%;
 }
 
@@ -63,12 +61,18 @@ width:100%;
     width: 25%;
     overflow: hidden;
     height: 37vh;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 
-#chart1{
-  height: 45vh;
+#chart{
+  height: 40vh;
     margin-bottom: 50px;
+    overflow: hidden;
+ }
+
+ .chartpanel{
+  height: 43vh;
+    margin-bottom: 20px;
     overflow: hidden;
  }
 
@@ -76,11 +80,12 @@ width:100%;
     height: calc(100vh - 100px);
 }
 #paramscontainer{
-height: calc(100vh - 125px);
+height: calc(100vh - 115px);
+
 }
 
 #mapcontainer{
-height: 45vh;
+height: 43vh;
 }
 
 #mappanel{
@@ -88,10 +93,12 @@ height: 45vh;
     position: relative;
     margin-bottom: 0;
     overflow: hidden;
+        margin-bottom:20px;
+
 }
 
 #mappanelbody{
-    height: 100%;
+    height: calc(100% - 40px);
     position: relative;
     padding: 0;
 }

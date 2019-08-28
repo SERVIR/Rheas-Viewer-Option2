@@ -70,8 +70,8 @@
                             </select>
                             <br>
                                 <div>
-                            VIC: <input id="vicslider" type="range" min="0" max="1" step="0.1"/><br>
-                            DSSAT: <input id="dssatslider" type="range" min="0" max="1" step="0.1"/>
+                            VIC: <input id="vicslider" type="range" min="0" max="1" step="0.1" value="0.7"/><br>
+                            DSSAT: <input id="dssatslider" type="range" min="0" max="1" step="0.1" value="0.7"/>
                             </div>
                             <label>
                                 Graph1
@@ -109,7 +109,7 @@
   			 <input type="text" name="point-lat-lon" id="point-lat-lon" hidden>
                     		<input type="text" name="poly-lat-lon" id="poly-lat-lon" hidden>
 			    <p>Note: The map interaction has to be set to None to be able to view the pixel values for a clicked point.</p>
-				<canvas id="cv" width="500px" height="50px"></canvas>
+				<canvas id="cv" width="500px" height="50px" style="margin-bottom:20px"></canvas>
 
                         </div>
                     </div>
@@ -124,7 +124,7 @@
                     </div>
                 </div>
 
-                <div class="m-5 col-lg-3" id="chartpanel" style="height:45vh;">
+                <div class="m-5 col-lg-3 chartpanel">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Graph 1</div>
                         <div class="panel-body" id="vic-plot-modal">
@@ -151,7 +151,7 @@
                 </div>
 </div>
 
-                <div class="m-5 col-lg-3">
+                <div class="m-5 col-lg-3 chartpanel">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Graph 2</div>
                           <div class="panel-body" id="vic-plot-modal1">
@@ -177,7 +177,7 @@
                     </div>
                     </div>
                 </div>
-                <div class="m-5 col-lg-3">
+                <div class="m-5 col-lg-3 chartpanel">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Graph 3</div>
                            <div class="panel-body" id="vic-plot-modal2">
@@ -203,7 +203,7 @@
                     </div>
                     </div>
                 </div>
-                <div class="m-5 col-lg-3">
+                <div class="m-5 col-lg-3 chartpanel">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Graph 4</div>
                            <div class="panel-body" id="vic-plot-modal3">

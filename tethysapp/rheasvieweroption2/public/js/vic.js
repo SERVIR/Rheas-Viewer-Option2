@@ -171,11 +171,11 @@ gmap=map;
         $('#vicslider').change(function(e){
              map.getLayers().forEach(lyr => {
             if(lyr.get("id")=="viclayer"){
-                lyr.setOpacity(0.5);
+                lyr.setOpacity(e.target.value);
                 }
         });  });
         $('#dssatslider').change(function(e){
-           vectorLayer1.setOpacity(0.5);
+           vectorLayer1.setOpacity(e.target.value);
         });
         //Code for adding interaction for drawing on the map
         var lastFeature, draw, featureType;
@@ -670,9 +670,9 @@ function add_dssat(data){
         wms_layer = new ol.layer.Image({
             source: wms_source,
             id:"viclayer",
-            opacity:0.7,
-
+            opacity:$("#vicslider").val(),
         });
+
         wms_layer.setZIndex(2);
         map.addLayer(wms_layer);
 
@@ -890,6 +890,7 @@ function add_dssat(data){
         $("#interaction").on('click',function(){
             $interactionModal.modal('show');
         });
+        $("#db_table").val("rheassm").attr("selected","selected");
          $("#db_table").change(function(){
             var db = $("#db_table option:selected").val();
             $("#schema_table").html('');
@@ -905,6 +906,7 @@ function add_dssat(data){
                         }else{
                             $("#schema_table").append(new_option);
                         }
+                          $("#schema_table").val("kenya_nowcast2").attr("selected","selected");
                     });
                     // variables.forEach(function(variable,i){
                     //     var new_option = new Option(variable,variable);
@@ -937,6 +939,7 @@ function add_dssat(data){
                         }else{
                             $("#var_table1").append(new_option);
                         }
+
                     });
                     variables.forEach(function(variable,i){
                         var new_option = new Option(variable,variable);
@@ -945,6 +948,8 @@ function add_dssat(data){
                         }else{
                             $("#var_table2").append(new_option);
                         }
+
+
                     });
                     variables.forEach(function(variable,i){
                         var new_option = new Option(variable,variable);
@@ -953,7 +958,10 @@ function add_dssat(data){
                         }else{
                             $("#var_table3").append(new_option);
                         }
+
+
                     });
+
                     variables.forEach(function(variable,i){
                         var new_option = new Option(variable,variable);
                         if(i==0){
@@ -966,6 +974,7 @@ function add_dssat(data){
                     console.log("error");
                 }
             });
+
         }).change();
 
         $("#var_table1").change(function(){
@@ -1009,7 +1018,7 @@ function add_dssat(data){
 
                         var new_option = new Option(date[0],date[1]);
                         if(i==0){
-                            $("#time_table").append(new_option).trigger('change');
+                            $("#time_table").append(new_option);
                         }else{
                             $("#time_table").append(new_option);
                         }
@@ -1036,7 +1045,7 @@ function add_dssat(data){
 
                         var new_option = new Option(date[0],date[1]);
                         if(i==0){
-                            $("#time_table").append(new_option).trigger('change');
+                            $("#time_table").append(new_option);
                         }else{
                             $("#time_table").append(new_option);
                         }
@@ -1064,7 +1073,7 @@ function add_dssat(data){
                         var new_option = new Option(date[0],date[1]);
                         if(i==0){
 
-                            $("#time_table").append(new_option).trigger('change');
+                            $("#time_table").append(new_option);
                         }else{
                             $("#time_table").append(new_option);
                         }

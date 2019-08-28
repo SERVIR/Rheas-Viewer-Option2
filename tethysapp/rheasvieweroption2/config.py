@@ -1,11 +1,11 @@
-connection = {'host': '216.218.226.151',
-              'user': 'rheas',
-              'password': 'pass',
-              'dbname': 'rheas'}
+connection = {'host': 'YOUR HOST',
+              'user': 'YOUR USERNAME',
+              'password': 'YOUR PASSWORD',
+              'dbname': 'YOUR DB NAME'}
 
-geoserver = {'rest_url':'http://tethys.servirglobal.net:8181/geoserver/rest',
-             'wms_url':'https://tethys.servirglobal.net/geoserver/wms',
-             'wfs_url':'https://tethys.servirglobal.net/geoserver/wfs',
-             'user':'admin',
-             'password':'geoserver',
-             'workspace':'darwin'}
+geoserver = {'rest_url':'REST URL',
+             'wms_url':'WMS URL',
+             'wfs_url':'WFS URL',
+             'user':'YOUR USERNAME',
+             'password':'YOUR PASSWORD',
+             'workspace':'YOUR WORKSPACE'}
