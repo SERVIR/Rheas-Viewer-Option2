@@ -366,7 +366,7 @@ def get_dssat_values(db,gid,schema,ensemble):
         return e
 
 def get_dssat_ens_values(cur,gid,schema,ensemble):
-    sql = """SELECT planting,wsgd,lai,gwad FROM {0}.dssat WHERE gid={1} AND ensemble={2} ORDER BY planting;""".format(
+    sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} ORDER BY fdate;""".format(
         schema, int(gid), int(ensemble))
 
     cur.execute(sql)
