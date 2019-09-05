@@ -1061,7 +1061,9 @@ var LIBRARY_OBJECT = (function () {
 				if ("success" in data) {
 					var variables = data.variables;
 					variables.forEach(function (variable, i) {
-						var new_option = new Option(variable, variable);
+						var index = find_var_index(variable, variable_data);
+					var display_name = variable_data[index]["display_name"];
+						var new_option = new Option(display_name, variable);
 						if (i == 0) {
 							$("#var_table1").append(new_option).trigger('change');
 						} else {
@@ -1070,7 +1072,9 @@ var LIBRARY_OBJECT = (function () {
 
 					});
 					variables.forEach(function (variable, i) {
-						var new_option = new Option(variable, variable);
+						var index = find_var_index(variable, variable_data);
+					var display_name = variable_data[index]["display_name"];
+						var new_option = new Option(display_name, variable);
 						if (i == 0) {
 							$("#var_table2").append(new_option).trigger('change');
 						} else {
@@ -1080,7 +1084,9 @@ var LIBRARY_OBJECT = (function () {
 
 					});
 					variables.forEach(function (variable, i) {
-						var new_option = new Option(variable, variable);
+						var index = find_var_index(variable, variable_data);
+					var display_name = variable_data[index]["display_name"];
+						var new_option = new Option(display_name, variable);
 						if (i == 0) {
 							$("#var_table3").append(new_option).trigger('change');
 						} else {
