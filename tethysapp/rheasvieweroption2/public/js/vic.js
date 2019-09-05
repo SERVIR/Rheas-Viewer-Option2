@@ -136,7 +136,6 @@ var LIBRARY_OBJECT = (function () {
 			wrapX: false
 		});
 
-
 		var baseLayer1 = new ol.layer.Tile({
 			source: new ol.source.OSM()
 		});
@@ -169,7 +168,7 @@ var LIBRARY_OBJECT = (function () {
 			view: view
 		});
 		gmap = map;
-  var modify = new ol.interaction.Modify({ source:vector_source  });
+  var modify = new ol.interaction.Modify({ source: vector_source });
         map.addInteraction(modify);
         addControls();
         function addControls() {
@@ -202,7 +201,7 @@ var LIBRARY_OBJECT = (function () {
                 type: which
             });
             map.addInteraction(draw);
-        var   snap = new ol.interaction.Snap({ source: vector_source });
+            var snap = new ol.interaction.Snap({ source: vector_source });
             map.addInteraction(snap);
             draw.on('drawend', function (evt) {
                 processFeature(evt.feature, which);
@@ -214,7 +213,9 @@ var LIBRARY_OBJECT = (function () {
             } else if (featureType == "Polygon") {
                 console.log("Process as Polygon");
             }
-            console.log(feature.getGeometry().getCoordinates());
+            var coords = feature.getGeometry().getCoordinates();
+            var proj_coords = ol.proj.transform(coords, 'EPSG:3857','EPSG:4326');
+                $("#point-lat-lon").val(proj_coords);
         }
 		$('#vicslider').change(function (e) {
 			map.getLayers().forEach(lyr => {
@@ -344,9 +345,46 @@ var LIBRARY_OBJECT = (function () {
 
 		map.on("singleclick", function (evt) {
 
+			$(element).popover('destroy');
 
 
+			if (map.getTargetElement().style.cursor == "pointer" && $("#interaction-type").find('option:selected').val() == "None") {
+				var clickCoord = evt.coordinate;
+				popup.setPosition(clickCoord);
+				var view = map.getView();
+				var viewResolution = view.getResolution();
 
+				var wms_url = current_layer.getSource().getGetFeatureInfoUrl(evt.coordinate, viewResolution, view.getProjection(), {
+					'INFO_FORMAT': 'application/json'
+				}); //Get the wms url for the clicked point
+
+				if (wms_url) {
+					//Retrieving the details for clicked point via the url
+					$.ajax({
+						type: "GET",
+						url: wms_url,
+						dataType: 'json',
+						success: function (result) {
+							var value = parseFloat(result["features"][0]["properties"]["GRAY_INDEX"]);
+							value = value.toFixed(2);
+							$(element).popover({
+								'placement': 'top',
+								'html': true,
+								//Dynamically Generating the popup content
+								'content': 'Value: ' + value
+							});
+
+							$(element).popover('show');
+							$(element).next().css('cursor', 'text');
+
+
+						},
+						error: function (XMLHttpRequest, textStatus, errorThrown) {
+							console.log(Error);
+						}
+					});
+				}
+			}
 		});
 
 		map.on('pointermove', function (evt) {
@@ -593,16 +631,13 @@ var LIBRARY_OBJECT = (function () {
 
 			  ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema}).done(function(data) {
 
- console.log("fdfsdss");
  if("success" in data) {
-                console.log("fdfs");
                     var ensembles = data.ensembles;
                     ensembles.forEach(function(ensemble,i){
                         var new_option = new Option(ensemble,ensemble);
                         $("#ens_table").append(new_option);
                     });
                 } else {
-                 console.log("fddddfs");
                     $(".error").append('<h3>Error Retrieving the ensemble data. Please select another feature.</h3>');
 
                 }
