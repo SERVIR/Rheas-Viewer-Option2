@@ -123,6 +123,12 @@ padding-right:0;
  }
 
 }
+@media screen and (min-width: 900px) {
+#plotter,#plotter1,#plotter2,#plotter3{
+height:420px;
+}
+
+}
 @media screen and (max-width: 800px) {
 #viccom,#dssatcom{
     width:700px;
