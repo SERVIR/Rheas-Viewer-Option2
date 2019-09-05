@@ -98,12 +98,8 @@ var LIBRARY_OBJECT = (function () {
 	init_dropdown = function () {
 		$(".db_table").select2();
 		$(".schema_table").select2();
-		$(".var_table1").select2();
-		$(".var_table2").select2();
-		$(".var_table3").select2();
-		$(".var_table4").select2();
+		$(".var_table").select2();
 		$(".time_table").select2();
-
 		$(".interaction").select2();
 		$(".region_table_plot").select2();
 		$(".date_table_plot").select2();
