@@ -121,6 +121,8 @@ var LIBRARY_OBJECT = (function () {
 		});
 
 		var fullScreenControl = new ol.control.FullScreen();
+
+
 		var view = new ol.View({
 			center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
 			projection: projection,
@@ -176,6 +178,7 @@ var LIBRARY_OBJECT = (function () {
             element.className = 'ol-control-panel ol-unselectable ol-control';
             element.appendChild(createControl("Point", "glyphicon glyphicon-record"));
             element.appendChild(createControl("Polygon", "fas fa-draw-polygon"));
+             element.appendChild(createControl("Recenter", "fas fa-compass"));
             /*A custom control which has container holding input elements etc*/
             var controlPanel = new ol.control.Control({
                 element: element
@@ -186,11 +189,20 @@ var LIBRARY_OBJECT = (function () {
             var drawElement = document.createElement('button');
             drawElement.id = "draw" + which;
             drawElement.innerHTML = "<span class='"+icon+"' aria-hidden='true'></span>";
+            drawElement.title = which;
             drawElement.onclick = function () { enableDrawInteraction(which); }
             return drawElement;
         }
         function enableDrawInteraction(which)
         {
+          if (which == "Recenter") {
+                console.log("Process as Recenter");
+                map.getView().animate({
+                 center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
+                 duration: 1000,
+                 zoom:5
+              });
+            }else{
             try {
                 map.removeInteraction(draw);
             }
@@ -206,6 +218,7 @@ var LIBRARY_OBJECT = (function () {
             draw.on('drawend', function (evt) {
                 processFeature(evt.feature, which);
             });
+            }
         }
         function processFeature(feature, featureType) {
             if (featureType == "Point") {
@@ -213,6 +226,7 @@ var LIBRARY_OBJECT = (function () {
             } else if (featureType == "Polygon") {
                 console.log("Process as Polygon");
             }
+
             var coords = feature.getGeometry().getCoordinates();
             var proj_coords = ol.proj.transform(coords, 'EPSG:3857','EPSG:4326');
                 $("#point-lat-lon").val(proj_coords);
