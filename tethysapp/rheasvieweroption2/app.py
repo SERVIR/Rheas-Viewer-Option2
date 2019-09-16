@@ -25,14 +25,14 @@ class Rheasvieweroption2(TethysAppBase):
 
         url_maps = (
             UrlMap(
-                name='home',
+                name='current',
                 url='rheasvieweroption2',
-                controller='rheasvieweroption2.controllers.home'
+                controller='rheasvieweroption2.controllers.vicdssat'
             ),
             UrlMap(
-                name='vicdssat',
-                url='rheasvieweroption2/vicdssat',
-                controller='rheasvieweroption2.controllers.vicdssat'
+                name='analysis',
+                url='rheasvieweroption2/analysis',
+                controller='rheasvieweroption2.controllers.home'
             ),
             UrlMap(
                 name='schemas',
