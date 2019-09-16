@@ -38,8 +38,9 @@
         <h2>RHEAS Viewer 2</h2>
 
         <div class="topnav">
-          <a id="analysis" href="{% url 'rheasvieweroption2:home' %}">Analysis</a>
+
             <a id="home" href="{% url 'rheasvieweroption2:vicdssat' %}">Current</a>
+             <a id="analysis" href="{% url 'rheasvieweroption2:home' %}">Analysis</a>
             <a id="outlook" href="#outlook">Outlook</a>
 
             <div class="topnav-right">
@@ -116,7 +117,8 @@
 <!--			    <p>Note: The map interaction has to be set to None to be able to view the pixel values for a clicked point.</p>-->
                              <input type="text" name="point-lat-lon" id="point-lat-lon" hidden>
                     <input type="text" name="poly-lat-lon" id="poly-lat-lon" hidden>
-				<canvas id="cv" width="500px" height="50px" style="margin-bottom:20px"></canvas>
+			VIC:<canvas id="cv_vic" width="500px" height="50px" style="margin-bottom:20px"></canvas>
+				DSSAT: <canvas id="cv_dssat" width="500px" height="50px" style="margin-bottom:20px"></canvas>
 
                         </div>
                     </div>
@@ -133,11 +135,11 @@
                 <div class="m-5 col-lg-3  col-xs-3 col-sm-3 chartpanel">
                     <div class="panel panel-primary">
                         <div class="panel-body" id="vic-plot-modal">
-				<div id="chart">
+				<div id="vic_chart_1">
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
-				            <div id="plotter" name="plotter"></div>
+				            <div id="vic_plotter_1" name="plotter"></div>
 				        </div>
 				    </div>
 				</div>
@@ -159,11 +161,11 @@
                 <div class="m-5 col-lg-3  col-xs-3 col-sm-3 chartpanel">
                     <div class="panel panel-primary">
                           <div class="panel-body" id="vic-plot-modal1">
-				<div id="chart1">
+				<div id="vic_chart_2">
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
-				            <div id="plotter1" name="plotter" style="width:100%" ></div>
+				            <div id="vic_plotter_2" name="plotter" style="width:100%" ></div>
 				        </div>
 				    </div>
 				</div>
@@ -184,11 +186,11 @@
                 <div class="m-5 col-lg-3 col-xs-3 col-sm-3 chartpanel">
                     <div class="panel panel-primary">
                            <div class="panel-body" id="vic-plot-modal2">
-				<div id="chart2">
+				<div id="vic_chart_3">
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
-				            <div id="plotter2" name="plotter" style="width:100%" ></div>
+				            <div id="vic_plotter_3" name="plotter" style="width:100%" ></div>
 				        </div>
 				    </div>
 				</div>
@@ -209,11 +211,11 @@
                 <div class="m-5 col-lg-3  col-xs-3 col-sm-3 chartpanel">
                     <div class="panel panel-primary">
                            <div class="panel-body" id="dssat-plot-modal">
-				<div id="chart3">
+				<div id="dssat_chart">
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
-				            <div id="plotter3" name="plotter" style="width:100%" ></div>
+				            <div id="dssat_plotter" name="plotter" style="width:100%" ></div>
 				        </div>
 				    </div>
 				</div>

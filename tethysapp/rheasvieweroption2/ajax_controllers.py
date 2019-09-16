@@ -95,6 +95,36 @@ def get_raster(request):
         except Exception as e:
             return_obj["error"] = str(e)+ " From ajax"
             return JsonResponse(return_obj)
+@csrf_exempt
+def get_vector(request):
+    return_obj = {}
+
+    if request.is_ajax() and request.method == 'POST':
+
+        info = request.POST
+        db = info.get("db")
+        variable = info.get("variable")
+        region = info.get("region")
+        date = info.get("date")
+        try:
+            storename, mean, stddev, min, max = get_selected_raster(db,region,variable,date)
+            color_range = calc_color_range(min,max)
+
+            return_obj["storename"] = storename
+            return_obj["mean"] = mean
+            return_obj["stddev"] = stddev
+            return_obj["min"] = min
+            return_obj["max"] = max
+            return_obj["scale"] = color_range
+            return_obj["variable"] = variable
+            return_obj["region"] = region
+            return_obj["date"] = date
+            return_obj["success"] = "success"
+            return JsonResponse(return_obj)
+
+        except Exception as e:
+            return_obj["error"] = str(e)+ " From ajax"
+            return JsonResponse(return_obj)
 
 def get_vic_plot(request):
     return_obj = {}
@@ -219,6 +249,26 @@ def get_ens_values(request):
                 return_obj["gwad_series"] = gwad_series
                 return_obj["success"] = "success"
                 return JsonResponse(return_obj)
+
+        except Exception as e:
+
+            return_obj["error"] = "error"
+            return JsonResponse(return_obj)
+
+
+def get_county(request):
+    return_obj = {}
+
+    if request.is_ajax() and request.method == 'POST':
+        info = request.POST
+
+        try:
+            db = info.get("db")
+            gid = info.get("gid")
+            schema = info.get("schema")
+            return_obj["county"] = get_county_name(db,gid,schema)
+            return_obj["success"] = "success"
+            return JsonResponse(return_obj)
 
         except Exception as e:
 

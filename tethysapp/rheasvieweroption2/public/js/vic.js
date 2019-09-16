@@ -9,7 +9,8 @@
 /*****************************************************************************
  *                      LIBRARY WRAPPER
  *****************************************************************************/
-var gwms, gmap;
+var gwms, gmap,feat;
+var eventt=[];
 var LIBRARY_OBJECT = (function () {
 	// Wrap the library in a package function
 	"use strict"; // And enable strict mode for this library
@@ -157,8 +158,8 @@ var LIBRARY_OBJECT = (function () {
 			})
 		});
 		gwms = wms_layer;
-
-		layers = [baseLayer, vector_layer];
+           vector_layer.setZIndex(9);
+		layers = [baseLayer];
 		// layers = [baseLayer,wms_layer,vector_layer,vectorLayer1];
 		map = new ol.Map({
 			target: document.getElementById("map"),
@@ -166,6 +167,10 @@ var LIBRARY_OBJECT = (function () {
 			view: view
 		});
 		gmap = map;
+		vector_layer.setZIndex(Infinity);
+		map.addLayer(vector_layer);
+
+
   var modify = new ol.interaction.Modify({ source: vector_source });
         map.addInteraction(modify);
         addControls();
@@ -186,7 +191,7 @@ var LIBRARY_OBJECT = (function () {
             drawElement.id = "draw" + which;
             drawElement.innerHTML = "<span class='"+icon+"' aria-hidden='true'></span>";
             drawElement.title = which;
-            drawElement.onclick = function () { enableDrawInteraction(which); }
+            drawElement.onclick = function () { vector_source.clear(); enableDrawInteraction(which); }
             return drawElement;
         }
         function enableDrawInteraction(which)
@@ -212,6 +217,9 @@ var LIBRARY_OBJECT = (function () {
             var snap = new ol.interaction.Snap({ source: vector_source });
             map.addInteraction(snap);
             draw.on('drawend', function (evt) {
+
+                selectedFeatures.push(evt.feature);
+                feat=evt.feature;
                 processFeature(evt.feature, which);
             });
             }
@@ -420,8 +428,8 @@ var LIBRARY_OBJECT = (function () {
 		init_events();
 	};
 
-	gen_color_bar = function (colors, scale) {
-		var cv = document.getElementById('cv'),
+	gen_color_bar = function (colors, scale,cv) {
+		var cv = document.getElementById(cv),
 			ctx = cv.getContext('2d');
 		ctx.clearRect(0, 0, cv.width, cv.height);
 		colors.forEach(function (color, i) {
@@ -532,7 +540,7 @@ var LIBRARY_OBJECT = (function () {
 
 	};
 
-	get_styling = function (variable, min, max, scale) {
+	get_styling = function (variable, min, max, scale,cv) {
 
 		//var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
 		var index = find_var_index(variable, variable_data);
@@ -542,12 +550,12 @@ var LIBRARY_OBJECT = (function () {
 		var sld_color_string = '';
 		if (scale[scale.length - 1] == 0) {
 			var colors = chroma.scale([start, start]).mode('lch').correctLightness().colors(20);
-			gen_color_bar(colors, scale);
+			gen_color_bar(colors, scale,cv);
 			var color_map_entry = '<ColorMapEntry color="' + colors[0] + '" quantity="' + scale[0] + '" label="label1" opacity="1"/>';
 			sld_color_string += color_map_entry;
 		} else {
 			var colors = chroma.scale([start, end]).mode('lch').correctLightness().colors(20);
-			gen_color_bar(colors, scale);
+			gen_color_bar(colors, scale,cv);
 			colors.forEach(function (color, i) {
 				var color_map_entry = '<ColorMapEntry color="' + color + '" quantity="' + scale[i] + '" label="label' + i + '" opacity="1"/>';
 				sld_color_string += color_map_entry;
@@ -584,11 +592,23 @@ var LIBRARY_OBJECT = (function () {
 	};
 	var yield_data;
 	var store;
-
+    var centeravg,lonlat;
 	function get_cal(bounds) {
 		var layer_extent = bounds;
 		var transformed_extent = ol.proj.transformExtent(layer_extent, 'EPSG:4326', 'EPSG:3857');
 		map.getView().fit(transformed_extent, map.getSize());
+		  var aa = layer_extent;
+    centeravg = ol.extent.getCenter(aa);
+
+
+
+             var variable1 = $("#var_table1 option:selected").val();
+                    var variable2 = $("#var_table2 option:selected").val();
+                    var variable3 = $("#var_table3 option:selected").val();
+        generate_vic_graph("#vic_plotter_1",variable1,centeravg.toString(),"");
+
+                    generate_vic_graph("#vic_plotter_2",variable2,centeravg.toString(),"");
+                    generate_vic_graph("#vic_plotter_3",variable3,centeravg.toString(),"");
 		map.updateSize();
 	};
 	var vectorLayer1 = new ol.layer.Vector({
@@ -599,6 +619,8 @@ var LIBRARY_OBJECT = (function () {
 	function add_dssat(data) {
 		yield_data = data.yield;
 		store = data.storename;
+		console.log(data);
+	  //  var styling = get_styling(data.variable, data.min, data.max, data.scale,'cv_dssat');
 		var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
 
 		vectorLayer1.setSource(new ol.source.Vector({
@@ -615,33 +637,123 @@ var LIBRARY_OBJECT = (function () {
 		}));
 		vectorLayer1.setZIndex(3);
 		map.addLayer(vectorLayer1);
+
 		map.crossOrigin = 'anonymous';
 		var select_interaction = new ol.interaction.Select({
 			layers: [vectorLayer1],
 			style: new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: 'rgba(0, 0, 255, 1.0)',
+					color: 'rgba(0, 0, 255, 0.7)',
 					width: 6
 				}),
 				fill: new ol.style.Fill({
-					color: 'rgba(48, 252, 7,1.0)'
+					color: 'rgba(0,0,0,0)'
 				})
 			}),
 			wrapX: false
 		});
-
 		map.addInteraction(select_interaction);
 
 
 		select_interaction.on('select', function (e) {
 			var gid = e.selected[0].getId().split(".")[1];
+		generate_dssat_graph(gid);
+		});
+		selectedFeatures = select_interaction.getFeatures();
+		selectedFeatures.on('add', function (event) {
+            try{
+         
+			$(".error").html('');
+			var feature = event.target.item(0);
+			var gid = feature.getId().split(".")[1];
+			console.log(feature);
+			var schema = $("#schema_table option:selected").val();
+			var db = $("#db_table option:selected").val();
+			$("#gid").val(gid);
+			$("#schema").val(schema);
+
+			var name_0 = feature.getProperties().name;
+			// var name_1 = feature.getProperties().name_1;
+			// var name_2 = feature.getProperties().name_2;
+
+			// var heading = $("<div>").append( $("<h3>").text(name_0));
+			// var content = $("<div>")
+			//     .append(heading);
+			// $(".feature-info").html('<h4 style="display: inline;">Current Feature: '+name_0+'→</h4>  <h5 style="display: inline;">'+name_1+'→</h5>  <h6 style="display: inline;">'+name_2+'</h6>');
+		$(".feature-info").html('<h4 style="display: inline;">Current Feature: ' + name_0 + '</h6>');
+
+
+            }
+            catch(e){
+            }
+		});
+
+		// when a feature is removed, clear the feature-info div
+		selectedFeatures.on('remove', function (event) {
+			$(".feature-info").html("");
+			// hide_charts();
+			$(".feature-info").html("<p>Please select a feature to View the relevant metadata.</p>");
+		});
+	}
+	add_vic = function (data) {
+		map.removeLayer(wms_layer);
+		var layer_name = wms_workspace + ":" + data.storename;
+		console.log(data);
+		var styling = get_styling(data.variable, data.min, data.max, data.scale,'cv_vic');
+		var bbox = get_bounds(wms_workspace, data.storename, rest_url, get_cal);
+
+		var sld_string = '<StyledLayerDescriptor version="1.0.0"><NamedLayer><Name>' + layer_name + '</Name><UserStyle><FeatureTypeStyle><Rule>\
+        <RasterSymbolizer> \
+        <ColorMap type="ramp"> \
+        <ColorMapEntry color="#f00" quantity="-9999" label="label0" opacity="0"/>' +
+			styling + '</ColorMap>\
+        </RasterSymbolizer>\
+        </Rule>\
+        </FeatureTypeStyle>\
+        </UserStyle>\
+        </NamedLayer>\
+        </StyledLayerDescriptor>';
+
+		wms_source = new ol.source.ImageWMS({
+			url: wms_url,
+			params: {
+				'LAYERS': layer_name,
+				'SLD_BODY': sld_string
+			},
+			serverType: 'geoserver',
+			crossOrigin: 'Anonymous'
+		});
+		wms_layer = new ol.layer.Image({
+			source: wms_source,
+			id: "viclayer",
+			opacity: $("#vicslider").val(),
+		});
+
+		wms_layer.setZIndex(2);
+		map.addLayer(wms_layer);
+	};
+
+	get_plot = function () {
+		var db = $("#db_table option:selected").val();
+		var region = $("#schema_table option:selected").val();
+		var variable1 = $("#var_table1 option:selected").val();
+		var variable2 = $("#var_table2 option:selected").val();
+		var variable3 = $("#var_table3 option:selected").val();
+		var point = $("#point-lat-lon").val();
+		var polygon = $("#poly-lat-lon").val();
+		generate_vic_graph("#vic_plotter_1",variable1,point,polygon);
+		generate_vic_graph("#vic_plotter_2",variable2,point,polygon);
+		generate_vic_graph("#vic_plotter_3",variable3,point,polygon);
+
+	};
+
+		function generate_dssat_graph(gid){
+
+			var county_name="";
 			var db = $("#db_table option:selected").val();
 			var schema = $("#schema_table option:selected").val();
-			console.log(gid);
-
 			  ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema}).done(function(data) {
-
- if("success" in data) {
+                if("success" in data) {
                     var ensembles = data.ensembles;
                     ensembles.forEach(function(ensemble,i){
                         var new_option = new Option(ensemble,ensemble);
@@ -652,22 +764,33 @@ var LIBRARY_OBJECT = (function () {
 
                 }
             });
-	    var ens = $("#ens_table option:selected").val();
+	        var ens = $("#ens_table option:selected").val();
 			var xhr = ajax_update_database("get-ens-values", {
 				"db": db,
 				"gid": gid,
 				"schema": schema,
 				"ensemble": ens
 			});
-
+            ajax_update_database("get-county", {
+				"db": db,
+				"gid": gid,
+				"schema": schema
+			}).done(function (data) {
+				if ("success" in data) {
+				    county_name = data["county"][0][0];
+				}
+				else{
+				   county_name = "Unknown";
+				}
+				});
 			xhr.done(function (data) {
 				if ("success" in data) {
-					$("#plotter3").highcharts({
+					$("#dssat_plotter").highcharts({
 						chart: {
 							zoomType: 'x'
 						},
 						title: {
-							text: 'Leaf Area Index'
+							text: 'Leaf Area Index : ' +county_name
 						},
 						plotOptions: {
 							series: {
@@ -707,126 +830,28 @@ var LIBRARY_OBJECT = (function () {
 
 				}
 			});
-
-
-		});
-		selectedFeatures = select_interaction.getFeatures();
-		selectedFeatures.on('add', function (event) {
-			$(".error").html('');
-			var feature = event.target.item(0);
-			var gid = feature.getId().split(".")[1];
-			var schema = $("#schema_table option:selected").val();
-			var db = $("#db_table option:selected").val();
-			$("#gid").val(gid);
-			$("#schema").val(schema);
-
-			var name_0 = feature.getProperties().name;
-			// var name_1 = feature.getProperties().name_1;
-			// var name_2 = feature.getProperties().name_2;
-
-			// var heading = $("<div>").append( $("<h3>").text(name_0));
-			// var content = $("<div>")
-			//     .append(heading);
-			// $(".feature-info").html('<h4 style="display: inline;">Current Feature: '+name_0+'→</h4>  <h5 style="display: inline;">'+name_1+'→</h5>  <h6 style="display: inline;">'+name_2+'</h6>');
-			$(".feature-info").html('<h4 style="display: inline;">Current Feature: ' + name_0 + '</h6>');
-
-
-		});
-
-		// when a feature is removed, clear the feature-info div
-		selectedFeatures.on('remove', function (event) {
-			$(".feature-info").html("");
-			// hide_charts();
-			$(".feature-info").html("<p>Please select a feature to View the relevant metadata.</p>");
-		});
-	}
-	add_vic = function (data) {
-		map.removeLayer(wms_layer);
-		var layer_name = wms_workspace + ":" + data.storename;
-		var styling = get_styling(data.variable, data.min, data.max, data.scale);
-		var bbox = get_bounds(wms_workspace, data.storename, rest_url, get_cal);
-
-		var sld_string = '<StyledLayerDescriptor version="1.0.0"><NamedLayer><Name>' + layer_name + '</Name><UserStyle><FeatureTypeStyle><Rule>\
-        <RasterSymbolizer> \
-        <ColorMap type="ramp"> \
-        <ColorMapEntry color="#f00" quantity="-9999" label="label0" opacity="0"/>' +
-			styling + '</ColorMap>\
-        </RasterSymbolizer>\
-        </Rule>\
-        </FeatureTypeStyle>\
-        </UserStyle>\
-        </NamedLayer>\
-        </StyledLayerDescriptor>';
-
-		wms_source = new ol.source.ImageWMS({
-			url: wms_url,
-			params: {
-				'LAYERS': layer_name,
-				'SLD_BODY': sld_string
-			},
-			serverType: 'geoserver',
-			crossOrigin: 'Anonymous'
-		});
-		wms_layer = new ol.layer.Image({
-			source: wms_source,
-			id: "viclayer",
-			opacity: $("#vicslider").val(),
-		});
-
-		wms_layer.setZIndex(2);
-		map.addLayer(wms_layer);
-
-	};
-
-	get_plot = function () {
-		var db = $("#db_table option:selected").val();
-		var region = $("#schema_table option:selected").val();
-		var variable1 = $("#var_table1 option:selected").val();
-		var variable2 = $("#var_table2 option:selected").val();
-		var variable3 = $("#var_table3 option:selected").val();
-		var variable4 = $("#var_table4 option:selected").val();
-		var point = $("#point-lat-lon").val();
-		var polygon = $("#poly-lat-lon").val();
-		var xhr1 = ajax_update_database("get-vic-plot", {
+		}
+        function generate_vic_graph(element,variable,point,polygon){
+        	var db = $("#db_table option:selected").val();
+			var region = $("#schema_table option:selected").val();
+        var xhr = ajax_update_database("get-vic-plot", {
 			"db": db,
 			"region": region,
-			"variable": variable1,
+			"variable": variable,
 			"point": point,
 			"polygon": polygon
 		});
-		var xhr2 = ajax_update_database("get-vic-plot", {
-			"db": db,
-			"region": region,
-			"variable": variable2,
-			"point": point,
-			"polygon": polygon
-		});
-		var xhr3 = ajax_update_database("get-vic-plot", {
-			"db": db,
-			"region": region,
-			"variable": variable3,
-			"point": point,
-			"polygon": polygon
-		});
-		var xhr4 = ajax_update_database("get-vic-plot", {
-			"db": db,
-			"region": region,
-			"variable": variable4,
-			"point": point,
-			"polygon": polygon
-		});
-
-		xhr1.done(function (data) {
+		xhr.done(function (data) {
 			$vicplotModal.find('.info').html('');
 			$vicplotModal.find('.warning').html('');
 			$vicplotModal.find('.table').html('');
 			if ("success" in data) {
 				if (data.interaction == "point" || data.interaction == "polygon") {
 					//var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
-					var index = find_var_index(variable1, variable_data);
+					var index = find_var_index(variable, variable_data);
 					var display_name = variable_data[index]["display_name"];
 					var units = variable_data[index]["units"];
-					$("#plotter").highcharts({
+					$(element).highcharts({
 						chart: {
 							type: 'area',
 							zoomType: 'x'
@@ -865,7 +890,7 @@ var LIBRARY_OBJECT = (function () {
 					});
 					$vicplotModal.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
 					$vicplotModal.find('.table').append('<tr><td>' + data.mean + '</td><td>' + data.stddev + '</td><td>' + data.min + '</td><td>' + data.max + '</td></tr>');
-					$("#plotter").removeClass('hidden');
+					$(element).removeClass('hidden');
 					$("#summary").removeClass('hidden');
 				}
 			} else {
@@ -873,121 +898,8 @@ var LIBRARY_OBJECT = (function () {
 				console.log(data.error);
 			}
 		});
-		xhr2.done(function (data) {
-			$vicplotModal1.find('.info').html('');
-			$vicplotModal1.find('.warning').html('');
-			$vicplotModal1.find('.table').html('');
-			if ("success" in data) {
-				if (data.interaction == "point" || data.interaction == "polygon") {
-					//var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
-					var index = find_var_index(variable2, variable_data);
-					var display_name = variable_data[index]["display_name"];
-					var units = variable_data[index]["units"];
-					$("#plotter1").highcharts({
-						chart: {
-							type: 'area',
-							zoomType: 'x'
-						},
-						title: {
-							text: display_name + " for " + region
-							// style: {
-							//     fontSize: '13px',
-							//     fontWeight: 'bold'
-							// }
-						},
-						xAxis: {
-							type: 'datetime',
-							labels: {
-								format: '{value:%d %b %Y}'
-								// rotation: 90,
-								// align: 'left'
-							},
-							title: {
-								text: 'Date'
-							}
-						},
-						yAxis: {
-							title: {
-								text: units
-							}
 
-						},
-						exporting: {
-							enabled: true
-						},
-						series: [{
-							data: data.time_series,
-							name: display_name
-						}]
-					});
-					$vicplotModal1.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
-					$vicplotModal1.find('.table').append('<tr><td>' + data.mean + '</td><td>' + data.stddev + '</td><td>' + data.min + '</td><td>' + data.max + '</td></tr>');
-					$("#plotter1").removeClass('hidden');
-					$("#summary").removeClass('hidden');
-				}
-			} else {
-				$vicplotModal1.find('.warning').html('<b>' + data.error + '</b>');
-				console.log(data.error);
-			}
-		});
-		xhr3.done(function (data) {
-			$vicplotModal2.find('.info').html('');
-			$vicplotModal2.find('.warning').html('');
-			$vicplotModal2.find('.table').html('');
-			if ("success" in data) {
-				if (data.interaction == "point" || data.interaction == "polygon") {
-					//var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
-					var index = find_var_index(variable3, variable_data);
-					var display_name = variable_data[index]["display_name"];
-					var units = variable_data[index]["units"];
-					$("#plotter2").highcharts({
-						chart: {
-							type: 'area',
-							zoomType: 'x'
-						},
-						title: {
-							text: display_name + " for " + region
-							// style: {
-							//     fontSize: '13px',
-							//     fontWeight: 'bold'
-							// }
-						},
-						xAxis: {
-							type: 'datetime',
-							labels: {
-								format: '{value:%d %b %Y}'
-								// rotation: 90,
-								// align: 'left'
-							},
-							title: {
-								text: 'Date'
-							}
-						},
-						yAxis: {
-							title: {
-								text: units
-							}
-
-						},
-						exporting: {
-							enabled: true
-						},
-						series: [{
-							data: data.time_series,
-							name: display_name
-						}]
-					});
-					$vicplotModal2.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
-					$vicplotModal2.find('.table').append('<tr><td>' + data.mean + '</td><td>' + data.stddev + '</td><td>' + data.min + '</td><td>' + data.max + '</td></tr>');
-					$("#plotter2").removeClass('hidden');
-					$("#summary").removeClass('hidden');
-				}
-			} else {
-				$vicplotModal2.find('.warning').html('<b>' + data.error + '</b>');
-				console.log(data.error);
-			}
-		});
-	};
+        }
 
 
 	/************************************************************************
@@ -1256,20 +1168,25 @@ var LIBRARY_OBJECT = (function () {
 					add_vic(data);
 
 
+
 				} else {
 					$(".error").html('<h3>Error Retrieving the layer</h3>');
 				}
 			});
+
 			ajax_update_database("get-schema-yield", {
 				"db": db,
 				"schema": region
 			}).done(function (data) {
 				if ("success" in data) {
+
 					add_dssat(data);
+				    generate_dssat_graph(32);
 				} else {
 					$(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
 				}
 			});
+
 
 		});
 

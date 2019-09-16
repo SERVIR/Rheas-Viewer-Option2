@@ -260,7 +260,7 @@
 
     };
  gen_color_bar = function(colors,scale){
-        var cv  = document.getElementById('cv'),
+        var cv  = document.getElementById('cv_vic'),
             ctx = cv.getContext('2d');
         ctx.clearRect(0,0,cv.width,cv.height);
         colors.forEach(function(color,i){

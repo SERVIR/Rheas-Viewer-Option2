@@ -121,6 +121,11 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/get-ens-values',
                 controller='rheasvieweroption2.ajax_controllers.get_ens_values'
           ),
+          UrlMap(
+                name='getcounty',
+                url='rheasvieweroption2/get-county',
+                controller='rheasvieweroption2.ajax_controllers.get_county'
+          ),
         )
 
         return url_maps

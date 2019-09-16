@@ -365,6 +365,7 @@ def get_dssat_values(db,gid,schema,ensemble):
 
         return e
 
+
 def get_dssat_ens_values(cur,gid,schema,ensemble):
     sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} ORDER BY fdate;""".format(
         schema, int(gid), int(ensemble))
@@ -374,6 +375,15 @@ def get_dssat_ens_values(cur,gid,schema,ensemble):
     wsgd_series, lai_series, gwad_series = parse_dssat_data(data)
 
     return wsgd_series, lai_series, gwad_series
+
+
+def get_county_name(db,gid,schema):
+    conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
+    cur = conn.cursor()
+    sql = """SELECT adm1_en FROM {0}.agareas WHERE gid={1};""".format(schema, int(gid))
+    cur.execute(sql)
+    data = cur.fetchall()
+    return data
 
 def calculate_yield(db,schema):
 

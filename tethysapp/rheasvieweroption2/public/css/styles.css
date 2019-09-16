@@ -124,7 +124,7 @@ padding-right:0;
 
 }
 @media screen and (min-height: 900px) {
-#plotter,#plotter1,#plotter2,#plotter3{
+#vic_plotter_1,#vic_plotter_2,#vic_plotter_3,#dssat_plotter{
 height:420px;
 }
 
@@ -151,7 +151,7 @@ padding:0px;
 }
 
 
-#plotter,#plotter1,#plotter2,#plotter3{
+#vic_plotter_1,#vic_plotter_2,#vic_plotter_3,#dssat_plotter{
 height:380px;
 }
 
