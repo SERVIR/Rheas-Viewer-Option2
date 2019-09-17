@@ -53,14 +53,14 @@
 
 
 
-    var xhr = ajax_update_database("dates1",{"variable":"net_long","region":"ken_co_testv1","db":"rheas"});
+    var xhr = ajax_update_database("dates1",{"variable":"net_long","region":"kenya_tethys","db":"rheas"});
             xhr.done(function(data) {
                 if("success" in data) {
                     var dates = data.dates;
                     console.log(dates);
                     date=dates.slice(-1)[0][1];
                     console.log(date);
-                    var xhr1 = ajax_update_database("raster1",{"db":"rheas","variable":"net_long","region":"ken_co_testv1","date":date});
+                    var xhr1 = ajax_update_database("raster1",{"db":"rheas","variable":"net_long","region":"kenya_tethys","date":date});
                      xhr1.done(function(data) {
                         if("success" in data) {
                             add_wms_vic(data);
@@ -105,7 +105,7 @@
                 wrapX: false
             }));
      }
- var xhr=ajax_update_database("get-schema-yield",{"db":"rheas","schema":"ken_co_testv1"});
+ var xhr=ajax_update_database("get-schema-yield",{"db":"rheas","schema":"kenya_tethys"});
             xhr.done(function(data) {
                 if("success" in data) {
                add_dssat(data);

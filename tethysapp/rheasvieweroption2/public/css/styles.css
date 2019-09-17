@@ -91,7 +91,7 @@ height:42vh;
  }
 
 #paramscontainer{
-height: calc(100vh - 60px);
+height: calc(100vh - 80px);
 margin:5px;
 }
 
@@ -125,6 +125,7 @@ overflow-x:hidden;
 }
 #vic-plot-modal,#vic-plot-modal1,#vic-plot-modal2,#dssat-plot-modal{
 padding:0px;
+height:45vh;
 }
 
 

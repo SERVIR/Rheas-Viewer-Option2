@@ -944,7 +944,7 @@ var LIBRARY_OBJECT = (function () {
 						} else {
 							$("#schema_table").append(new_option);
 						}
-					   $("#schema_table").val("ken_co_testv1").attr("selected","selected");
+					   $("#schema_table").val("kenya_tethys").attr("selected","selected");
 					});
 					// variables.forEach(function(variable,i){
 					//     var new_option = new Option(variable,variable);
