@@ -776,6 +776,7 @@ var LIBRARY_OBJECT = (function () {
 				"gid": gid,
 				"schema": schema
 			}).done(function (data) {
+			    console.log(data["county"]);
 				if ("success" in data) {
 				    county_name = data["county"][0][0];
 				}

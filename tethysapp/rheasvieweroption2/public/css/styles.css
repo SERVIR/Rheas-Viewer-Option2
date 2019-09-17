@@ -91,7 +91,7 @@ height:42vh;
  }
 
 #paramscontainer{
-height: calc(100vh - 115px);
+height: calc(100vh - 60px);
 margin:5px;
 }
 
@@ -117,15 +117,30 @@ padding-right:0;
     position: relative;
     padding: 0;
 }
+
+#params{
+height: calc(100vh - 115px);
+overflow-x:hidden;
+
+}
+#vic-plot-modal,#vic-plot-modal1,#vic-plot-modal2,#dssat-plot-modal{
+padding:0px;
+}
+
+
+#vic_plotter_1,#vic_plotter_2,#vic_plotter_3,#dssat_plotter{
+height:380px;
+}
 @media screen and (max-width: 1220px) {
  #paramscontainer,#mapcontainer{
     width:25%;
  }
 
 }
-@media screen and (min-height: 900px) {
+
+@media screen and (max-height: 900px) {
 #vic_plotter_1,#vic_plotter_2,#vic_plotter_3,#dssat_plotter{
-height:420px;
+height:280px;
 }
 
 }
@@ -145,14 +160,8 @@ height:420px;
  .chartpanel{
  width:340px;
  }
-}
-#vic-plot-modal,#vic-plot-modal1,#vic-plot-modal2,#dssat-plot-modal{
-padding:0px;
+
 }
 
-
-#vic_plotter_1,#vic_plotter_2,#vic_plotter_3,#dssat_plotter{
-height:380px;
-}
 
 

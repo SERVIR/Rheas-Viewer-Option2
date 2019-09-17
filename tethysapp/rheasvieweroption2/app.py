@@ -27,16 +27,16 @@ class Rheasvieweroption2(TethysAppBase):
             UrlMap(
                 name='home',
                 url='rheasvieweroption2',
-                controller='rheasvieweroption2.controllers.home'
+                controller='rheasvieweroption2.controllers.vicdssat'
             ),
             UrlMap(
                 name='vicdssat',
                 url='rheasvieweroption2/vicdssat',
-                controller='rheasvieweroption2.controllers.vicdssat'
+                controller='rheasvieweroption2.controllers.home'
             ),
             UrlMap(
                 name='schemas',
-                url='rheasvieweroption2/schemas',
+                url='rheasvieweroption2/vicdssat/schemas',
                 controller='rheasvieweroption2.ajax_controllers.get_db_schemas'
             ),
             UrlMap(
@@ -46,7 +46,7 @@ class Rheasvieweroption2(TethysAppBase):
             ),
             UrlMap(
                 name='variables',
-                url='rheasvieweroption2/variables',
+                url='rheasvieweroption2/vicdssat/variables',
                 controller='rheasvieweroption2.ajax_controllers.get_vars'
             ),
             UrlMap(
@@ -56,12 +56,12 @@ class Rheasvieweroption2(TethysAppBase):
             ),
             UrlMap(
                 name='dates',
-                url='rheasvieweroption2/dates',
+                url='rheasvieweroption2/vicdssat/dates',
                 controller='rheasvieweroption2.ajax_controllers.get_dates'
             ),
             UrlMap(
                 name='dates1',
-                url='rheasvieweroption2/vicdssat/dates1',
+                url='rheasvieweroption2/dates1',
                 controller='rheasvieweroption2.ajax_controllers.get_dates'
             ),
             UrlMap(
@@ -71,7 +71,7 @@ class Rheasvieweroption2(TethysAppBase):
             ),
             UrlMap(
                 name='get-vic-plot',
-                url='rheasvieweroption2/get-vic-plot',
+                url='rheasvieweroption2/vicdssat/get-vic-plot',
                 controller='rheasvieweroption2.ajax_controllers.get_vic_plot'
            ),
            UrlMap(
@@ -82,48 +82,48 @@ class Rheasvieweroption2(TethysAppBase):
 
            UrlMap(
                 name='raster1',
-                url='rheasvieweroption2/vicdssat/raster1',
+                url='rheasvieweroption2/raster1',
                 controller='rheasvieweroption2.ajax_controllers.get_raster'
           ),
           UrlMap(
                 name='bounds',
-                url='rheasvieweroption2/bounds',
+                url='rheasvieweroption2/vicdssat/bounds',
                 controller='rheasvieweroption2.ajax_controllers.get_bounds'
           ),
           UrlMap(
                 name='bounds1',
-                url='rheasvieweroption2/vicdssat/bounds1',
+                url='rheasvieweroption2/bounds1',
                 controller='rheasvieweroption2.ajax_controllers.get_bounds'
           ),
           UrlMap(
                 name='boundshome',
-                url='rheasvieweroption2/boundshome',
+                url='rheasvieweroption2/vicdssat/boundshome',
                 controller='rheasvieweroption2.ajax_controllers.get_bounds'
           ),
           UrlMap(
                 name='dsyield',
-                url='rheasvieweroption2/vicdssat/get-schema-yield',
+                url='rheasvieweroption2/get-schema-yield',
                 controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
           ),
 
           UrlMap(
                 name='dsyield1',
-                url='rheasvieweroption2/get-schema-yield',
+                url='rheasvieweroption2/vicdssat/get-schema-yield',
                 controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
           ),
           UrlMap(
                 name='dsensemble',
-                url='rheasvieweroption2/get-ensemble',
+                url='rheasvieweroption2/vicdssat/get-ensemble',
                 controller='rheasvieweroption2.ajax_controllers.get_ensemble'
           ),
           UrlMap(
                 name='dsensval',
-                url='rheasvieweroption2/get-ens-values',
+                url='rheasvieweroption2/vicdssat/get-ens-values',
                 controller='rheasvieweroption2.ajax_controllers.get_ens_values'
           ),
           UrlMap(
                 name='getcounty',
-                url='rheasvieweroption2/get-county',
+                url='rheasvieweroption2/vicdssat/get-county',
                 controller='rheasvieweroption2.ajax_controllers.get_county'
           ),
         )
