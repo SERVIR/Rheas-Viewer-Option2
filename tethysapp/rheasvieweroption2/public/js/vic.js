@@ -111,10 +111,13 @@ var LIBRARY_OBJECT = (function () {
 	init_map = function () {
 		var projection = ol.proj.get('EPSG:3857');
 		var baseLayer = new ol.layer.Tile({
-			source: new ol.source.BingMaps({
-				key: '5TC0yID7CYaqv3nVQLKe~xWVt4aXWMJq2Ed72cO4xsA~ApdeyQwHyH_btMjQS1NJ7OHKY8BK-W-EMQMrIavoQUMYXeZIQOUURnKGBOC7UCt4',
-				imagerySet: 'AerialWithLabels' // Options 'Aerial', 'AerialWithLabels', 'Road'
-			})
+//			source: new ol.source.BingMaps({
+//				key: '5TC0yID7CYaqv3nVQLKe~xWVt4aXWMJq2Ed72cO4xsA~ApdeyQwHyH_btMjQS1NJ7OHKY8BK-W-EMQMrIavoQUMYXeZIQOUURnKGBOC7UCt4',
+//				imagerySet: 'AerialWithLabels' // Options 'Aerial', 'AerialWithLabels', 'Road'
+//			})
+
+            source: new ol.source.OSM()
+
 		});
 
 		var fullScreenControl = new ol.control.FullScreen();
@@ -196,6 +199,7 @@ var LIBRARY_OBJECT = (function () {
         }
         function enableDrawInteraction(which)
         {
+
           if (which == "Recenter") {
                 console.log("Process as Recenter");
                 map.getView().animate({
@@ -213,6 +217,7 @@ var LIBRARY_OBJECT = (function () {
                 source: vector_source,
                 type: which
             });
+              //vector_source.removeFeatures(vector_source.features);
             map.addInteraction(draw);
             var snap = new ol.interaction.Snap({ source: vector_source });
             map.addInteraction(snap);

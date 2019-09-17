@@ -12,7 +12,7 @@
     var view = new ol.View({
         center: ol.proj.transform([39.669571,-4.036878], 'EPSG:4326','EPSG:3857'),
         projection: projection,
-        zoom: 4
+        zoom: 7
     });
 
     var vector_source = new ol.source.Vector({
@@ -349,4 +349,10 @@
     })
   });
 
+dssatmap.getView().on('change:resolution', (event) => {
+    vicmap.setView(dssatmap.getView());
+});
+vicmap.getView().on('change:resolution', (event) => {
+    dssatmap.setView(vicmap.getView());
 
+});
