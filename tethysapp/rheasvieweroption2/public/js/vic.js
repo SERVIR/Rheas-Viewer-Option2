@@ -23,6 +23,7 @@ var LIBRARY_OBJECT = (function () {
 		$interactionModal,
 		layers,
 		map,
+		map1,
 		popup,
 		$plotModal,
 		public_interface, // Object returned by the module
