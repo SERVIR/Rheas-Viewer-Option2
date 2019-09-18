@@ -72,28 +72,40 @@
                                 {% endfor %}
                             </select>
                             <br>
-                                <div>
-                                      <label>
-                                Opacity Sliders
-                            </label><br>
-                            VIC: <input id="vicslider" type="range" min="0" max="1" step="0.1" value="0.7"/><br>
-                            DSSAT: <input id="dssatslider" type="range" min="0" max="1" step="0.1" value="0.7"/>
-                            </div>
+<!--                                <div>-->
+<!--                                      <label>-->
+<!--                                Opacity Sliders-->
+<!--                            </label><br>-->
+<!--                            VIC: <input id="vicslider" type="range" min="0" max="1" step="0.1" value="0.7"/><br>-->
+<!--                            DSSAT: <input id="dssatslider" type="range" min="0" max="1" step="0.1" value="0.7"/>-->
+<!--                            </div>-->
                             <label>
-                                Chart 1
+                                VIC Chart 1
                             </label>
                             <select class="var_table" name="var_table1" id="var_table1" style="width: 100%">
                             </select>
                              <label>
-                                Chart 2
+                                VIC Chart 2
                             </label>
                             <select class="var_table" name="var_table2" id="var_table2" style="width: 100%">
                             </select>
-                             <label>
-                                Chart 3
+                                <label>
+                                DSSAT Chart 1
                             </label>
                             <select class="var_table" name="var_table3" id="var_table3" style="width: 100%">
+                                <option>GWAD</option>
+                                 <option>WSGD</option>
+                                 <option>LAI</option>
                             </select>
+                             <label>
+                                DSSAT Chart 2
+                            </label>
+                            <select class="var_table" name="var_table3" id="var_table4" style="width: 100%">
+                                <option>WSGD</option>
+                                 <option>GWAD</option>
+                                 <option>LAI</option>
+                            </select>
+
                              <label>
                                 Select an ensemble
                             </label><br>
@@ -117,16 +129,24 @@
 <!--			    <p>Note: The map interaction has to be set to None to be able to view the pixel values for a clicked point.</p>-->
                              <input type="text" name="point-lat-lon" id="point-lat-lon" hidden>
                     <input type="text" name="poly-lat-lon" id="poly-lat-lon" hidden>
-			VIC:<canvas id="cv_vic" width="500px" height="50px" style="margin-bottom:20px"></canvas>
-				DSSAT: <canvas id="cv_dssat" width="500px" height="50px" style="margin-bottom:20px"></canvas>
+			VIC:<canvas id="cv_vic" height="50px" style="margin-bottom:20px"></canvas>
+				DSSAT: <canvas id="cv_dssat" height="50px" style="margin-bottom:20px"></canvas>
 
                         </div>
                     </div>
                 </div>
-                <div class="m-3 col-lg-6  col-xs-6 col-sm-6"  id="mapcontainer">
+                <div class="m-5 col-lg-3  col-xs-3 col-sm-3 "  id="mapcontainer">
                     <div class="panel panel-primary" id="mappanel">
                         <div class="panel-body" id="mappanelbody">
                             <div id="map" class="map"></div>
+
+                        </div>
+                    </div>
+                </div>
+             <div class="m-5 col-lg-3  col-xs-3 col-sm-3"  id="mapcontainer1">
+                    <div class="panel panel-primary" id="mappanel1">
+                        <div class="panel-body" id="mappanelbody1">
+                            <div id="map1" class="map"></div>
 
                         </div>
                     </div>
@@ -157,6 +177,7 @@
                     </div>
                 </div>
 </div>
+
 
                 <div class="m-5 col-lg-3  col-xs-3 col-sm-3 chartpanel">
                     <div class="panel panel-primary">
@@ -190,7 +211,7 @@
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
-				            <div id="vic_plotter_3" name="plotter" style="width:100%" ></div>
+				            <div id="dssat_plotter_1" name="plotter" style="width:100%" ></div>
 				        </div>
 				    </div>
 				</div>
@@ -215,7 +236,7 @@
 				    <div class="chart-wrapper">
 				        <div class="chart-inner">
 				            <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
-				            <div id="dssat_plotter" name="plotter" style="width:100%" ></div>
+				            <div id="dssat_plotter_2" name="plotter" style="width:100%" ></div>
 				        </div>
 				    </div>
 				</div>

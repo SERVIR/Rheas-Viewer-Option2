@@ -95,6 +95,31 @@ def get_raster(request):
         except Exception as e:
             return_obj["error"] = str(e)+ " From ajax"
             return JsonResponse(return_obj)
+
+@csrf_exempt
+def get_scale(request):
+    return_obj = {}
+
+    if request.is_ajax() and request.method == 'POST':
+
+        info = request.POST
+        min = info.get("min")
+        max = info.get("max")
+        print(min)
+        print("gte scale")
+        try:
+            color_range = calc_color_range(float(min),float(max))
+            print("color range")
+
+            #print(color_range)
+            return_obj["scale"] = color_range
+            return_obj["success"] = "success"
+            return JsonResponse(return_obj)
+
+        except Exception as e:
+            return_obj["error"] = str(e)+ " From ajax"
+            return JsonResponse(return_obj)
+
 @csrf_exempt
 def get_vector(request):
     return_obj = {}
@@ -225,7 +250,6 @@ def get_ens_values(request):
             schema = info.get("schema")
             ensemble = info.get("ensemble")
             if "avg" in ensemble:
-                print("from avg")
                 wsgd_series,lai_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble)
                 return_obj["gid"] = gid
                 return_obj["schema"] = schema
@@ -321,9 +345,7 @@ def get_bounds(request):
 
         if type =='vector':
             xml_url = str(rest_url) + 'workspaces/' + str(workspace) + '/datastores/' + str(store) + '/featuretypes/' + str(store) + '.xml'
-            print(xml_url)
             r = requests.get(xml_url, auth=(cfg.geoserver['user'], cfg.geoserver['password']))
-            print(str(r))
             r_json = xmltodict.parse(r.content)
             bbox = r_json['featureType']['latLonBoundingBox']
             bounds = [float(bbox['minx'])-1.5, float(bbox['miny']), float(bbox['maxx'])-1.5, float(bbox['maxy'])]

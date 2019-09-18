@@ -79,6 +79,11 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/vicdssat/raster',
                 controller='rheasvieweroption2.ajax_controllers.get_raster'
           ),
+          UrlMap(
+                name='scale',
+                url='rheasvieweroption2/vicdssat/scale',
+                controller='rheasvieweroption2.ajax_controllers.get_scale'
+          ),
 
            UrlMap(
                 name='raster1',

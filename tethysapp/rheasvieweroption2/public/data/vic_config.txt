@@ -1,5 +1,5 @@
 Variable_Id|Variable_Display_Name|Description|Units
-net_long|Net Downward Longwave Flux|W/m2|red|blue
+net_long|Net Downward Longwave Flux|W/m2|blue|yellow|red
 net_short|Net Downward Shortwave Flux|W/m2|red|blue
 snow_cover|Fractional Area of Snow Cover|fraction|red|blue
 salbedo|Snow Pack Albedo|fraction|blue|red
@@ -16,7 +16,7 @@ surfstor|Storage of Liquid Water and Ice (not snow) on Surface (ponding)|mm|red|
 swe|Snow Water Equivalent in Snow Pack (including vegetation-intercepted snow)|mm|red|blue
 wdew|Total Moisture Interception Storage in Canopy|mm|red|blue
 baseflow|Baseflow out of the bottom layer|mm|red|blue
-evap|Total Net Evaporation|mm|red|green
+evap|Total Net Evaporation|mm|red|yellow|green
 evap_bare|Net Evaporation from Bare Soil|mm|red|green
 evap_canop|Net Evaporation from Canopy Interception|mm|red|green
 prec|Incoming Precipitation|mm|red|blue
@@ -43,9 +43,23 @@ air_temp|Air Temperature|C|blue|red
 longwave|Incoming Longwave|W/m2|blue|red
 shortwave|Incoming Shortwave|W/m2|blue|red
 spi|Standardized Precipitation Index|Index|red|blue
+spi1|1 Month Standardized Precipitation Index|Index|red|blue
+spi6|6 Month Standardized Precipitation Index|Index|red|blue
+spi3|3 Month Standardized Precipitation Index|Index|red|blue
+spi12|12 Month Standardized Precipitation Index|Index|red|blue
 sri|Standardized Runoff Index|Index|red|blue
+sri1|1 Month Standardized Runoff Index|Index|red|blue
+sri3|3 Month Standardized Runoff Index|Index|red|blue
+sri6|6 Month Standardized Runoff Index|Index|red|blue
+sri12|12 Month Standardized Runoff Index|Index|red|blue
 dryspells|Dry Spells|Number of Dry Spells from Beginning of Simulation(14 days of consecutive no rain)|blue|red
 tmax|Temperature Max|k|blue|red
 tmin|Temperature Min|k|blue|red
 severity|Drought Severity|Index|red|blue
 smdi|Soil Moisture Deficit Index|Index|red|blue
+cdi|Composite Drought Index|Index|red|blue
+par|PAR|Index|red|blue
+pet_natveg|Potential Evapotranspiration of Natural Vegetation|Index|red|blue
+pet_short|Potential Evapotranspiration of Short Vegetation|Index|red|blue
+pet_tall|Potential Evapotranspiration of Tall Vegetation|Index|red|blue
+rel_humid|Relative Humidity|Index|red|blue

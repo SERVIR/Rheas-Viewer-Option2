@@ -36,7 +36,7 @@ var LIBRARY_OBJECT = (function () {
 		wms_workspace,
 		wms_url,
 		wms_layer,
-		wms_source;
+		wms_source,gid;
 
 
 	/************************************************************************
@@ -133,13 +133,8 @@ var LIBRARY_OBJECT = (function () {
 		wms_layer = new ol.layer.Image({
 			source: wms_source
 		});
-
 		var vector_source = new ol.source.Vector({
 			wrapX: false
-		});
-
-		var baseLayer1 = new ol.layer.Tile({
-			source: new ol.source.OSM()
 		});
 		var vector_layer = new ol.layer.Vector({
 			name: 'my_vectorlayer',
@@ -169,6 +164,11 @@ var LIBRARY_OBJECT = (function () {
 			layers: layers,
 			view: view
 		});
+		map1 = new ol.Map({
+			target: document.getElementById("map1"),
+			layers: [baseLayer],
+			view: view
+		});
 		gmap = map;
 		vector_layer.setZIndex(Infinity);
 		map.addLayer(vector_layer);
@@ -194,7 +194,17 @@ var LIBRARY_OBJECT = (function () {
             drawElement.id = "draw" + which;
             drawElement.innerHTML = "<span class='"+icon+"' aria-hidden='true'></span>";
             drawElement.title = which;
-            drawElement.onclick = function () { vector_source.clear(); enableDrawInteraction(which); }
+            drawElement.onclick = function () {
+                try{
+                 var selectedFeature = select_interaction.getFeatures().item(0);
+                    //Remove it from your feature source
+                vector_source.removeFeature(selectedFeature) ;
+                 }
+                 catch(e){
+
+                 }
+                    enableDrawInteraction(which);
+           }
             return drawElement;
         }
         function enableDrawInteraction(which)
@@ -217,15 +227,28 @@ var LIBRARY_OBJECT = (function () {
                 source: vector_source,
                 type: which
             });
+
               //vector_source.removeFeatures(vector_source.features);
             map.addInteraction(draw);
             var snap = new ol.interaction.Snap({ source: vector_source });
             map.addInteraction(snap);
             draw.on('drawend', function (evt) {
-
+//               try{
+//               select_interaction.getOverlay().clear();
+//                 var selectedFeatures = select_interaction.getFeatures();
+//                 console.log(selectedFeatures.length);
+//                 for(var i=0;i<selectedFeatures.length;i++){
+//                                 vector_source.removeFeature(selectedFeatures[i].item(0));
+//
+//                 }
+//                 }
+//                 catch(e){
+//                        console.log(e);
+//                 }
                 selectedFeatures.push(evt.feature);
                 feat=evt.feature;
                 processFeature(evt.feature, which);
+                map.removeInteraction(draw);
             });
             }
         }
@@ -440,8 +463,14 @@ var LIBRARY_OBJECT = (function () {
 		colors.forEach(function (color, i) {
 			ctx.beginPath();
 			ctx.fillStyle = color;
-			ctx.fillRect(i * 15, 0, 15, 20);
-			ctx.fillText(scale[i].toFixed(), i * 15, 30);
+var my_gradient = ctx.createLinearGradient(0, 0, 150, 0);
+my_gradient.addColorStop(0, "red");
+my_gradient.addColorStop(0.5, "yellow");
+my_gradient.addColorStop(1, "green");
+ctx.fillStyle = my_gradient;
+			ctx.fillRect(i * 25, 0, 45, 20);
+			ctx.fillStyle = "black";
+			ctx.fillText(scale[i].toFixed(), i * 30, 33);
 		});
 
 	};
@@ -545,8 +574,9 @@ var LIBRARY_OBJECT = (function () {
 
 	};
 
-	get_styling = function (variable, min, max, scale,cv) {
-
+	get_styling = function (variable,scale,cv) {
+	console.log(variable);
+           console.log(scale);
 		//var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
 		var index = find_var_index(variable, variable_data);
 		var start = variable_data[index]["start"];
@@ -554,12 +584,18 @@ var LIBRARY_OBJECT = (function () {
 
 		var sld_color_string = '';
 		if (scale[scale.length - 1] == 0) {
-			var colors = chroma.scale([start, start]).mode('lch').correctLightness().colors(20);
+			//var colors = chroma.scale([start, start]).mode('lch').correctLightness().colors(5);
+		var colors =	chroma.bezier(['yellow', 'red', 'black'])
+    .scale()
+    .colors(5);
 			gen_color_bar(colors, scale,cv);
 			var color_map_entry = '<ColorMapEntry color="' + colors[0] + '" quantity="' + scale[0] + '" label="label1" opacity="1"/>';
 			sld_color_string += color_map_entry;
 		} else {
-			var colors = chroma.scale([start, end]).mode('lch').correctLightness().colors(20);
+			//var colors = chroma.scale([start, end]).mode('lch').correctLightness().colors(5);
+				var colors =	chroma.bezier(['yellow', 'red', 'black'])
+    .scale()
+    .colors(5);
 			gen_color_bar(colors, scale,cv);
 			colors.forEach(function (color, i) {
 				var color_map_entry = '<ColorMapEntry color="' + color + '" quantity="' + scale[i] + '" label="label' + i + '" opacity="1"/>';
@@ -604,28 +640,22 @@ var LIBRARY_OBJECT = (function () {
 		map.getView().fit(transformed_extent, map.getSize());
 		  var aa = layer_extent;
     centeravg = ol.extent.getCenter(aa);
-
-
-
-             var variable1 = $("#var_table1 option:selected").val();
-                    var variable2 = $("#var_table2 option:selected").val();
-                    var variable3 = $("#var_table3 option:selected").val();
+var variable1 = $("#var_table1 option:selected").val();
+        var variable2 = $("#var_table2 option:selected").val();
         generate_vic_graph("#vic_plotter_1",variable1,centeravg.toString(),"");
-
-                    generate_vic_graph("#vic_plotter_2",variable2,centeravg.toString(),"");
-                    generate_vic_graph("#vic_plotter_3",variable3,centeravg.toString(),"");
+        generate_vic_graph("#vic_plotter_2",variable2,centeravg.toString(),"");
 		map.updateSize();
 	};
 	var vectorLayer1 = new ol.layer.Vector({
 		source: new ol.source.Vector(),
 		style: styleFunction
 	});
-
-	function add_dssat(data) {
+var select_interaction;
+	function add_dssat(data,scale) {
 		yield_data = data.yield;
 		store = data.storename;
 		console.log(data);
-	  //  var styling = get_styling(data.variable, data.min, data.max, data.scale,'cv_dssat');
+	var styling = get_styling("net_short", scale,'cv_dssat');
 		var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
 
 		vectorLayer1.setSource(new ol.source.Vector({
@@ -641,10 +671,10 @@ var LIBRARY_OBJECT = (function () {
 
 		}));
 		vectorLayer1.setZIndex(3);
-		map.addLayer(vectorLayer1);
+		map1.addLayer(vectorLayer1);
 
-		map.crossOrigin = 'anonymous';
-		var select_interaction = new ol.interaction.Select({
+		map1.crossOrigin = 'anonymous';
+		 select_interaction = new ol.interaction.Select({
 			layers: [vectorLayer1],
 			style: new ol.style.Style({
 				stroke: new ol.style.Stroke({
@@ -657,12 +687,13 @@ var LIBRARY_OBJECT = (function () {
 			}),
 			wrapX: false
 		});
-		map.addInteraction(select_interaction);
+		map1.addInteraction(select_interaction);
 
 
 		select_interaction.on('select', function (e) {
-			var gid = e.selected[0].getId().split(".")[1];
-		generate_dssat_graph(gid);
+			 gid = e.selected[0].getId().split(".")[1];
+		generate_dssat_graph("#dssat_plotter_1",gid,$("#var_table3 option:selected").val());
+		generate_dssat_graph("#dssat_plotter_2",gid,$("#var_table4 option:selected").val());
 		});
 		selectedFeatures = select_interaction.getFeatures();
 		selectedFeatures.on('add', function (event) {
@@ -704,7 +735,7 @@ var LIBRARY_OBJECT = (function () {
 		map.removeLayer(wms_layer);
 		var layer_name = wms_workspace + ":" + data.storename;
 		console.log(data);
-		var styling = get_styling(data.variable, data.min, data.max, data.scale,'cv_vic');
+		var styling = get_styling(data.variable,  data.scale,'cv_vic');
 		var bbox = get_bounds(wms_workspace, data.storename, rest_url, get_cal);
 
 		var sld_string = '<StyledLayerDescriptor version="1.0.0"><NamedLayer><Name>' + layer_name + '</Name><UserStyle><FeatureTypeStyle><Rule>\
@@ -743,16 +774,14 @@ var LIBRARY_OBJECT = (function () {
 		var region = $("#schema_table option:selected").val();
 		var variable1 = $("#var_table1 option:selected").val();
 		var variable2 = $("#var_table2 option:selected").val();
-		var variable3 = $("#var_table3 option:selected").val();
 		var point = $("#point-lat-lon").val();
 		var polygon = $("#poly-lat-lon").val();
 		generate_vic_graph("#vic_plotter_1",variable1,point,polygon);
 		generate_vic_graph("#vic_plotter_2",variable2,point,polygon);
-		generate_vic_graph("#vic_plotter_3",variable3,point,polygon);
 
 	};
 
-		function generate_dssat_graph(gid){
+		function generate_dssat_graph(element,gid,variable){
 
 			var county_name="";
 			var db = $("#db_table option:selected").val();
@@ -790,13 +819,30 @@ var LIBRARY_OBJECT = (function () {
 				}
 				});
 			xhr.done(function (data) {
+			var input,title,titletext;
+			console.log(element);
+			if(variable=="GWAD"){
+                input=data.gwad_series;
+                title="GWAD : ";
+                titletext="GWAD (m2/m2)";
+			}
+			else if(variable=="WSGD"){
+                input=data.wsgd_series;
+                title="WSGD : ";
+                titletext="WSGD (m2/m2)";
+			}
+			else{
+			input=data.wsgd_series;
+                title="LAI : ";
+                titletext="LAI (m2/m2)";
+			}
 				if ("success" in data) {
-					$("#dssat_plotter").highcharts({
+					$(element).highcharts({
 						chart: {
 							zoomType: 'x'
 						},
 						title: {
-							text: 'Leaf Area Index : ' +county_name
+							text: title +county_name
 						},
 						plotOptions: {
 							series: {
@@ -816,7 +862,7 @@ var LIBRARY_OBJECT = (function () {
 						},
 						yAxis: {
 							title: {
-								text: 'LAI (m2/m2)'
+								text: titletext
 							}
 
 						},
@@ -824,13 +870,14 @@ var LIBRARY_OBJECT = (function () {
 							enabled: true
 						},
 						series: [{
-							data: data.lai_series,
-							name: 'LAI (m2/m2)',
+							data: input,
+							name: titletext,
 							type: 'line',
 							lineWidth: 5,
 							color: "green"
 						}]
 					});
+					console.log("done11");
 				} else {
 					$(".error").append('<h3>Error Processing Request. Please be sure to select an area with data.</h3>');
 
@@ -963,71 +1010,45 @@ var LIBRARY_OBJECT = (function () {
 			});
 
 		}).change();
+		function fillVarTables(element,variables){
+		variables.forEach(function (variable, i) {
+						var index = find_var_index(variable, variable_data);
+					var display_name = variable_data[index]["display_name"];
+						var new_option = new Option(display_name, variable);
+						if (i == 0) {
+							$(element).append(new_option).trigger('change');
+						} else {
+							$(element).append(new_option);
+						}
+
+
+					});
+		}
 
 		$("#schema_table").change(function () {
+		console.log("schema chnage");
 			var db = $("#db_table option:selected").val();
 			var region = $("#schema_table option:selected").val();
+			if(region == undefined)
+			region="kenya_tethys";
+			console.log(region);
 			$("#var_table1").html('');
 			$("#var_table2").html('');
-			$("#var_table3").html('');
-			$("#var_table4").html('');
-			var xhr = ajax_update_database("variables", {
-				"region": region,
-				"db": db
-			});
-			xhr.done(function (data) {
+			ajax_update_database("variables", {"region": region,"db": db}).done(function (data) {
 				if ("success" in data) {
-					var variables = data.variables;
-					variables.forEach(function (variable, i) {
-						var index = find_var_index(variable, variable_data);
-					var display_name = variable_data[index]["display_name"];
-						var new_option = new Option(display_name, variable);
-						if (i == 0) {
-							$("#var_table1").append(new_option).trigger('change');
-						} else {
-							$("#var_table1").append(new_option);
-						}
+				    console.log(data.variables);
+					fillVarTables("#var_table1",data.variables);
+					fillVarTables("#var_table2",data.variables);
+                    $("#var_table1").val("rainf").attr("selected","selected");
+                    $("#var_table2").val("evap").attr("selected","selected");
 
-					});
-					variables.forEach(function (variable, i) {
-						var index = find_var_index(variable, variable_data);
-					var display_name = variable_data[index]["display_name"];
-						var new_option = new Option(display_name, variable);
-						if (i == 0) {
-							$("#var_table2").append(new_option).trigger('change');
-						} else {
-							$("#var_table2").append(new_option);
-						}
-
-
-					});
-					variables.forEach(function (variable, i) {
-						var index = find_var_index(variable, variable_data);
-					var display_name = variable_data[index]["display_name"];
-						var new_option = new Option(display_name, variable);
-						if (i == 0) {
-							$("#var_table3").append(new_option).trigger('change');
-						} else {
-							$("#var_table3").append(new_option);
-						}
-
-
-					});
-
-					variables.forEach(function (variable, i) {
-						var new_option = new Option(variable, variable);
-						if (i == 0) {
-							$("#var_table4").append(new_option).trigger('change');
-						} else {
-							$("#var_table4").append(new_option);
-						}
-					});
 				} else {
 					console.log("error");
 				}
 			});
 
 		}).change();
+
 
 		$("#var_table1").change(function () {
 			var db = $("#db_table option:selected").val();
@@ -1092,67 +1113,13 @@ var LIBRARY_OBJECT = (function () {
 
 		});
 		$("#var_table3").change(function () {
-			var db = $("#db_table option:selected").val();
-			var variable = $("#var_table3 option:selected").val();
-			var region = $("#schema_table option:selected").val();
 
-			var xhr = ajax_update_database("dates", {
-				"variable": variable,
-				"region": region,
-				"db": db
-			});
-			xhr.done(function (data) {
-				if ("success" in data) {
-					var dates = data.dates;
-					$("#time_table").html('');
-					dates.forEach(function (date, i) {
-
-						var new_option = new Option(date[0], date[1]);
-						if (i == 0) {
-							$("#time_table").append(new_option);
-						} else {
-							$("#time_table").append(new_option);
-						}
-					});
-
-				} else {
-					console.log("error");
-
-				}
-			});
+		generate_dssat_graph("#dssat_plotter_1",gid,$("#var_table3 option:selected").val());
 
 		});
 		$("#var_table4").change(function () {
-			var db = $("#db_table option:selected").val();
-			var variable = $("#var_table4 option:selected").val();
-			var region = $("#schema_table option:selected").val();
 
-			var xhr = ajax_update_database("dates", {
-				"variable": variable,
-				"region": region,
-				"db": db
-			});
-			xhr.done(function (data) {
-				if ("success" in data) {
-					var dates = data.dates;
-					$("#time_table").html('');
-					dates.forEach(function (date, i) {
-
-						var new_option = new Option(date[0], date[1]);
-						if (i == 0) {
-
-							$("#time_table").append(new_option);
-						} else {
-							$("#time_table").append(new_option);
-						}
-					});
-
-				} else {
-					console.log("error");
-
-				}
-			});
-
+generate_dssat_graph("#dssat_plotter_2",gid,$("#var_table3 option:selected").val());
 		});
 
 		$("#time_table").change(function () {
@@ -1185,9 +1152,19 @@ var LIBRARY_OBJECT = (function () {
 				"schema": region
 			}).done(function (data) {
 				if ("success" in data) {
-
-					add_dssat(data);
-				    generate_dssat_graph(32);
+                    ajax_update_database("scale", {
+                            "min": 104.17,
+                            "max": 274.74,
+                        }).done(function (data1) {
+                            if ("success" in data1) {
+                                console.log(data1);
+                                add_dssat(data,data1.scale);
+                            } else {
+                                $(".error").html('<h3>Error Retrieving the layer</h3>');
+                            }
+                        });
+				    generate_dssat_graph("#dssat_plotter_1",32,"GWAD");
+				    generate_dssat_graph("#dssat_plotter_2",32,"WSGD");
 				} else {
 					$(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
 				}

@@ -222,11 +222,11 @@ def get_variables(db,region):
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
         cur = conn.cursor()
         sql = """SELECT table_name FROM information_schema.tables WHERE table_schema = '{0}'""".format(region)
-
         cur.execute(sql)
         data = cur.fetchall()
-
-        variables = [var[0] for var in data if var[0] != "basin" if var[0] != "agareas" if var[0] != "state" if var[0] != "dssat" if var[0] != "yield"]
+        print(data)
+        variables = [var[0] for var in data if var[0] != "basin" if var[0] != "agareas" if var[0] != "state" if var[0] != "dssat" if var[0] != "dssat_all" if var[0] != "yield"]
+        print(variables)
         variables.sort()
         conn.close()
 
@@ -322,7 +322,6 @@ def get_dssat_gid(db,schema):
 
         cur.execute(sql)
         data = cur.fetchall()
-        print(data)
         gids = [gid[0] for gid in data]
         conn.close()
 
@@ -344,7 +343,6 @@ def get_dssat_values(db,gid,schema,ensemble):
 
             cur.execute(sql1)
             data1 = cur.fetchall()
-            print(data1)
             medianens = data1[math.ceil(len(data1)/2) - 1]
             lowens = data1[math.ceil(len(data1)/4) - 1]
             highens = data1[math.ceil(len(data1)* 3/4) - 1]
