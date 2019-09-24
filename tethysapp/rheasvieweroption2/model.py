@@ -438,8 +438,8 @@ def calculate_yield(db,schema):
                     print('whooo')
                     #shutil.rmtree(temp_dir)
 
-        sql = """SELECT gid,avg(max) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
-
+       # sql = """SELECT gid,avg(max) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
+        sql = """SELECT gid,avg_yield FROM {0}.yield""".format(schema)
         cur.execute(sql)
         data = cur.fetchall()
 

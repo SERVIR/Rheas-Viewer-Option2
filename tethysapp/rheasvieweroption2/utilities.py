@@ -55,15 +55,18 @@ def get_variables_meta():
             linevals = line.split('|')
             variable_id = linevals[0]
             display_name = linevals[1]
+            print(display_name)
             units = linevals[2]
-            start = linevals[3]
-            end = linevals[4]
+            color1 = linevals[3]
+            color2 = linevals[4]
+            color3 =linevals[5]
             variable_list.append({
                 'id': variable_id,
                 'display_name': display_name,
                 'units': units,
-                'start':start,
-                'end':end
+                'color1':color1,
+                'color2':color2,
+                'color3':color3,
             })
 
     return variable_list
@@ -92,6 +95,16 @@ def calc_color_range(min,max):
 
     if interval == 0:
         scale = [0] * 20
+    else:
+        scale = np.arange(min, max, interval).tolist()
+
+    return scale
+
+def calc_color_range1(min,max):
+    interval = abs((max - min) / 5)
+
+    if interval == 0:
+        scale = [0] * 5
     else:
         scale = np.arange(min, max, interval).tolist()
 

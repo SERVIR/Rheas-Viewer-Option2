@@ -108,7 +108,7 @@ def get_scale(request):
         print(min)
         print("gte scale")
         try:
-            color_range = calc_color_range(float(min),float(max))
+            color_range = calc_color_range1(float(min),float(max))
             print("color range")
 
             #print(color_range)
@@ -261,7 +261,6 @@ def get_ens_values(request):
                 return_obj["high_gwad_series"] = high_gwad_series
                 return_obj["ensemble_info"] = ensemble_info
                 return_obj["success"] = "success"
-
                 return JsonResponse(return_obj)
             else:
                 wsgd_series, lai_series, gwad_series = get_dssat_values(db,gid, schema, ensemble)

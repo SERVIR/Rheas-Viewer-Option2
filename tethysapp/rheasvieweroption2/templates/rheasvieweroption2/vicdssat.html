@@ -1,100 +1,81 @@
 <html>
-{% load staticfiles %}
-{% load tethys_gizmos %}
-
-<head>
-
-    {% block content_dependent_styles %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
-    <link rel="stylesheet" href="{% static 'rheasvieweroption2/css/styles.css' %}" />
-    {% endblock %}
-
-
-</head>
-
-<body>
-
-
-        <h2>RHEAS Viewer 2</h2>
-        <div class="topnav">
-            <a id="home" href="{% url 'rheasvieweroption2:home' %}">Current</a>
-                        <a id="analysis" href="{% url 'rheasvieweroption2:vicdssat' %}">Analysis</a>
-
-            <a id="outlook" href="#outlook">Outlook</a>
-
-            <div class="topnav-right">
-                <a data-toggle="modal" data-target="#myModal">About</a>
-                <a href="#help">Help</a>
+   {% load staticfiles %}
+   {% load tethys_gizmos %}
+   <head>
+      {% block content_dependent_styles %}
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" />
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+      <link rel="stylesheet" href="{% static 'rheasvieweroption2/css/styles.css' %}" />
+      {% endblock %}
+   </head>
+   <body>
+      <h2>RHEAS Viewer 2</h2>
+      <div class="topnav">
+         <a id="home" href="{% url 'rheasvieweroption2:home' %}">Current</a>
+         <a id="analysis" href="{% url 'rheasvieweroption2:vicdssat' %}">Analysis</a>
+         <a id="outlook" href="#outlook">Outlook</a>
+         <div class="topnav-right">
+            <a data-toggle="modal" data-target="#myModal">About</a>
+            <a href="#help">Help</a>
+         </div>
+      </div>
+      <div class="container-fluid">
+         </br>
+         <p id="text"> This is an application that lets you visualize the VIC and DSSAT maps. If you want to compare side by side go to Current tab and view the latest data. If you want to view the layers on top of each other by changing some parameters, go to Anaylysis tab
+            . Outlook tab is in progress.
+         </p>
+         <div class="m-3 col-xs-6 col-sm-6" id="viccom">
+            <div class="panel panel-primary"   class="mapstyle">
+               <div class="panel-heading">VIC Standard Precipitation Index (SPI3)</div>
+               <div class="panel-body" style="padding:0;">
+                  <div id="vicmap" class="map"></div>
+                  <div class="cvs1">
+                     <canvas id="curr_vic" height="50px"></canvas>
+                  </div>
+               </div>
             </div>
-        </div>
-
-
-
-        <div class="container-fluid">
-            </br>
-
-<p id="text"> This is an application that lets you visualize the VIC and DSSAT maps. If you want to compare side by side go to Current tab and view the latest data. If you want to view the layers on top of each other by changing some parameters, go to Anaylysis tab
-. Outlook tab is in progress.</p>
-
-                <div class="m-3 col-xs-6 col-sm-6" id="viccom">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">VIC Map</div>
-                        <div class="panel-body" style="padding:0;">
-                            <div id="vicmap" class="map"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="m-3 col-xs-6 col-sm-6" id="dssatcom">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">DSSAT Map</div>
-                        <div class="panel-body" style="padding:0;">
-                            <div id="dssatmap" class="map"></div>
-                        </div>
-                    </div>
-                </div>
-                <canvas id="cv_vic" width="500px" height="50px"></canvas>
-
-<br>
-
-           <div id="dssat" class="dssat" name="dssat" style="display:none;" data-geoserver-url="{{geoserver_wms_url}}"  data-geoserverwfs-url="{{geoserver_wfs_url}}" data-geoserver-workspace="{{geoserver_workspace}}"  data-rest-url="{{geoserver_rest_url}}"></div>
-
-            <div id="variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-geoserver-url="{{geoserver_wms_url}}" data-rest-url="{{geoserver_rest_url}}" data-geoserver-workspace="{{geoserver_workspace}}"></div>
-
-            <div class="modal fade" id="myModal" role="dialog">
-                <div class="modal-dialog">
-
-
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">About RHEAS Viewer</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>Description about VIC and DSSAT.</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-
-                </div>
+         </div>
+         <div class="m-3 col-xs-6 col-sm-6" id="dssatcom">
+            <div class="panel panel-primary"   class="mapstyle">
+               <div class="panel-heading">DSSAT Yield Map</div>
+               <div class="panel-body" style="padding:0;">
+                  <div id="dssatmap" class="map"></div>
+                  <div class="cvs1">
+                     <canvas id="curr_dssat" height="50px"></canvas>
+                  </div>
+               </div>
             </div>
-        </div>
-
-        </div>
-{% block scripts %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <script src="{% static 'rheasvieweroption2/js/main.js' %}" type="text/javascript"></script>
-    <script src="{% static 'rheasvieweroption2/js/dssat.js' %}" type="text/javascript"></script>
-
-
-    {% endblock %}
-</body>
+         </div>
+         <br>
+         <div id="dssat" class="dssat" name="dssat" style="display:none;" data-geoserver-url="{{geoserver_wms_url}}"  data-geoserverwfs-url="{{geoserver_wfs_url}}" data-geoserver-workspace="{{geoserver_workspace}}"  data-rest-url="{{geoserver_rest_url}}"></div>
+         <div id="variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-geoserver-url="{{geoserver_wms_url}}" data-rest-url="{{geoserver_rest_url}}" data-geoserver-workspace="{{geoserver_workspace}}"></div>
+         <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                     <h4 class="modal-title">About RHEAS Viewer</h4>
+                  </div>
+                  <div class="modal-body">
+                     <p>Description about VIC and DSSAT.</p>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      </div>
+      {% block scripts %}
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+      <script src="https://code.highcharts.com/highcharts.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+      <script src="{% static 'rheasvieweroption2/js/main.js' %}" type="text/javascript"></script>
+      <script src="{% static 'rheasvieweroption2/js/dssat.js' %}" type="text/javascript"></script>
+      {% endblock %}
+   </body>
 </html>
