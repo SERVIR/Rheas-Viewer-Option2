@@ -139,9 +139,9 @@ h2 {
 	margin: 10 0 0 10;
 }
 .cvs {
-	position: relative;
+	position: absolute;
 	background: white;
-	bottom: 20%;
+	bottom: 5%;
 	border: 1px solid #337ab7;
 	display: inline-block;
 	margin: 10 10 10 10;
@@ -166,7 +166,7 @@ h2 {
 		width: 25%;
 	}
 	.cvs {
-		bottom: 25%;
+		bottom: 5%;
 	}
 	.chartpanel {
 		width: 17.5%;
