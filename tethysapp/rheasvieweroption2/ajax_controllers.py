@@ -105,13 +105,8 @@ def get_scale(request):
         info = request.POST
         min = info.get("min")
         max = info.get("max")
-        print(min)
-        print("gte scale")
         try:
             color_range = calc_color_range1(float(min),float(max))
-            print("color range")
-
-            #print(color_range)
             return_obj["scale"] = color_range
             return_obj["success"] = "success"
             return JsonResponse(return_obj)
