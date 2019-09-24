@@ -338,26 +338,26 @@ def get_dssat_values(db,gid,schema,ensemble):
 
         cur = conn.cursor()
 
-        if "avg" in ensemble:
-            sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat WHERE gid={1} GROUP BY ensemble) as foo""".format(schema,int(gid))
+       # if "avg" in ensemble:
+        sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} GROUP BY ensemble) as foo""".format(schema,int(gid))
 
-            cur.execute(sql1)
-            data1 = cur.fetchall()
-            medianens = data1[math.ceil(len(data1)/2) - 1]
-            lowens = data1[math.ceil(len(data1)/4) - 1]
-            highens = data1[math.ceil(len(data1)* 3/4) - 1]
+        cur.execute(sql1)
+        data1 = cur.fetchall()
+        medianens = data1[math.ceil(len(data1)/2) - 1]
+        lowens = data1[math.ceil(len(data1)/4) - 1]
+        highens = data1[math.ceil(len(data1)* 3/4) - 1]
 
-            med_wsgd_series, med_lai_series, med_gwad_series = get_dssat_ens_values(cur,gid,schema,medianens[1])
-            low_wsgd_series, low_lai_series, low_gwad_series = get_dssat_ens_values(cur, gid, schema, lowens[1])
-            high_wsgd_series, high_lai_series, high_gwad_series = get_dssat_ens_values(cur, gid, schema, highens[1])
-            ensemble_info = [lowens[1],medianens[1],highens[1]]
-            conn.close()
-            return med_wsgd_series, med_lai_series, med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
-        else:
+        med_wsgd_series, med_lai_series, med_gwad_series = get_dssat_ens_values(cur,gid,schema,medianens[1])
+        low_wsgd_series, low_lai_series, low_gwad_series = get_dssat_ens_values(cur, gid, schema, lowens[1])
+        high_wsgd_series, high_lai_series, high_gwad_series = get_dssat_ens_values(cur, gid, schema, highens[1])
+        ensemble_info = [lowens[1],medianens[1],highens[1]]
+        conn.close()
+        return med_wsgd_series, med_lai_series, med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
+        #else:
 
-            wsgd_series, lai_series, gwad_series = get_dssat_ens_values(cur,gid,schema,ensemble)
-            conn.close()
-            return wsgd_series, lai_series, gwad_series
+         #   wsgd_series, lai_series, gwad_series = get_dssat_ens_values(cur,gid,schema,ensemble)
+            #conn.close()
+            #return wsgd_series, lai_series, gwad_series
 
     except Exception as e:
 

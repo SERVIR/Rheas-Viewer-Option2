@@ -726,11 +726,27 @@ var LIBRARY_OBJECT = (function () {
 				$(".error").html('');
 				var feature = event.target.item(0);
 				var gid = feature.getId().split(".")[1];
+				  $("#gid").val(gid);
 				var schema = $("#schema_table option:selected").val();
 				var db = $("#db_table option:selected").val();
 				$("#gid").val(gid);
 				$("#schema").val(schema);
+var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema});
+            xhr.done(function(data) {
+                if("success" in data) {
+                    $(".ensemble").removeClass('hidden');
+                    $("#ens_table").html('');
+                    var ensembles = data.ensembles;
+                    $("#ens_table").append(new Option("Median","avg"));
+                    ensembles.forEach(function(ensemble,i){
+                        var new_option = new Option(ensemble,ensemble);
+                        $("#ens_table").append(new_option);
+                    });
+                } else {
+                   // $(".error").append('<h3>Error Retrieving the ensemble data. Please select another feature.</h3>');
 
+                }
+            });
 				var name_0 = feature.getProperties().name;
 				// var name_1 = feature.getProperties().name_1;
 				// var name_2 = feature.getProperties().name_2;
@@ -807,22 +823,6 @@ var LIBRARY_OBJECT = (function () {
 		var county_name = "";
 		var db = $("#db_table option:selected").val();
 		var schema = $("#schema_table option:selected").val();
-		ajax_update_database("get-ensemble", {
-			"db": db,
-			"gid": gid,
-			"schema": schema
-		}).done(function (data) {
-			if ("success" in data) {
-				var ensembles = data.ensembles;
-				ensembles.forEach(function (ensemble, i) {
-					var new_option = new Option(ensemble, ensemble);
-					$("#ens_table").append(new_option);
-				});
-			} else {
-				$(".error").append('<h3>Error Retrieving the ensemble data. Please select another feature.</h3>');
-
-			}
-		});
 		var ens = $("#ens_table option:selected").val();
 		var xhr = ajax_update_database("get-ens-values", {
 			"db": db,
@@ -844,6 +844,7 @@ var LIBRARY_OBJECT = (function () {
 		xhr.done(function (data) {
 
 			if (variable == "GWAD") {
+			console.log(data);
 				input = data.gwad_series;
 				gwad_low = data.low_gwad_series;
 				gwad_high = data.high_gwad_series;
@@ -1237,58 +1238,16 @@ var LIBRARY_OBJECT = (function () {
 		$("#ens_table").change(function () {
 			var db = $("#db_table option:selected").val();
 			var schema = $("#schema_table option:selected").val();
-			ajax_update_database("get-ensemble", {
-				"db": db,
-				"gid": 32,
-				"schema": schema
-			}).done(function (data) {
-				if ("success" in data) {
-					var ensembles = data.ensembles;
-					ensembles.forEach(function (ensemble, i) {
-						var new_option = new Option(ensemble, ensemble);
-						$("#ens_table").append(new_option);
-					});
-				} else {
-					$(".error").append('<h3>Error Retrieving the ensemble data. Please select another feature.</h3>');
-
-				}
-			});
 			var ens = $("#ens_table option:selected").val();
-			var xhr = ajax_update_database("get-ens-values", {
-				"db": db,
-				"gid": 32,
-				"schema": schema,
-				"ensemble": ens
-			});
-			xhr.done(function (data) {
-				if ("success" in data) {
-					var chart = $("#dssat_plotter_1").highcharts();
+			  var gid = $("#gid").val();
+		   var xhr = ajax_update_database("get-ens-values",{"db":db,"gid":gid,"schema":schema,"ensemble":ens});
 
-					if (chart.series.length === 1) {
-						//  $(".ensemble-info").html('<p style="display: inline;">25th Percentile Ensemble: '+ensemble_info[0]+', Median Ensemble: '+ensemble_info[1]+', 75th Percentile Ensemble: '+ensemble_info[2]+'</p>');
-						chart.addSeries({
-							data: data.low_gwad_series,
-							name: "min",
-							type: 'line',
-							color: "red",
-							fillOpacity: 0.1,
-							zIndex: -1,
-							dashStyle: "Dash"
-
-						});
-						chart.addSeries({
-							data: data.high_gwad_series,
-							name: "max",
-							type: 'line',
-							color: "orange",
-							fillOpacity: 0.1,
-							zIndex: -2,
-							dashStyle: "Dash"
-
-						});
-					}
-				} else {}
-			});
+            xhr.done(function(data) {
+                if("success" in data) {
+                generate_dssat_graph("#dssat_plotter_1", gid, "GWAD");
+					generate_dssat_graph("#dssat_plotter_2", gid, "WSGD");
+                }
+                });
 		});
 
 	});

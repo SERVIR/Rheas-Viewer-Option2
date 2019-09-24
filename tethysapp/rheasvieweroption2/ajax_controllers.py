@@ -244,29 +244,29 @@ def get_ens_values(request):
             gid = info.get("gid")
             schema = info.get("schema")
             ensemble = info.get("ensemble")
-            if "avg" in ensemble:
-                wsgd_series,lai_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble)
-                return_obj["gid"] = gid
-                return_obj["schema"] = schema
-                return_obj["ensemble"] = ensemble
-                return_obj["wsgd_series"] = wsgd_series
-                return_obj["lai_series"] = lai_series
-                return_obj["gwad_series"] = gwad_series
-                return_obj["low_gwad_series"] = low_gwad_series
-                return_obj["high_gwad_series"] = high_gwad_series
-                return_obj["ensemble_info"] = ensemble_info
-                return_obj["success"] = "success"
-                return JsonResponse(return_obj)
-            else:
-                wsgd_series, lai_series, gwad_series = get_dssat_values(db,gid, schema, ensemble)
-                return_obj["gid"] = gid
-                return_obj["schema"] = schema
-                return_obj["ensemble"] = ensemble
-                return_obj["wsgd_series"] = wsgd_series
-                return_obj["lai_series"] = lai_series
-                return_obj["gwad_series"] = gwad_series
-                return_obj["success"] = "success"
-                return JsonResponse(return_obj)
+            # if "avg" in ensemble:
+            wsgd_series,lai_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble)
+            return_obj["gid"] = gid
+            return_obj["schema"] = schema
+            return_obj["ensemble"] = ensemble
+            return_obj["wsgd_series"] = wsgd_series
+            return_obj["lai_series"] = lai_series
+            return_obj["gwad_series"] = gwad_series
+            return_obj["low_gwad_series"] = low_gwad_series
+            return_obj["high_gwad_series"] = high_gwad_series
+            return_obj["ensemble_info"] = ensemble_info
+            return_obj["success"] = "success"
+            return JsonResponse(return_obj)
+            # else:
+            #     wsgd_series, lai_series, gwad_series = get_dssat_values(db,gid, schema, ensemble)
+            #     return_obj["gid"] = gid
+            #     return_obj["schema"] = schema
+            #     return_obj["ensemble"] = ensemble
+            #     return_obj["wsgd_series"] = wsgd_series
+            #     return_obj["lai_series"] = lai_series
+            #     return_obj["gwad_series"] = gwad_series
+            #     return_obj["success"] = "success"
+            #     return JsonResponse(return_obj)
 
         except Exception as e:
 
