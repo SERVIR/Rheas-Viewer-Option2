@@ -158,7 +158,7 @@ h2 {
 #vic_plotter_2,
 #dssat_plotter_1,
 #dssat_plotter_2 {
-	height: 220px;
+	height: 200px;
 }
 @media screen and (max-width: 1500px) {
 	#paramscontainer,
