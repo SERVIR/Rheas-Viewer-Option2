@@ -9,6 +9,7 @@ import requests
 import logging
 import tempfile, shutil,os,sys, zipfile
 from os.path import basename
+from django.views.decorators.csrf import csrf_exempt
 
 default_schemas = ['basin','crops','dssat','ken_test','information_schema','lai','precip','public','soilmoist','test','test_ke','test_tza','tmax','tmin','topology','vic','wind','pg_toast','pg_temp_1','pg_toast_temp_1','pg_catalog','ken_vic','tza_vic','eth_vic','tza_nrt']
 
@@ -197,7 +198,7 @@ def get_database():
     except Exception as e:
         print(e)
         return e
-
+@csrf_exempt
 def get_schemas(db):
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
@@ -215,7 +216,7 @@ def get_schemas(db):
     except Exception as e:
         print(e)
         return e
-
+@csrf_exempt
 def get_variables(db,region):
 
     try:
