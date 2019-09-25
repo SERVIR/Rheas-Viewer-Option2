@@ -146,6 +146,7 @@ def get_vector(request):
             return_obj["error"] = str(e)+ " From ajax"
             return JsonResponse(return_obj)
 
+@csrf_exempt
 def get_vic_plot(request):
     return_obj = {}
     context = {}
@@ -232,7 +233,7 @@ def get_ensemble(request):
         return_obj["success"] = "success"
 
         return JsonResponse(return_obj)
-
+@csrf_exempt
 def get_ens_values(request):
     return_obj = {}
 
@@ -273,7 +274,7 @@ def get_ens_values(request):
             return_obj["error"] = "error"
             return JsonResponse(return_obj)
 
-
+@csrf_exempt
 def get_county(request):
     return_obj = {}
 
@@ -314,7 +315,8 @@ def get_schema_yield(request):
         return_obj["success"] = "success"
 
         return JsonResponse(return_obj)
-    
+
+@csrf_exempt
 def get_bounds(request):
     
     return_obj = {}

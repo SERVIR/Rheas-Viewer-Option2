@@ -103,7 +103,7 @@ def get_vic_summary(db,region,variable,date):
     except Exception as e:
         print(e)
         return e
-
+@csrf_exempt
 def get_vic_point(db,region,variable,point):
 
     try:
@@ -142,7 +142,7 @@ def get_vic_point(db,region,variable,point):
     except Exception as e:
         print( e)
         return e
-
+@csrf_exempt
 def get_vic_polygon(db,region,variable,polygon):
 
     try:
@@ -182,7 +182,7 @@ def get_vic_polygon(db,region,variable,polygon):
     except Exception as e:
         print(e)
         return e
-
+@csrf_exempt
 def get_database():
     try:
         conn = psycopg2.connect(user=cfg.connection['user'],host= cfg.connection['host'],password=cfg.connection['password'])
@@ -235,7 +235,7 @@ def get_variables(db,region):
     except Exception as e:
         print(e)
         return e
-
+@csrf_exempt
 def get_times(db,region,variable):
 
     try:
@@ -290,7 +290,6 @@ def check_dssat_schema(db):
         return e
 
 
-
 def get_dssat_ensemble(db,gid,schema):
 
 
@@ -330,7 +329,7 @@ def get_dssat_gid(db,schema):
     except Exception as e:
         print(e)
         return e
-
+@csrf_exempt
 def get_dssat_values(db,gid,schema,ensemble):
 
 
@@ -364,7 +363,7 @@ def get_dssat_values(db,gid,schema,ensemble):
 
         return e
 
-
+@csrf_exempt
 def get_dssat_ens_values(cur,gid,schema,ensemble):
     sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} ORDER BY fdate;""".format(
         schema, int(gid), int(ensemble))
@@ -375,7 +374,7 @@ def get_dssat_ens_values(cur,gid,schema,ensemble):
 
     return wsgd_series, lai_series, gwad_series
 
-
+@csrf_exempt
 def get_county_name(db,gid,schema):
     conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
     cur = conn.cursor()
@@ -383,7 +382,7 @@ def get_county_name(db,gid,schema):
     cur.execute(sql)
     data = cur.fetchall()
     return data
-
+@csrf_exempt
 def calculate_yield(db,schema):
 
     try:
