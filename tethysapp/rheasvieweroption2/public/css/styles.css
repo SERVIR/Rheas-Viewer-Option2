@@ -230,7 +230,10 @@ h2 {
 
 @media screen and (max-width: 400px) {
 #paramspanel{
-overflow: auto;
+overflow: overlay;
+}
+#viccom, #dssatcom {
+    width: 350px;
 }
 #mapcontainer,#mapcontainer1 {
     width: 320px;
