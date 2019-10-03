@@ -13,7 +13,7 @@ class Rheasvieweroption2(TethysAppBase):
     root_url = 'rheasvieweroption2'
     color = '#f39c12'
     description = 'Integration of VIC and DSSAT in to RHEAS Viewer'
-    tags = '&quot;VIC&quot;,&quot;DSSAT&quot;'
+    tags = 'VIC,DSSAT'
     enable_feedback = False
     feedback_emails = []
 

@@ -269,16 +269,6 @@ var LIBRARY_OBJECT = (function () {
 			var proj_coords = ol.proj.transform(coords, 'EPSG:3857', 'EPSG:4326');
 			$("#point-lat-lon").val(proj_coords);
 		}
-		$('#vicslider').change(function (e) {
-			map.getLayers().forEach(lyr => {
-				if (lyr.get("id") == "viclayer") {
-					lyr.setOpacity(e.target.value);
-				}
-			});
-		});
-		$('#dssatslider').change(function (e) {
-			vectorLayer1.setOpacity(e.target.value);
-		});
 		//Code for adding interaction for drawing on the map
 		var lastFeature, draw, featureType;
 
@@ -798,7 +788,7 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 		wms_layer = new ol.layer.Image({
 			source: wms_source,
 			id: "viclayer",
-			opacity: $("#vicslider").val(),
+			//opacity: $("#vicslider").val(),
 		});
 
 		wms_layer.setZIndex(2);
@@ -1202,6 +1192,7 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 
 			xhr.done(function (data) {
 				if ("success" in data) {
+				console.log(data);
 					add_vic(data);
 
 
