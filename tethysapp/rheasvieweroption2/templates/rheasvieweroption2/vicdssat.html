@@ -22,7 +22,7 @@
       </div>
       <div class="container-fluid">
          </br>
-         <p id="text"> This is an application that lets you visualize the VIC and DSSAT maps. If you want to compare side by side go to Current tab and view the latest data. If you want to view the layers on top of each other by changing some parameters, go to Anaylysis tab
+         <p class="text"> This is an application that lets you visualize the VIC and DSSAT maps. If you want to compare side by side go to Current tab and view the latest data. If you want to view the layers on top of each other by changing some parameters, go to Anaylysis tab
             . Outlook tab is in progress.
          </p>
          <div class="m-3 col-xs-6 col-sm-6" id="viccom">
@@ -48,6 +48,33 @@
             </div>
          </div>
          <br>
+<p>
+ <p  class="text">The Regional Hydrologic Extremes Assessment System (RHEAS) is a modular hydrologic modeling framework that has been developed at JPL. At the core of the system lies a hydrologic model that can be run both in nowcasting (i.e. estimation of the current time period) and forecasting (i.e. estimation for future time periods) modes.
+          The nowcasting simulations are constrained by assimilating a suite of Earth Science satellite observations, resulting in optimal estimates of directly and indirectly observed water variables. The latter nowcast estimates can then be used to initialize the 30- to 180-day forecasts.
+          Datasets are automatically fetched from various sources (OpenDAP, FTP etc.) and ingested in a spatially-enabled PostGIS database, allowing for easy dissemination of maps and data.</p>
+        <p  class="text">Documentation for RHEAS can be found at <a href="http://rheas.readthedocs.org/en/latest/" target="_blank">Read the Docs.</a></p>
+        <p  class="text">A peer-reviewed journal article on RHEAS is also <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0176506" target="_blank">available.</a></p>
+        <p class="text">External Resources and Links:</p>
+        <p class="text"><a href="https://servirglobal.net/about-servir" target="_blank">About SERVIR</a></p>
+        <p class="text"><a href="https://servirglobal.net/Privacy-Terms-of-Use" target="_blank">Privacy and Terms of Conditions</a></p>
+        <p class="text"><a href="https://vic.readthedocs.io/en/master/" target="_blank">VIC Hydrology Model</a></p>
+        <p class="text"><a href="http://dssat.net/" target="_blank">DSSAT Crop Model</a></p>
+   
+        <div align="center" style=" height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;" id="logos">
+          <div class="logo-image"><a href="http://www.usaid.gov/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/usaid.png"></a></div>
+          <div class="logo-image"><a href="http://appliedsciences.nasa.gov/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/nasa.png"></a></div>
+          <div class="logo-image"><a href="http://www.cilss.bf/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/cilss.png"></a></div>
+          <div class="logo-image"><a href="http://www.rcmrd.org/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/rcmrd.png"></a></div>
+          <div class="logo-image"><a href="http://www.icimod.org/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/icimod.png"></a></div>
+          <div class="logo-image"><a href="http://www.adpc.net/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/adpc.png"></a></div>
+        </div>
+
+
+					
+</p>
          <div id="dssat" class="dssat" name="dssat" style="display:none;" data-geoserver-url="{{geoserver_wms_url}}"  data-geoserverwfs-url="{{geoserver_wfs_url}}" data-geoserver-workspace="{{geoserver_workspace}}"  data-rest-url="{{geoserver_rest_url}}"></div>
          <div id="variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-geoserver-url="{{geoserver_wms_url}}" data-rest-url="{{geoserver_rest_url}}" data-geoserver-workspace="{{geoserver_workspace}}"></div>
          <div class="modal fade" id="myModal" role="dialog">
