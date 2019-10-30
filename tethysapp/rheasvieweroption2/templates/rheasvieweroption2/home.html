@@ -10,8 +10,11 @@
       <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
       <link rel="stylesheet" href="{% static 'rheasvieweroption2/css/ol3-ext.min.css' %}">
       <link rel="stylesheet" href="{% static 'rheasvieweroption2/css/styles.css' %}" />
+
       {% endblock %}
       {% block scripts %}
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
       <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
       <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -38,7 +41,7 @@
                <a href="#help">Help</a>
             </div>
          </div>
-         <div id="row">
+         <div id="row"><a href="#" id="togglePanel"><span class="glyphicon glyphicon-chevron-left"></span></a>
             <div class="m-5 col-lg-3 col-xs-3 col-sm-3" id="paramscontainer">
                <div class="panel panel-primary" id="paramspanel"  style="height:100%;">
                   <div class="panel-heading">Parameters</div>
@@ -113,6 +116,27 @@
                      <select class="ens_table" name="ens_table" id="ens_table"  style="width: 100%">
                      </select>
                      <br>
+                      <label>
+                     Switch range
+                     </label>
+                  <div class="onoffswitch">
+        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+        <label class="onoffswitch-label" for="myonoffswitch">
+            <span class="onoffswitch-inner"></span>
+            <span class="onoffswitch-switch"></span>
+        </label>
+    </div>
+   Select year
+                     </label><br>
+                     <select class="seasonyear" name="seasonyear" id="seasonyear"  style="width: 100%">
+                        <option>2016</option>
+                        <option>2017</option>
+                        <option>2018</option>
+                     </select>
+                     <br>
+
+
+
                      <!--			  <b>Map Interaction</b>-->
                      <!--			    <select id="interaction-type" class="btn btn-xs btn-primary" data-width="fit">-->
                      <!--				<option value="None">None</option>-->
@@ -127,7 +151,9 @@
                   </div>
                </div>
             </div>
-            <div class="m-5 col-lg-3  col-xs-3 col-sm-3 "  id="mapcontainer">
+              <div class="container-fluid" id="mc">
+             <div id="mrow">
+            <div class="col-lg-6 col-xs-6 col-sm-6"  id="mapcontainer">
                <div class="panel panel-primary" id="mappanel">
                   <div class="panel-heading">VIC Model</div>
                   <div class="panel-body" id="mappanelbody">
@@ -138,7 +164,7 @@
                   </div>
                </div>
             </div>
-            <div class="m-5 col-lg-3  col-xs-3 col-sm-3"  id="mapcontainer1">
+            <div class="col-lg-6  col-xs-6 col-sm-6"  id="mapcontainer1">
                <div class="panel panel-primary" id="mappanel1">
                   <div class="panel-heading">DSSAT Model</div>
                   <div class="panel-body" id="mappanelbody1">
@@ -149,8 +175,10 @@
                   </div>
                </div>
             </div>
-            <div class="m-5 col-lg-3  col-xs-3 col-sm-3 chartpanel">
-               <div class="panel panel-primary">
+         </div>
+             <div id="crow">
+            <div class="col-lg-3  col-md-3 col-sm-3 chartpanel">
+               <div class="panel panel-primary" style="margin:5px 5px 0 0">
                   <div class="panel-body" id="vic-plot-modal">
                      <div id="vic_chart_1">
                         <div class="chart-wrapper">
@@ -173,8 +201,8 @@
                   </div>
                </div>
             </div>
-            <div class="m-5 col-lg-3  col-xs-3 col-sm-3 chartpanel">
-               <div class="panel panel-primary">
+            <div class="col-lg-3  col-md-3 col-sm-3 chartpanel">
+               <div class="panel panel-primary" style="margin:5px 5px 0 0">
                   <div class="panel-body" id="vic-plot-modal1">
                      <div id="vic_chart_2">
                         <div class="chart-wrapper">
@@ -197,8 +225,8 @@
                   </div>
                </div>
             </div>
-            <div class="m-5 col-lg-3 col-xs-3 col-sm-3 chartpanel">
-               <div class="panel panel-primary">
+            <div class="col-lg-3  col-md-3 col-sm-3 chartpanel">
+               <div class="panel panel-primary" style="margin:5px 5px 0 0">
                   <div class="panel-body" id="vic-plot-modal2">
                      <div id="vic_chart_3">
                         <div class="chart-wrapper">
@@ -221,8 +249,8 @@
                   </div>
                </div>
             </div>
-            <div class="m-5 col-lg-3  col-xs-3 col-sm-3 chartpanel">
-               <div class="panel panel-primary">
+            <div class="col-lg-3  col-md-3 col-sm-3 chartpanel">
+               <div class="panel panel-primary" style="margin:5px 5px 0 0">
                   <div class="panel-body" id="dssat-plot-modal">
                      <div id="dssat_chart">
                         <div class="chart-wrapper">
@@ -245,6 +273,8 @@
                   </div>
                </div>
             </div>
+                 </div>
+              </div>
             <div id="variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-geoserver-url="{{geoserver_wms_url}}" data-rest-url="{{geoserver_rest_url}}" data-geoserver-workspace="{{geoserver_workspace}}"></div>
             <div id="dssat" class="dssat" name="dssat" style="display:none;" data-geoserver-url="{{geoserver_wfs_url}}" data-geoserver-workspace="{{geoserver_workspace}}" data-rest-url="{{geoserver_rest_url}}"></div>
             <div class="modal fade" id="myModal" role="dialog">

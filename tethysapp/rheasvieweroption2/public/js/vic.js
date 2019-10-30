@@ -54,7 +54,9 @@ var LIBRARY_OBJECT = (function () {
 		init_jquery_vars,
 		init_dropdown,
 		init_all,
-		init_map;
+		init_map,
+	getShortRange,
+	getLongRange;
 	var styleCache = {};
 	var high = [10, 82, 10, 0.81]; //dark green
 	var mid = [108, 152, 64, 0.81];
@@ -117,7 +119,11 @@ var LIBRARY_OBJECT = (function () {
 			//				imagerySet: 'AerialWithLabels' // Options 'Aerial', 'AerialWithLabels', 'Road'
 			//			})
 
-			source: new ol.source.OSM()
+			source: new ol.source.XYZ({
+        attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+            'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+      })
 
 		});
 
@@ -658,6 +664,7 @@ var LIBRARY_OBJECT = (function () {
 		var variable2 = $("#var_table2 option:selected").val();
 		generate_vic_graph("#vic_plotter_1", variable1, centeravg.toString(), "");
 		generate_vic_graph("#vic_plotter_2", variable2, centeravg.toString(), "");
+
 		map.updateSize();
 	};
 	var vectorLayer1 = new ol.layer.Vector({
@@ -706,8 +713,8 @@ var LIBRARY_OBJECT = (function () {
 
 		select_interaction.on('select', function (e) {
 			gid = e.selected[0].getId().split(".")[1];
-			generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
-			generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
+			generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val(),rangedates);
+			generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val(),rangedates);
 		});
 		selectedFeatures = select_interaction.getFeatures();
 		selectedFeatures.on('add', function (event) {
@@ -793,6 +800,7 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 
 		wms_layer.setZIndex(2);
 		map.addLayer(wms_layer);
+
 	};
 
 	get_plot = function () {
@@ -806,19 +814,94 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 		generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
 
 	};
-	var input, title, titletext, gwad_low, gwad_high, series;
+	var rangedates=[];
+			function getLongRange(){
+					var rangedates=[];
 
-	function generate_dssat_graph(element, gid, variable) {
+				console.log("in get long");
+				var year=$("#seasonyear option:selected").val();
+				var db = $("#db_table option:selected").val();
+			var variable = $("#var_table1 option:selected").val();
+			var region = $("#schema_table option:selected").val();
+
+			var xhr = ajax_update_database("dates", {
+				"variable": variable,
+				"region": region,
+				"db": db
+			});
+			xhr.done(function (data) {
+				if ("success" in data) {
+					var dates = data.dates;
+					rangedates=[];
+					dates.forEach(function (date, i) {
+
+						if(date[0].substring(0,4)==year && (parseInt(date[0].substring(5,8))>4 && parseInt(date[0].substring(5,8))<9))
+						{
+rangedates.push(date[0]);
+						}
+
+					});
+					console.log(rangedates);
+
+					generate_dssat_graph("#dssat_plotter_1", 32, "GWAD",rangedates);
+					generate_dssat_graph("#dssat_plotter_2", 32, "WSGD",rangedates);
+				} else {
+					console.log("error");
+
+				}
+			});
+
+							  }
+		function getShortRange(){
+				var year=$("#seasonyear option:selected").val();
+				var db = $("#db_table option:selected").val();
+			var variable = $("#var_table1 option:selected").val();
+			var region = $("#schema_table option:selected").val();
+
+			var xhr = ajax_update_database("dates", {
+				"variable": variable,
+				"region": region,
+				"db": db
+			});
+			xhr.done(function (data) {
+				if ("success" in data) {
+					var dates = data.dates;
+rangedates=[];
+					dates.forEach(function (date, i) {
+
+						if((parseInt(date[0].substring(5,8))>9  &&date[0].substring(0,4)==year) || (parseInt(date[0].substring(0,4))==year+1 &&  parseInt(date[0].substring(5,8))<3))
+						{
+						    rangedates.push(date[0]);
+						}
+
+					});
+					generate_dssat_graph("#dssat_plotter_1", 32, "GWAD",rangedates);
+					generate_dssat_graph("#dssat_plotter_2", 32, "WSGD",rangedates);
+
+				} else {
+					console.log("error");
+
+				}
+			});
+
+					  }
+
+	var input, title, titletext, gwad_low, gwad_high, series,lai_low, lai_high;
+
+	function generate_dssat_graph(element, gid, variable,rangedates) {
 
 		var county_name = "";
 		var db = $("#db_table option:selected").val();
 		var schema = $("#schema_table option:selected").val();
 		var ens = $("#ens_table option:selected").val();
+		console.log(rangedates);
 		var xhr = ajax_update_database("get-ens-values", {
 			"db": db,
 			"gid": gid,
 			"schema": schema,
-			"ensemble": ens
+			"ensemble": ens,
+            "startdate":rangedates[0],
+            "enddate":rangedates[rangedates.length-1]
 		});
 		ajax_update_database("get-county", {
 			"db": db,
@@ -838,30 +921,33 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 				input = data.gwad_series;
 				gwad_low = data.low_gwad_series;
 				gwad_high = data.high_gwad_series;
-				title = "GWAD : ";
+				title = "Grain Weight : ";
 				titletext = "GWAD (kg/ha)";
 				series = [{
 						data: input,
-						name: titletext,
+						name: "Median",
 						type: 'line',
+						showInLegend:false,
 						lineWidth: 5,
 						color: "green",
 					},
 					{
 						data: gwad_low,
-						name: "Min",
+						name: "5th percentile",
 						type: 'line',
 						color: "red",
+							showInLegend:false,
 						fillOpacity: 0.1,
 						zIndex: -1,
 						dashStyle: "Dash"
 
 					}, {
 						data: gwad_high,
-						name: "Max",
+						name: "95th percentile",
 						type: 'line',
 						color: "orange",
 						fillOpacity: 0.1,
+							showInLegend:false,
 						zIndex: -2,
 						dashStyle: "Dash"
 
@@ -869,26 +955,55 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 				]
 			} else if (variable == "WSGD") {
 				input = data.wsgd_series;
-				title = "WSGD : ";
-				titletext = "WSGD (m2/m2)";
+				title = "Daily Water Stress : ";
+				titletext = "WSGD (0-1)";
 				series = [{
 					data: input,
 					name: titletext,
 					type: 'line',
 					lineWidth: 5,
+						showInLegend:false,
 					color: "green",
 				}]
-			} else {
-				input = data.wsgd_series;
+			} else if (variable == "LAI") {
+				input = data.lai_series;
+				lai_low = data.low_lai_series;
+				lai_high = data.high_lai_series;
+				console.log(input);
+				console.log((lai_low));
+				console.log((lai_high));
 				title = "LAI : ";
 				titletext = "LAI (m2/m2)";
 				series = [{
-					data: input,
-					name: titletext,
-					type: 'line',
-					lineWidth: 5,
-					color: "green",
-				}]
+						data: input,
+						name: "Median",
+						type: 'line',
+						showInLegend:false,
+						lineWidth: 5,
+						color: "green",
+					},
+					{
+						data: lai_low,
+						name: "5th percentile",
+						type: 'line',
+						color: "red",
+							showInLegend:false,
+						fillOpacity: 0.1,
+						zIndex: -1,
+						dashStyle: "Dash"
+
+					}, {
+						data: lai_high,
+						name: "95th percentile",
+						type: 'line',
+						color: "orange",
+						fillOpacity: 0.1,
+							showInLegend:false,
+						zIndex: -2,
+						dashStyle: "Dash"
+
+					}
+				]
 			}
 			if ("success" in data) {
 				$(element).highcharts({
@@ -927,7 +1042,8 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 					exporting: {
 						enabled: true
 					},
-					series: series
+					series: series,
+
 				});
 			} else {
 				$(".error").append('<h3>Error Processing Request. Please be sure to select an area with data.</h3>');
@@ -982,7 +1098,7 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 						},
 						yAxis: {
 							title: {
-								text: units
+								text: display_name+' '+units
 							}
 
 						},
@@ -991,7 +1107,8 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 						},
 						series: [{
 							data: data.time_series,
-							name: display_name
+							name: display_name,
+							showInLegend:false
 						}]
 					});
 					$vicplotModal.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
@@ -1122,10 +1239,15 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 
 						var new_option = new Option(date[0], date[1]);
 						if (i == 0) {
+
+
 							$("#time_table").append(new_option).trigger('change');
+
 						} else {
 							$("#time_table").append(new_option);
+
 						}
+
 					});
 
 				} else {
@@ -1168,12 +1290,13 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 		});
 		$("#var_table3").change(function () {
 			if (gid == undefined) gid = 32;
-			generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+
+			generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val(),rangedates);
 
 		});
 		$("#var_table4").change(function () {
 			if (gid == undefined) gid = 32;
-			generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
+			generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val(),rangedates);
 		});
 
 		$("#time_table").change(function () {
@@ -1216,8 +1339,8 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 							$(".error").html('<h3>Error Retrieving the layer</h3>');
 						}
 					});
-					generate_dssat_graph("#dssat_plotter_1", 32, "GWAD");
-					generate_dssat_graph("#dssat_plotter_2", 32, "WSGD");
+				$("#seasonyear").trigger('change');
+
 
 				} else {
 					$(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
@@ -1235,11 +1358,79 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 
             xhr.done(function(data) {
                 if("success" in data) {
-                generate_dssat_graph("#dssat_plotter_1", gid, "GWAD");
-					generate_dssat_graph("#dssat_plotter_2", gid, "WSGD");
+                generate_dssat_graph("#dssat_plotter_1", gid, "GWAD",rangedates);
+					generate_dssat_graph("#dssat_plotter_2", gid, "WSGD",rangedates);
                 }
                 });
 		});
+			$("#myonoffswitch").change(function () {
+				if($("#myonoffswitch").is(':checked')){
+					//may-aug long
+					getLongRange();
+				}
+				else{
+					getShortRange();
+
+				}
+            });
+			$("#seasonyear").change(function () {
+				if($("#myonoffswitch").is(':checked')){
+					//may-aug long
+					getLongRange();
+				}
+				else{
+					getShortRange();
+
+				}
+            }).change();
+			$("#togglePanel").click(function () {
+			    console.log("clicked on arrow");
+
+				if($("#paramscontainer").css('display')=='none') {
+$("#togglePanel").html("<span class=\"glyphicon glyphicon-chevron-left\"></span>");
+
+                     $("#crow").css('margin-left','6%');
+					$("#mrow").css('margin-left','6%');
+                     $("#paramscontainer").show();
+                     	   	  $("#mapcontainer").height("65vh");
+					  $("#mapcontainer1").height("65vh");
+					     $(".chartpanel").height("28vh");
+					       $("#mc").width("89.5%");
+
+					       $("#vic-plot-modal").height("27vh");
+					        $("#vic-plot-modal1").height("27vh");
+					         $("#vic-plot-modal2").height("27vh");
+					     $("#dssat-plot-modal").height("27vh");
+					 /*      $("#vic_plotter_1").height("300px");
+                           $("#vic_plotter_2").height("300px");
+                           $("#dssat_plotter_1").height("300px");
+                           $("#dssat_plotter_2").height("300px");*/
+
+                }
+				else{
+				    $("#togglePanel").html("<span class=\"glyphicon glyphicon-chevron-right\"></span>");
+					 $("#togglePanel").css('margin-left','0%');
+					    $("#mc").width("100%");
+					  $("#paramscontainer").hide();
+					/*  $("#mapcontainer").width("49%");
+					   $("#mapcontainer1").width("49%");*/
+					   	  $("#mapcontainer").height("51vh");
+					   $("#mapcontainer1").height("51vh");
+					     $(".chartpanel").height("42vh");
+					      $("#vic-plot-modal").height("41vh");
+					        $("#vic-plot-modal1").height("41vh");
+					         $("#vic-plot-modal2").height("41vh");
+					     $("#dssat-plot-modal").height("41vh");
+					       $("#vic_plotter_1").height("97%");
+                           $("#vic_plotter_2").height("97%");
+                           $("#dssat_plotter_1").height("97%");
+                           $("#dssat_plotter_2").height("97%");
+					$("#crow").css('margin-left','20px');
+					$("#mrow").css('margin-left','20px');
+			}
+
+
+            });
 
 	});
 

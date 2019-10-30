@@ -225,9 +225,7 @@ def get_variables(db,region):
         sql = """SELECT table_name FROM information_schema.tables WHERE table_schema = '{0}'""".format(region)
         cur.execute(sql)
         data = cur.fetchall()
-        print(data)
         variables = [var[0] for var in data if var[0] != "basin" if var[0] != "agareas" if var[0] != "state" if var[0] != "dssat" if var[0] != "dssat_all" if var[0] != "yield"]
-        print(variables)
         variables.sort()
         conn.close()
 
@@ -330,7 +328,7 @@ def get_dssat_gid(db,schema):
         print(e)
         return e
 @csrf_exempt
-def get_dssat_values(db,gid,schema,ensemble):
+def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
 
 
     try:
@@ -339,17 +337,19 @@ def get_dssat_values(db,gid,schema,ensemble):
         cur = conn.cursor()
 
        # if "avg" in ensemble:
-        sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} GROUP BY ensemble) as foo""".format(schema,int(gid))
-
+        s="'"+startdate+"'"
+        e="'"+enddate+"'"
+        sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} AND fdate>={2} AND fdate<={3} GROUP BY ensemble) as foo""".format(schema,int(gid),s,e)
+        print(sql1)
         cur.execute(sql1)
         data1 = cur.fetchall()
         medianens = data1[math.ceil(len(data1)/2) - 1]
-        lowens = data1[math.ceil(len(data1)/4) - 1]
-        highens = data1[math.ceil(len(data1)* 3/4) - 1]
+        lowens = data1[1]
+        highens = data1[18]
 
-        med_wsgd_series, med_lai_series, med_gwad_series = get_dssat_ens_values(cur,gid,schema,medianens[1])
-        low_wsgd_series, low_lai_series, low_gwad_series = get_dssat_ens_values(cur, gid, schema, lowens[1])
-        high_wsgd_series, high_lai_series, high_gwad_series = get_dssat_ens_values(cur, gid, schema, highens[1])
+        med_wsgd_series, med_lai_series, med_gwad_series = get_dssat_ens_values(cur,gid,schema,medianens[1],"'"+startdate+"'","'"+enddate+"'")
+        low_wsgd_series, low_lai_series, low_gwad_series = get_dssat_ens_values(cur, gid, schema, lowens[1],"'"+startdate+"'","'"+enddate+"'")
+        high_wsgd_series, high_lai_series, high_gwad_series = get_dssat_ens_values(cur, gid, schema, highens[1],"'"+startdate+"'","'"+enddate+"'")
         ensemble_info = [lowens[1],medianens[1],highens[1]]
         conn.close()
         return med_wsgd_series, med_lai_series, med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
@@ -364,15 +364,21 @@ def get_dssat_values(db,gid,schema,ensemble):
         return e
 
 @csrf_exempt
-def get_dssat_ens_values(cur,gid,schema,ensemble):
-    sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} ORDER BY fdate;""".format(
-        schema, int(gid), int(ensemble))
+def get_dssat_ens_values(cur,gid,schema,ensemble,startdate,enddate):
+    print(startdate)
+    print(enddate)
+    try:
+        sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} AND fdate>={3} AND fdate<={4} ORDER BY fdate;""".format(
+            schema, int(gid), int(ensemble),str(startdate),str(enddate))
+        cur.execute(sql)
+        data = cur.fetchall()
+        wsgd_series, lai_series, gwad_series = parse_dssat_data(data)
 
-    cur.execute(sql)
-    data = cur.fetchall()
-    wsgd_series, lai_series, gwad_series = parse_dssat_data(data)
+        return wsgd_series, lai_series, gwad_series
+    except Exception as e:
+        print(e)
+        return e
 
-    return wsgd_series, lai_series, gwad_series
 
 @csrf_exempt
 def get_county_name(db,gid,schema):
