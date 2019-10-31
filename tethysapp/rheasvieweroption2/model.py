@@ -339,8 +339,13 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
        # if "avg" in ensemble:
         s="'"+startdate+"'"
         e="'"+enddate+"'"
-        sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} AND fdate>={2} AND fdate<={3} GROUP BY ensemble) as foo""".format(schema,int(gid),s,e)
-        print(sql1)
+        sql1=""
+
+        if len(startdate)>9 and len(enddate)>9:
+            sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} AND fdate>={2} AND fdate<={3} GROUP BY ensemble) as foo""".format(schema,int(gid),s,e)
+        else:
+            sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} GROUP BY ensemble) as foo""".format(schema,int(gid))
+
         cur.execute(sql1)
         data1 = cur.fetchall()
         medianens = data1[math.ceil(len(data1)/2) - 1]
@@ -365,11 +370,15 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
 
 @csrf_exempt
 def get_dssat_ens_values(cur,gid,schema,ensemble,startdate,enddate):
-    print(startdate)
-    print(enddate)
+
     try:
-        sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} AND fdate>={3} AND fdate<={4} ORDER BY fdate;""".format(
-            schema, int(gid), int(ensemble),str(startdate),str(enddate))
+
+        if len(startdate) > 9 and len(enddate) > 9:
+            sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} AND fdate>={3} AND fdate<={4} ORDER BY fdate;""".format(
+                schema, int(gid), int(ensemble),str(startdate),str(enddate))
+        else:
+            sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} ORDER BY fdate;""".format(
+                schema, int(gid), int(ensemble))
         cur.execute(sql)
         data = cur.fetchall()
         wsgd_series, lai_series, gwad_series = parse_dssat_data(data)

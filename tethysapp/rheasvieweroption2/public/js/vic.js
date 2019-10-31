@@ -895,14 +895,28 @@ rangedates=[];
 		var schema = $("#schema_table option:selected").val();
 		var ens = $("#ens_table option:selected").val();
 		console.log(rangedates);
-		var xhr = ajax_update_database("get-ens-values", {
-			"db": db,
-			"gid": gid,
-			"schema": schema,
-			"ensemble": ens,
-            "startdate":rangedates[0],
-            "enddate":rangedates[rangedates.length-1]
-		});
+		var jsonObj={};
+		if(rangedates.length>0) {
+             jsonObj = {
+                "db": db,
+                "gid": gid,
+                "schema": schema,
+                "ensemble": ens,
+                "startdate": rangedates[0],
+                "enddate": rangedates[rangedates.length - 1]
+            };
+        }
+		else{
+			jsonObj = {
+                "db": db,
+                "gid": gid,
+                "schema": schema,
+                "ensemble": ens,
+                "startdate": "",
+                "enddate": ""
+            };
+		}
+		var xhr = ajax_update_database("get-ens-values", jsonObj);
 		ajax_update_database("get-county", {
 			"db": db,
 			"gid": gid,
