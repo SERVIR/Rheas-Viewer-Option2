@@ -1388,7 +1388,7 @@ rangedates=[];
 
 				if($("#paramscontainer").css('display')=='none') {
 $("#togglePanel").html("<span class=\"glyphicon glyphicon-chevron-left\"></span>");
-
+$("#togglePanel").css("left","15%");
                      $("#crow").css('margin-left','6%');
 					$("#mrow").css('margin-left','6%');
                      $("#paramscontainer").show();
@@ -1410,6 +1410,7 @@ $("#togglePanel").html("<span class=\"glyphicon glyphicon-chevron-left\"></span>
 				else{
 				    $("#togglePanel").html("<span class=\"glyphicon glyphicon-chevron-right\"></span>");
 					 $("#togglePanel").css('margin-left','0%');
+					 $("#togglePanel").css("left","0%");
 					    $("#mc").width("100%");
 					  $("#paramscontainer").hide();
 					/*  $("#mapcontainer").width("49%");
