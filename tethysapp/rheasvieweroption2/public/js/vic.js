@@ -1224,6 +1224,8 @@ rangedates=[];
 				if ("success" in data) {
 					fillVarTables("#var_table1", data.variables);
 					fillVarTables("#var_table2", data.variables);
+					$("#var_table3").trigger('change');
+					$("#var_table4").trigger('change');
 					$("#var_table1").val("rainf").attr("selected", "selected");
 					$("#var_table2").val("evap").attr("selected", "selected");
 
