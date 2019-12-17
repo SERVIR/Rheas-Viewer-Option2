@@ -925,76 +925,75 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 
 	};
 	var rangedates=[];
-			function getLongRange(){
-					var rangedates=[];
+			function getLongRange() {
+                var rangedates = [];
 
-				console.log("in get long");
-				var year=$("#seasonyear option:selected").val();
-				var db = $("#db_table option:selected").val();
-			var variable = $("#var_table1 option:selected").val();
-			var region = $("#schema_table option:selected").val();
+                console.log("in get long");
+                var year = $("#seasonyear option:selected").val();
+                var db = $("#db_table option:selected").val();
+                var variable = $("#var_table1 option:selected").val();
+                var region = $("#schema_table option:selected").val();
 
-			var xhr = ajax_update_database("dates", {
-				"variable": variable,
-				"region": region,
-				"db": db
-			});
-			xhr.done(function (data) {
-				if ("success" in data) {
-					var dates = data.dates;
-					rangedates=[];
-					dates.forEach(function (date, i) {
+                var xhr = ajax_update_database("dates", {
+                    "variable": variable,
+                    "region": region,
+                    "db": db
+                });
+                xhr.done(function (data) {
+                    if ("success" in data) {
+                        var dates = data.dates;
+                        rangedates = [];
+                        dates.forEach(function (date, i) {
 
-						if(date[0].substring(0,4)==year && (parseInt(date[0].substring(5,8))>4 && parseInt(date[0].substring(5,8))<9))
-						{
-rangedates.push(date[0]);
-						}
+                            if (date[0].substring(0, 4) == year && (parseInt(date[0].substring(5, 8)) > 4 && parseInt(date[0].substring(5, 8)) < 9)) {
+                                rangedates.push(date[0]);
+                            }
 
-					});
-					console.log(rangedates);
+                        });
+                        console.log(rangedates);
 
-					generate_dssat_graph("#dssat_plotter_1", 32, "GWAD",rangedates);
-					generate_dssat_graph("#dssat_plotter_2", 32, "WSGD",rangedates);
-				} else {
-					console.log("error");
+                        generate_dssat_graph("#dssat_plotter_1", 32, "GWAD", rangedates);
+                        generate_dssat_graph("#dssat_plotter_2", 32, "WSGD", rangedates);
+                    } else {
+                        console.log("error");
 
-				}
-			});
+                    }
+                });
+                return rangedates;
 
-							  }
-		function getShortRange(){
-				var year=$("#seasonyear option:selected").val();
-				var db = $("#db_table option:selected").val();
-			var variable = $("#var_table1 option:selected").val();
-			var region = $("#schema_table option:selected").val();
+            }
+		function getShortRange() {
+            var year = $("#seasonyear option:selected").val();
+            var db = $("#db_table option:selected").val();
+            var variable = $("#var_table1 option:selected").val();
+            var region = $("#schema_table option:selected").val();
 
-			var xhr = ajax_update_database("dates", {
-				"variable": variable,
-				"region": region,
-				"db": db
-			});
-			xhr.done(function (data) {
-				if ("success" in data) {
-					var dates = data.dates;
-rangedates=[];
-					dates.forEach(function (date, i) {
+            var xhr = ajax_update_database("dates", {
+                "variable": variable,
+                "region": region,
+                "db": db
+            });
+            xhr.done(function (data) {
+                if ("success" in data) {
+                    var dates = data.dates;
+                    rangedates = [];
+                    dates.forEach(function (date, i) {
 
-						if((parseInt(date[0].substring(5,8))>9  &&date[0].substring(0,4)==year) || (parseInt(date[0].substring(0,4))==year+1 &&  parseInt(date[0].substring(5,8))<3))
-						{
-						    rangedates.push(date[0]);
-						}
+                        if ((parseInt(date[0].substring(5, 8)) > 9 && date[0].substring(0, 4) == year) || (parseInt(date[0].substring(0, 4)) == year + 1 && parseInt(date[0].substring(5, 8)) < 3)) {
+                            rangedates.push(date[0]);
+                        }
 
-					});
-					generate_dssat_graph("#dssat_plotter_1", 32, "GWAD",rangedates);
-					generate_dssat_graph("#dssat_plotter_2", 32, "WSGD",rangedates);
+                    });
+                    generate_dssat_graph("#dssat_plotter_1", 32, "GWAD", rangedates);
+                    generate_dssat_graph("#dssat_plotter_2", 32, "WSGD", rangedates);
 
-				} else {
-					console.log("error");
+                } else {
+                    console.log("error");
 
-				}
-			});
+                }
+            });
 
-					  }
+        }
 
 	var input, title, titletext, gwad_low, gwad_high, series,lai_low, lai_high;
 
@@ -1041,7 +1040,6 @@ rangedates=[];
 		xhr.done(function (data) {
 
 			if (variable == "GWAD") {
-			console.log(data);
 				input = data.gwad_series;
 				gwad_low = data.low_gwad_series;
 				gwad_high = data.high_gwad_series;
@@ -1166,7 +1164,7 @@ rangedates=[];
 					exporting: {
 						enabled: true
 					},
-					series: [],
+					series: series,
 
 				},
 					function (chart) {
@@ -1540,20 +1538,20 @@ $("#map_var_table").change(function () {
 			$("#myonoffswitch").change(function () {
 				if($("#myonoffswitch").is(':checked')){
 					//may-aug long
-					getLongRange();
+					var arr=getLongRange();
 				}
 				else{
-					getShortRange();
+					var arr=getShortRange();
 
 				}
             });
 			$("#seasonyear").change(function () {
 				if($("#myonoffswitch").is(':checked')){
 					//may-aug long
-					getLongRange();
+					var arr=getLongRange();
 				}
 				else{
-					getShortRange();
+					var arr=getShortRange();
 
 				}
             }).change();
