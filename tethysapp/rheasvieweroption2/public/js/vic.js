@@ -1171,8 +1171,8 @@ rangedates=[];
 				},
 					function (chart) {
 					if(chart.series.length<1){
-						chart.renderer.text("No dataaaaa",140,120).css({
-							color:"blue",
+						chart.renderer.text("No data",140,120).css({
+							color:"black",
 							fontSize:"16px"
 						}).add();
 					}
