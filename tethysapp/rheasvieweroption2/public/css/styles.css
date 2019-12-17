@@ -157,7 +157,19 @@ h2 {
 	border: 1px solid #337ab7;
 	display: inline-block;
 	margin: 10 10 10 10;
+	right:20px;
 }
+.vic_params {
+	position: absolute;
+	background: white;
+	bottom: 5%;
+	border: 1px solid #337ab7;
+	border-radius: 3px;
+	display: inline-block;
+	margin: 10 10 10 10;
+	padding: 5px;
+}
+
 .cvs1 {
 	position: absolute;
 	background: white;
@@ -165,6 +177,7 @@ h2 {
 	border: 1px solid #337ab7;
 	display: inline-block;
 	margin: 10 10 10 10;
+	right:20px;
 }
 #vic_plotter_1,
 #vic_plotter_2,

@@ -144,7 +144,7 @@ def get_vic_point(db,region,variable,point):
         return e
 @csrf_exempt
 def get_vic_polygon(db,region,variable,polygon):
-
+    print("get vic poly")
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
         cur = conn.cursor()
@@ -153,6 +153,7 @@ def get_vic_polygon(db,region,variable,polygon):
         cur.execute(ssql)
         data = cur.fetchall()[0][0]
         summary = data.strip("(").strip(")").split(',')
+        print(str(summary))
         count = summary[0]
         mean = round(float(summary[2]), 3)
         stddev = round(float(summary[3]), 3)
@@ -160,10 +161,13 @@ def get_vic_polygon(db,region,variable,polygon):
         max = round(float(summary[5]), 3)
 
         polygon = json.loads(polygon)
+
         polygon_str = ''
         for item in polygon["coordinates"][0]:
             coord = str(item[0])+' '+str(item[1])+','
+
             polygon_str += coord
+
 
         polygon_str = polygon_str[:-1]
         poly_sql = """SELECT fdate, CAST(AVG(((foo.geomval).val)) AS decimal(9,3)) as avgimr FROM (SELECT fdate, ST_Intersection(rast,ST_GeomFromText('POLYGON(({0}))',4326)) AS geomval FROM {1}.{2} WHERE ST_Intersects(ST_GeomFromText('POLYGON(({0}))',4326), rast)) AS foo GROUP BY fdate ORDER BY fdate""".format(polygon_str,region,variable)

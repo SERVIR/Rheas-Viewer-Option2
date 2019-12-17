@@ -7,8 +7,11 @@ var rest_url = $("#variable").attr('data-rest-url');
 var date = "";
 var projection = ol.proj.get('EPSG:3857');
 var baseLayer = new ol.layer.Tile({
-	source: new ol.source.OSM()
-});
+			source: new ol.source.XYZ({
+                attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+            })});
 var view = new ol.View({
 	center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
 	projection: projection,
@@ -374,16 +377,20 @@ var vectorLayer1 = new ol.layer.Vector({
 	style: styleFunction
 });
 var baseLayer1 = new ol.layer.Tile({
-	source: new ol.source.OSM()
+			source: new ol.source.XYZ({
+                attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+            })
 });
 
 var dssatmap = new ol.Map({
 	target: 'dssatmap',
 	layers: [baseLayer1, vectorLayer1],
 	view: new ol.View({
-		center: ol.proj.transform([-90, 34.7304], 'EPSG:4326', 'EPSG:3857'),
-		projection: ol.proj.get('EPSG:3857'),
-		zoom: 7
+			center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
+	projection: projection,
+	zoom: 7
 	})
 });
 

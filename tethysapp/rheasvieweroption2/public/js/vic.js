@@ -9,7 +9,7 @@
 /*****************************************************************************
  *                      LIBRARY WRAPPER
  *****************************************************************************/
-var gwms, gmap, feat;
+var gwms, gmap, feat,testvar,testevt,boundaryLayer;
 var eventt = [];
 var LIBRARY_OBJECT = (function () {
 	// Wrap the library in a package function
@@ -166,6 +166,40 @@ var LIBRARY_OBJECT = (function () {
 		vector_layer.setZIndex(9);
 		layers = [baseLayer];
 		// layers = [baseLayer,wms_layer,vector_layer,vectorLayer1];
+    var vs = new ol.source.Vector({
+      features: (new ol.format.GeoJSON()).readFeatures(boundaries,{
+              featureProjection: 'EPSG:3857'
+            })
+    });
+          var style = new ol.style.Style({
+
+      stroke: new ol.style.Stroke({
+        color: '#606060',
+        width: 1
+      }),
+      text: new ol.style.Text({
+        font: '12px Calibri,sans-serif',
+        fill: new ol.style.Fill({
+          color: '#000'
+        }),
+        stroke: new ol.style.Stroke({
+          color: '#fff',
+          width: 3
+        })
+      })
+    });
+
+
+
+
+      var vectorLayerDistrict = new ol.layer.Vector({
+        source:vs,
+           style: function(feature) {
+    style.getText().setText(feature.get('name'));
+    return style;
+  }
+      });
+      console.log(vectorLayerDistrict);
 		map = new ol.Map({
 			target: document.getElementById("map"),
 			layers: layers,
@@ -178,7 +212,37 @@ var LIBRARY_OBJECT = (function () {
 		});
 		gmap = map;
 		vector_layer.setZIndex(Infinity);
-		map.addLayer(vector_layer);
+	//	map.addLayer(vector_layer);
+        vectorLayerDistrict.setZIndex(77777);
+        map.addLayer(vectorLayerDistrict);
+        boundaryLayer=vectorLayerDistrict;
+
+        var sel=new ol.interaction.Select({
+            source:vectorLayerDistrict
+        });
+
+        map.addInteraction(sel);
+
+        sel.on('select', function(e) {
+            testvar=e.target.getFeatures().getArray()[0].getGeometry().getCoordinates();
+            var result=testvar[0].map(coord=>{
+                console.log(coord);
+                return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
+            });
+            console.log(result);
+            var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result)+ ']}';
+            var variable1 = $("#var_table1 option:selected").val();
+            var variable2 = $("#var_table2 option:selected").val();
+            generate_vic_graph("#vic_plotter_1", variable1,"",json_object);
+            generate_vic_graph("#vic_plotter_2", variable2,"",json_object);
+        });
+
+
+
+
+
+
+
 
 
 		var modify = new ol.interaction.Modify({
@@ -193,6 +257,7 @@ var LIBRARY_OBJECT = (function () {
 			element.appendChild(createControl("Point", "glyphicon glyphicon-record"));
 			element.appendChild(createControl("Polygon", "fas fa-draw-polygon"));
 			element.appendChild(createControl("Recenter", "fas fa-compass"));
+			element.appendChild(createControl("ToggleDistrict", "fas fa-toggle-on"));
 			/*A custom control which has container holding input elements etc*/
 			var controlPanel = new ol.control.Control({
 				element: element
@@ -227,7 +292,17 @@ var LIBRARY_OBJECT = (function () {
 					duration: 1000,
 					zoom: 5
 				});
-			} else {
+			}
+			else if(which == "ToggleDistrict"){
+			   if( boundaryLayer.getVisible()) {
+                      boundaryLayer.setVisible(false);
+                                            document.getElementById("draw"+which).innerHTML= "<span class='" + "fas fa-toggle-off"+ "' aria-hidden='true'></span>";
+
+                } else {
+                      boundaryLayer.setVisible(true);
+                      document.getElementById("draw"+which).innerHTML= "<span class='" + "fas fa-toggle-on"+ "' aria-hidden='true'></span>";
+                }
+            } else {
 				try {
 					map.removeInteraction(draw);
 				} catch (e) {}
@@ -267,13 +342,19 @@ var LIBRARY_OBJECT = (function () {
 		function processFeature(feature, featureType) {
 			if (featureType == "Point") {
 				console.log("Process as point");
-			} else if (featureType == "Polygon") {
-				console.log("Process as Polygon");
-			}
-
-			var coords = feature.getGeometry().getCoordinates();
+					var coords = feature.getGeometry().getCoordinates();
 			var proj_coords = ol.proj.transform(coords, 'EPSG:3857', 'EPSG:4326');
 			$("#point-lat-lon").val(proj_coords);
+			$("#poly-lat-lon").val("");
+			} else if (featureType == "Polygon") {
+				console.log("Process as Polygon");
+					var coords = feature.getGeometry().getCoordinates();
+			var proj_coords = ol.proj.transform(coords, 'EPSG:3857', 'EPSG:4326');
+			$("#poly-lat-lon").val(proj_coords);
+			$("#point-lat-lon").val("");
+			}
+
+
 		}
 		//Code for adding interaction for drawing on the map
 		var lastFeature, draw, featureType;
@@ -318,7 +399,7 @@ var LIBRARY_OBJECT = (function () {
 
 		vector_layer.getSource().on('addfeature', function (event) {
 			//Extracting the point/polygon values from the drawn feature
-			var feature_json = saveData();
+			var feature_json = saveData(vector_layer);
 			var parsed_feature = JSON.parse(feature_json);
 			var feature_type = parsed_feature["features"][0]["geometry"]["type"];
 			if (feature_type == 'Point') {
@@ -347,7 +428,7 @@ var LIBRARY_OBJECT = (function () {
 			get_plot();
 		});
 
-		function saveData() {
+		function saveData(layer) {
 			// get the format the user has chosen
 			var data_type = 'GeoJSON',
 				// define a format the data shall be converted to
@@ -356,7 +437,7 @@ var LIBRARY_OBJECT = (function () {
 				data;
 			try {
 				// convert the data of the vector_layer into the chosen format
-				data = format.writeFeatures(vector_layer.getSource().getFeatures());
+				data = format.writeFeatures(layer.getSource().getFeatures());
 			} catch (e) {
 				// at time of creation there is an error in the GPX format (18.7.2014)
 				$('#data').val(e.name + ": " + e.message);
@@ -389,65 +470,85 @@ var LIBRARY_OBJECT = (function () {
 
 
 	init_events = function () {
+	    map.on('pointermove', function(evt) {
 
+	        testevt=evt;
+              if (evt.dragging) {
+                return;
+              }
+              var pixel = map.getEventPixel(evt.originalEvent);
+                       var highlightStyle = new ol.style.Style({
+              stroke: new ol.style.Stroke({
+                color: '#f00',
+                width: 1
+              }),
+              text: new ol.style.Text({
+                font: '12px Calibri,sans-serif',
+                fill: new ol.style.Fill({
+                  color: '#000'
+                }),
+                stroke: new ol.style.Stroke({
+                  color: '#f00',
+                  width: 3
+                })
+              })
+            });
+
+            var featureOverlay = new ol.layer.Vector({
+              source: new ol.source.Vector(),
+              map: map,
+              style: function(feature) {
+                highlightStyle.getText().setText(feature.get('name'));
+                return highlightStyle;
+              }
+            });
+
+              var highlight;
+               var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+                return feature;
+              });
+ boundaryLayer.getSource().getFeatures().map(f=>{
+                     var coords = evt.coordinate;
+                     let poli = new ol.geom.Polygon(f.getCoordinates());
+                     console.log(poli  )
+                     console.log(ol.extent.containsXY(poli.getExtent(), coords[0], coords[1]));
+                    // let intersectPolygon = intersect(polygonGeometry, coords);
+
+//let polygon = new Polygon(intersectPolygon.geometry.coordinates);
+
+});
+
+
+              if (feature !== highlight) {
+                if (highlight) {
+                  featureOverlay.getSource().removeFeature(highlight);
+                }
+                if (feature) {
+                    //console.log(feature);
+                  featureOverlay.getSource().addFeature(feature);
+                }
+                highlight = feature;
+              }
+        });
 
 		map.on("singleclick", function (evt) {
 
-			$(element).popover('destroy');
 
-
-			if (map.getTargetElement().style.cursor == "pointer" && $("#interaction-type").find('option:selected').val() == "None") {
-				var clickCoord = evt.coordinate;
-				popup.setPosition(clickCoord);
-				var view = map.getView();
-				var viewResolution = view.getResolution();
-
-				var wms_url = current_layer.getSource().getGetFeatureInfoUrl(evt.coordinate, viewResolution, view.getProjection(), {
-					'INFO_FORMAT': 'application/json'
-				}); //Get the wms url for the clicked point
-
-				if (wms_url) {
-					//Retrieving the details for clicked point via the url
-					$.ajax({
-						type: "GET",
-						url: wms_url,
-						dataType: 'json',
-						success: function (result) {
-							var value = parseFloat(result["features"][0]["properties"]["GRAY_INDEX"]);
-							value = value.toFixed(2);
-							$(element).popover({
-								'placement': 'top',
-								'html': true,
-								//Dynamically Generating the popup content
-								'content': 'Value: ' + value
-							});
-
-							$(element).popover('show');
-							$(element).next().css('cursor', 'text');
-
-
-						},
-						error: function (XMLHttpRequest, textStatus, errorThrown) {
-							console.log(Error);
-						}
-					});
-				}
-			}
 		});
 
-		map.on('pointermove', function (evt) {
-			if (evt.dragging) {
-				return;
-			}
-			var pixel = map.getEventPixel(evt.originalEvent);
-			var hit = map.forEachLayerAtPixel(pixel, function (layer) {
-				if (layer != layers[0] && layer != layers[2]) {
-					current_layer = layer;
-					return true;
-				}
-			});
-			map.getTargetElement().style.cursor = hit ? 'pointer' : '';
-		});
+		// map.on('pointermove', function (evt) {
+		// 	if (evt.dragging) {
+		// 		return;
+		// 	}
+		// 	var pixel = map.getEventPixel(evt.originalEvent);
+		// 	var hit = map.forEachLayerAtPixel(pixel, function (layer) {
+		// 		if (layer != layers[0] && layer != layers[2]) {
+		// 			current_layer = layer;
+		// 			return true;
+		// 		}
+		// 	});
+		// 	map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+		// });
 
 	};
 
@@ -639,6 +740,10 @@ var LIBRARY_OBJECT = (function () {
 			'type': 'vector'
 		});
 
+
+
+
+
 		xhr_dssat.done(function (data) {
 			if ("success" in data) {
 				callback(data.bounds);
@@ -799,7 +904,12 @@ var xhr = ajax_update_database("get-ensemble",{"db":db,"gid":gid,"schema":schema
 		});
 
 		wms_layer.setZIndex(2);
-		map.addLayer(wms_layer);
+	map.addLayer(wms_layer);
+		var index = find_var_index($("#map_var_table option:selected").val(), variable_data);
+					var display_name = variable_data[index]["display_name"];
+					var units = variable_data[index]["units"];
+		$("#var_name").html(display_name);
+			$("#var_units").html(units);
 
 	};
 
@@ -1056,9 +1166,17 @@ rangedates=[];
 					exporting: {
 						enabled: true
 					},
-					series: series,
+					series: [],
 
-				});
+				},
+					function (chart) {
+					if(chart.series.length<1){
+						chart.renderer.text("No dataaaaa",140,120).css({
+							color:"blue",
+							fontSize:"16px"
+						}).add();
+					}
+                    });
 			} else {
 				$(".error").append('<h3>Error Processing Request. Please be sure to select an area with data.</h3>');
 
@@ -1087,6 +1205,7 @@ rangedates=[];
 					var index = find_var_index(variable, variable_data);
 					var display_name = variable_data[index]["display_name"];
 					var units = variable_data[index]["units"];
+
 					$(element).highcharts({
 						chart: {
 							type: 'area',
@@ -1223,6 +1342,7 @@ rangedates=[];
 			}).done(function (data) {
 				if ("success" in data) {
 					fillVarTables("#var_table1", data.variables);
+					fillVarTables("#map_var_table", data.variables);
 					fillVarTables("#var_table2", data.variables);
 					$("#var_table3").trigger('change');
 					$("#var_table4").trigger('change');
@@ -1235,7 +1355,42 @@ rangedates=[];
 			});
 
 		}).change();
+$("#map_var_table").change(function () {
+			var db = $("#db_table option:selected").val();
+			var variable = $("#var_table1 option:selected").val();
+			var region = $("#schema_table option:selected").val();
 
+			var xhr = ajax_update_database("dates", {
+				"variable": variable,
+				"region": region,
+				"db": db
+			});
+			xhr.done(function (data) {
+				if ("success" in data) {
+					var dates = data.dates;
+					$("#time_table").html('');
+					dates.forEach(function (date, i) {
+
+						var new_option = new Option(date[0], date[1]);
+						if (i == 0) {
+
+
+							$("#time_table").append(new_option).trigger('change');
+
+						} else {
+							$("#time_table").append(new_option);
+
+						}
+
+					});
+
+				} else {
+					console.log("error");
+
+				}
+			});
+
+		});
 
 		$("#var_table1").change(function () {
 			var db = $("#db_table option:selected").val();
@@ -1315,11 +1470,14 @@ rangedates=[];
 			generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val(),rangedates);
 		});
 
+
+
 		$("#time_table").change(function () {
 			var db = $("#db_table option:selected").val();
-			var variable = $("#var_table1 option:selected").val();
+			var variable = $("#map_var_table option:selected").val();
 			var region = $("#schema_table option:selected").val();
 			var date = $("#time_table option:selected").val();
+
 			$(".error").html('');
 
 			var xhr = ajax_update_database("raster", {
