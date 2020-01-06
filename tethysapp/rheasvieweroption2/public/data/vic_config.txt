@@ -26,7 +26,7 @@ runoff|Surface Runoff|mm|red|yellow|blue
 snow_melt|Snow Melt|mm|red|blue|white
 snowf|Snowfall|mm|red|yellow|blue
 transp_veg|Net Transpiration from Vegetation|mm|red|yellow|blue
-albedo|Average Surface Albedo|fraction|red|yellow|blue
+albedo|Average Surface Albedo|fraction|red|yellow|green
 baresoilt|Bare Soil Surface Temperature|C|blue|yellow|red
 snow_surf_temp|Snow Surface Temperature|C|blue|yellow|red
 soil_temp|Soil Temperature|C for each soil layer|blue|yellow|red
@@ -62,4 +62,4 @@ pet_natveg|Potential Evapotranspiration of Natural Vegetation|Index|red|yellow|g
 pet_short|Potential Evapotranspiration of Short Vegetation|Index|red|yellow|green
 pet_tall|Potential Evapotranspiration of Tall Vegetation|Index|red|yellow|green
 rel_humid|Relative Humidity|Index|blue|yellow|red
-dssat|dssat|Index|red|yellow|blue
+dssat|dssat|Index|red|yellow|green

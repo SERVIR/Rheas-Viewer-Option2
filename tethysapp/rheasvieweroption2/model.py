@@ -94,8 +94,8 @@ def get_vic_summary(db,region,variable,date):
         count = summary[0]
         mean = round(float(summary[2]), 3)
         stddev = round(float(summary[3]), 3)
-        min = round(float(summary[4]), 3)
-        max = round(float(summary[5]), 3)
+        min = 0.11
+        max = 0.2
 
         conn.close()
 
@@ -352,6 +352,7 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
 
         cur.execute(sql1)
         data1 = cur.fetchall()
+        print(len(data1))
         medianens = data1[math.ceil(len(data1)/2) - 1]
         lowens = data1[1]
         highens = data1[18]
@@ -362,7 +363,6 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
         ensemble_info = [lowens[1],medianens[1],highens[1]]
         conn.close()
         return med_wsgd_series, med_lai_series, med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
-        #else:
 
          #   wsgd_series, lai_series, gwad_series = get_dssat_ens_values(cur,gid,schema,ensemble)
             #conn.close()
@@ -376,7 +376,6 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
 def get_dssat_ens_values(cur,gid,schema,ensemble,startdate,enddate):
 
     try:
-
         if len(startdate) > 9 and len(enddate) > 9:
             sql = """SELECT fdate,wsgd,lai,gwad FROM {0}.dssat_all WHERE gid={1} AND ensemble={2} AND fdate>={3} AND fdate<={4} ORDER BY fdate;""".format(
                 schema, int(gid), int(ensemble),str(startdate),str(enddate))
@@ -386,7 +385,6 @@ def get_dssat_ens_values(cur,gid,schema,ensemble,startdate,enddate):
         cur.execute(sql)
         data = cur.fetchall()
         wsgd_series, lai_series, gwad_series = parse_dssat_data(data)
-
         return wsgd_series, lai_series, gwad_series
     except Exception as e:
         print(e)

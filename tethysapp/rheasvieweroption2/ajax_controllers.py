@@ -248,7 +248,10 @@ def get_ens_values(request):
             startdate = info.get("startdate")
             enddate = info.get("enddate")
             # if "avg" in ensemble:
+
+
             wsgd_series,lai_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble,startdate,enddate)
+
             return_obj["gid"] = gid
             return_obj["schema"] = schema
             return_obj["ensemble"] = ensemble
@@ -259,6 +262,8 @@ def get_ens_values(request):
             return_obj["high_gwad_series"] = high_gwad_series
             return_obj["ensemble_info"] = ensemble_info
             return_obj["success"] = "success"
+            print("_________________")
+            print(return_obj)
             return JsonResponse(return_obj)
             # else:
             #     wsgd_series, lai_series, gwad_series = get_dssat_values(db,gid, schema, ensemble)

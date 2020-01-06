@@ -120,7 +120,6 @@ function appendSuccessMessage(message, div_id) {
 
 //send data to database with error messages
 function ajax_update_database(ajax_url, ajax_data) {
-console.log(ajax_data);
     //backslash at end of url is required
     if (ajax_url.substr(-1) !== "/") {
         ajax_url = ajax_url.concat("/");
@@ -143,7 +142,6 @@ console.log(ajax_data);
         .fail(function(xhr, status, error) {
             console.log(error);
         });
-
     return xhr;
 }
 //send data to database but follow this if you have files assosciated with it.
