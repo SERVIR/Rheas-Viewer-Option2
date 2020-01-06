@@ -1217,7 +1217,7 @@ var LIBRARY_OBJECT = (function () {
 
                     $(element).highcharts({
                         chart: {
-                            type: 'area',
+                            type: display_name=='Rainfall'?'bar':'area',
                             zoomType: 'x'
                         },
                         title: {

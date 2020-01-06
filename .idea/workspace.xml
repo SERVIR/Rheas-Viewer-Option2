@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e35078ec-81e7-49d0-a61c-d0f6cd49f29b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/ajax_controllers.py" beforeDir="false" afterPath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/ajax_controllers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/public/data/vic_config.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/public/data/vic_config.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/public/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/public/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/public/js/vic.js" beforeDir="false" afterPath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/public/js/vic.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/templates/rheasvieweroption2/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/templates/rheasvieweroption2/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/tethysapp/rheasvieweroption2/config.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,8 +15,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tethysapp/rheasvieweroption2/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="10" column="37" selection-start-line="10" selection-start-column="37" selection-end-line="10" selection-end-column="37" />
+            <state relative-caret-position="165">
+              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
             </state>
           </provider>
         </entry>
@@ -130,7 +124,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>chroma</find>
       <find>2d</find>
       <find>cv_</find>
       <find>poor</find>
@@ -160,6 +153,7 @@
       <find>color_bar</find>
       <find>map.on(</find>
       <find>map</find>
+      <find>lon</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -308,12 +302,12 @@
       <workItem from="1577115494016" duration="18015000" />
       <workItem from="1577218990399" duration="5014000" />
       <workItem from="1577377001013" duration="1230000" />
-      <workItem from="1578321395240" duration="1396000" />
+      <workItem from="1578321395240" duration="2206000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="123189000" />
+    <option name="totallyTimeSpent" value="123999000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-11" width="2497" height="1347" extended-state="6" />
@@ -477,8 +471,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tethysapp/rheasvieweroption2/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="37" selection-start-line="10" selection-start-column="37" selection-end-line="10" selection-end-column="37" />
+        <state relative-caret-position="165">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
         </state>
       </provider>
     </entry>
