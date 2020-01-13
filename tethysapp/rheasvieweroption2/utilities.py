@@ -74,16 +74,18 @@ def get_variables_meta():
 def parse_dssat_data(data):
 
     wsgd_series, lai_series, gwad_series = [], [], []
-
+    lai=0.0
+    wsgd=0.0
     for item in data:
         time_stamp = time.mktime(datetime.strptime(str(item[0]), "%Y-%m-%d").timetuple()) * 1000
-        wsgd = item[1]
-        lai = item[2]
+        wsgd = wsgd+item[1]#cum
+        lai = lai+item[2]#cum
         gwad = item[3]
         wsgd_series.append([time_stamp, wsgd])
         lai_series.append([time_stamp, lai])
         gwad_series.append([time_stamp, gwad])
-
+    print(lai_series)
+    print(wsgd_series)
     wsgd_series.sort()
     lai_series.sort()
     gwad_series.sort()

@@ -322,6 +322,23 @@ def get_schema_yield(request):
         return_obj["success"] = "success"
 
         return JsonResponse(return_obj)
+@csrf_exempt
+def get_schema_yield_gid(request):
+    return_obj = {}
+
+    if request.is_ajax() and request.method == 'POST':
+        info = request.POST
+
+        db = info.get("db")
+
+        schema = info.get("schema")
+
+        gid = info.get("gid")
+        yield_data = calculate_yield_gid(db,schema,gid)
+        return_obj["yield"] = yield_data
+        return_obj["success"] = "success"
+
+        return JsonResponse(return_obj)
 
 @csrf_exempt
 def get_bounds(request):

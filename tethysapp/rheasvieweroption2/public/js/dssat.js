@@ -274,65 +274,76 @@ get_bounds1 = function (ws, store, url, callback) {
 
 };
 gen_color_bar = function (colors, scale, cv, variable) {
-	var cv = document.getElementById(cv),
-		ctx = cv.getContext('2d');
-	ctx.clearRect(0, 0, cv.width, cv.height);
-	var k = 0;
-	var j = 1;
-	colors.forEach(function (color, i) {
-		ctx.beginPath();
-		ctx.fillStyle = color;
-		if (variable == "dssat") {
-			ctx.fillRect(i * 45, 0, 35, 20);
-			ctx.fillStyle = "black";
-			ctx.fillText(scale[i].toFixed(), i * 45, 33);
-		} else {
+	     var cv = document.getElementById(cv),
+            ctx = cv.getContext('2d');
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var k = 0;
+        var j = 1;
+        colors.forEach(function (color, i) {
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            //            var my_gradient = ctx.createLinearGradient(0, 0, 150, 0);
+            //            console.log(colors);
+            //            my_gradient.addColorStop(0, colors[0]);
+            //            my_gradient.addColorStop(0.5, colors[1]);
+            //            my_gradient.addColorStop(1, colors[2]);
+            //            ctx.fillStyle = my_gradient;
+            if (variable == "dssat") {
+                ctx.fillRect(i * 35, 0, 35, 20);
+                ctx.fillStyle = "black";
 
-			ctx.fillRect(i * 10, 0, 55, 20);
-			ctx.fillStyle = "black";
-			k = k + 1;
-			if (k % 4 == 0) {
-				try {
-					ctx.fillText(scale[k - 1].toFixed(), j, 33);
-					j = j + (cv.width / 5);
-				} catch (e) {
-					console.log(e);
-				}
-			}
-		}
-	});
+                ctx.fillText("poor", 0, 33);
+                ctx.fillText("mid", 75, 33);
+                ctx.fillText("high", 150, 33);
+            } else {
+
+                ctx.fillRect(i * 10, 0, 10, 20);
+                ctx.fillStyle = "black";
+                k = k + 1;
+                if (k % 4 == 0) {
+                    try {
+                        ctx.fillText(scale[k - 1].toFixed(2), j, 33);
+                        j = j + (cv.width / 7);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
+            }
+        });
 
 };
 
 get_styling = function (variable, scale, cv) {
 
-	var index = find_var_index(variable, var_data);
-	var color1 = var_data[index]["color1"];
-	var color2 = var_data[index]["color2"];
-	var color3 = var_data[index]["color3"];
-	var sld_color_string = '';
-	if (scale[scale.length - 1] == 0) {
-		var colors = chroma.scale([color1, color1, color1]).mode('lch').correctLightness().colors(20);
-		//var colors1 = chroma.scale([color1,color1,color1]).mode('lch').correctLightness().colors(15);
-		//var colors=[color1,color1,color1];
-		gen_color_bar(colors, scale, cv, variable);
-		var color_map_entry = '<ColorMapEntry color="' + colors[0] + '" quantity="' + scale[0] + '" label="label1" opacity="1"/>';
-		sld_color_string += color_map_entry;
-	} else {
-		//   var colors=[color1,color2,color3];
-		//	var colors = chroma.scale([color1,color3,color3]).mode('lch').correctLightness().colors(5);
-		var colors = chroma.scale([color1, color2, color3]).mode('lch').correctLightness().colors(20);
-		if (variable == "dssat")
-			//	 colors = chroma.scale([color1,color2,color3]).mode('lch').correctLightness().colors(5);
-			colors = chroma.scale('Spectral').colors(5);
-		gen_color_bar(colors, scale, cv, variable);
-		colors.forEach(function (color, i) {
-			var color_map_entry = '<ColorMapEntry color="' + color + '" quantity="' + scale[i] + '" label="label' + i + '" opacity="1"/>';
-			sld_color_string += color_map_entry;
-		});
-	}
+  var index = find_var_index(variable, var_data);
+        var color1 = var_data[index]["color1"];
+        var color2 = var_data[index]["color2"];
+        var color3 = var_data[index]["color3"];
+        var sld_color_string = '';
+        if (scale[scale.length - 1] == 0) {
+            var colors = chroma.scale([color1, color1, color1]).mode('lch').correctLightness().colors(20);
+            //var colors1 = chroma.scale([color1,color1,color1]).mode('lch').correctLightness().colors(15);
+            //var colors=[color1,color1,color1];
+            gen_color_bar(colors, scale, cv, variable);
+            var color_map_entry = '<ColorMapEntry color="' + colors[0] + '" quantity="' + scale[0] + '" label="label1" opacity="1"/>';
+            sld_color_string += color_map_entry;
+        } else {
+            //   var colors=[color1,color2,color3];
+            //	var colors = chroma.scale([color1,color3,color3]).mode('lch').correctLightness().colors(5);
+            //	var colors = chroma.scale([color1, color2, color3]).mode('lch').correctLightness().colors(20);
+            var colors = chroma.scale([color1, color2, color3]).mode('rgb').colors(20);
+            if (variable == "dssat")
+                colors = (chroma.scale([color1, color2, color3])).colors(5);
+            console.log((colors));
+            //colors = chroma.scale('Spectral').colors(5);
+            gen_color_bar(colors, scale, cv, variable);
+            colors.forEach(function (color, i) {
+                var color_map_entry = '<ColorMapEntry color="' + color + '" quantity="' + scale[i] + '" label="label' + i + '" opacity="1"/>';
+                sld_color_string += color_map_entry;
+            });
+        }
 
-	return sld_color_string
+        return sld_color_string
 };
 add_wms_vic = function (data) {
 

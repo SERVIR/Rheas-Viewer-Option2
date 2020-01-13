@@ -227,10 +227,8 @@ var LIBRARY_OBJECT = (function () {
         sel.on('select', function (e) {
             testvar = e.target.getFeatures().getArray()[0].getGeometry().getCoordinates();
             var result = testvar[0].map(coord => {
-                console.log(coord);
                 return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
             });
-            console.log(result);
             var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
             var variable1 = $("#var_table1 option:selected").val();
             var variable2 = $("#var_table2 option:selected").val();
@@ -513,9 +511,21 @@ var LIBRARY_OBJECT = (function () {
             });
             boundaryLayer.getSource().getFeatures().map(f => {
                 var coords = evt.coordinate;
-                let poli = new ol.geom.Polygon(f.getCoordinates());
-                console.log(poli)
+                let poli = new ol.geom.Polygon(f.getGeometry().getCoordinates());
                 console.log(ol.extent.containsXY(poli.getExtent(), coords[0], coords[1]));
+                if(ol.extent.containsXY(poli.getExtent(), coords[0], coords[1]))
+                    highlight = f;
+                if (feature !== highlight) {
+                    if (highlight) {
+                        featureOverlay.getSource().removeFeature(highlight);
+                    }
+                    if (feature) {
+                        //console.log(feature);
+                        featureOverlay.getSource().addFeature(feature);
+                    }
+                    highlight = feature;
+                }
+
                 // let intersectPolygon = intersect(polygonGeometry, coords);
 
 //let polygon = new Polygon(intersectPolygon.geometry.coordinates);
@@ -523,16 +533,7 @@ var LIBRARY_OBJECT = (function () {
             });
 
 
-            if (feature !== highlight) {
-                if (highlight) {
-                    featureOverlay.getSource().removeFeature(highlight);
-                }
-                if (feature) {
-                    //console.log(feature);
-                    featureOverlay.getSource().addFeature(feature);
-                }
-                highlight = feature;
-            }
+
         });
 
         map.on("singleclick", function (evt) {
@@ -791,6 +792,14 @@ var LIBRARY_OBJECT = (function () {
         style: styleFunction
     });
     var select_interaction;
+var tooltip = document.getElementById('tooltip11');
+
+ var overlayt = new ol.Overlay({
+                    element: tooltip,
+                    offset: [0, 0],
+                    positioning: 'bottom-left'
+
+                });
 
     function add_dssat(data, scale) {
         yield_data = data.yield;
@@ -827,7 +836,24 @@ var LIBRARY_OBJECT = (function () {
             }),
             wrapX: false
         });
-        map1.addInteraction(select_interaction);
+           map1.addInteraction(select_interaction);
+       var hoverInteraction = new ol.interaction.Select({
+           condition: ol.events.condition.pointerMove,
+           layers: [vectorLayer1],  //Setting layers to be hovered
+           style: new ol.style.Style({
+               stroke: new ol.style.Stroke({
+                   color: 'rgba(121,121,125,0.5)',
+                   lineDash: null,
+                   lineCap: 'butt',
+                   lineJoin: 'miter',
+                   width: 0,
+               }),
+               fill: new ol.style.Fill({
+                   color: '#0d0887',
+               }),
+           }),
+       });
+		map1.addInteraction(hoverInteraction);
 
 
         select_interaction.on('select', function (e) {
@@ -837,6 +863,7 @@ var LIBRARY_OBJECT = (function () {
         });
         selectedFeatures = select_interaction.getFeatures();
         selectedFeatures.on('add', function (event) {
+            console.log("dfdg");
             try {
 
                 $(".error").html('');
@@ -864,26 +891,61 @@ var LIBRARY_OBJECT = (function () {
                     }
                 });
                 var name_0 = feature.getProperties().name;
-                // var name_1 = feature.getProperties().name_1;
-                // var name_2 = feature.getProperties().name_2;
 
-                // var heading = $("<div>").append( $("<h3>").text(name_0));
-                // var content = $("<div>")
-                //     .append(heading);
-                // $(".feature-info").html('<h4 style="display: inline;">Current Feature: '+name_0+'→</h4>  <h5 style="display: inline;">'+name_1+'→</h5>  <h6 style="display: inline;">'+name_2+'</h6>');
-                $(".feature-info").html('<h4 style="display: inline;">Current Feature: ' + name_0 + '</h6>');
 
 
             } catch (e) {
             }
         });
 
-        // when a feature is removed, clear the feature-info div
-        selectedFeatures.on('remove', function (event) {
-            $(".feature-info").html("");
-            // hide_charts();
-            $(".feature-info").html("<p>Please select a feature to View the relevant metadata.</p>");
+         var hoverFeatures = hoverInteraction.getFeatures();
+      hoverInteraction.on('select', function(evt){
+    if(evt.selected.length > 0){
+        console.log( ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+        var gid = evt.selected[0].getId().split(".")[1];
+         var county_name= "Unknown";
+          var yield_val="unavailable";
+        ajax_update_database("get-schema-yield-gid", {
+                "db":  $("#db_table option:selected").val(),
+                "schema": $("#schema_table option:selected").val(),
+            "gid":gid
+            }).done(function (data) {
+                if ("success" in data) {
+                      ajax_update_database("get-county", {
+            "db": $("#db_table option:selected").val(),
+            "gid": gid,
+            "schema": $("#schema_table option:selected").val(),
+        }).done(function (data1) {
+
+            if ("success" in data1) {
+                county_name = data1["county"][0][0];
+                if (data.yield[1]) {
+                    yield_val = data.yield[1][0];
+                }
+                  document.getElementById("tooltip11").style.display = data.yield[1] ? 'block' : 'none';
+                   document.getElementById("tooltip11").innerHTML = "County: "+county_name+"<br>"+"Yield: "+yield_val;
+                overlayt.setPosition( ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+                 map1.addOverlay(overlayt);
+
+
+
+
+            }
         });
+
+
+
+                } else {
+                   console.log("error");
+                }
+            });
+
+    }
+    else{
+               document.getElementById("tooltip11").style.display =  'none';
+    }
+});
     }
 
     add_vic = function (data) {
@@ -1467,7 +1529,6 @@ var LIBRARY_OBJECT = (function () {
 
         });
         $("#var_table3").change(function () {
-            console.log("from 3");
             if (gid == undefined || gid == "") gid = 32;
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val(), rangedates);
             //  $("#time_table").trigger('change');
@@ -1512,9 +1573,7 @@ var LIBRARY_OBJECT = (function () {
                         "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
                         "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
                     }).done(function (data1) {
-                        console.log(data1);
                         if ("success" in data1) {
-                            console.log("in jere")
                             add_dssat(data, data1.scale);
                         } else {
                             $(".error").html('<h3>Error Retrieving the layer</h3>');
@@ -1628,7 +1687,6 @@ var LIBRARY_OBJECT = (function () {
         function readFile(evt) {
             var file = (evt.target.files)[0];
             var filename = file.name;
-            console.log(file.name);
             var allowedExtensions = ['geojson'];
             var extension = filename.substr(filename.lastIndexOf('.') + 1).toLowerCase();
             if (allowedExtensions.indexOf(extension) === -1) {

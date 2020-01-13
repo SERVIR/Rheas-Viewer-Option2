@@ -120,6 +120,12 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/vicdssat/get-schema-yield',
                 controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
           ),
+
+          UrlMap(
+                name='dsyieldgid',
+                url='rheasvieweroption2/vicdssat/get-schema-yield-gid',
+                controller='rheasvieweroption2.ajax_controllers.get_schema_yield_gid'
+          ),
           UrlMap(
                 name='dsensemble',
                 url='rheasvieweroption2/vicdssat/get-ensemble',

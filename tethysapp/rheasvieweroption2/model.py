@@ -362,6 +362,7 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
         high_wsgd_series, high_lai_series, high_gwad_series = get_dssat_ens_values(cur, gid, schema, highens[1],"'"+startdate+"'","'"+enddate+"'")
         ensemble_info = [lowens[1],medianens[1],highens[1]]
         conn.close()
+
         return med_wsgd_series, med_lai_series, med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
 
          #   wsgd_series, lai_series, gwad_series = get_dssat_ens_values(cur,gid,schema,ensemble)
@@ -465,6 +466,26 @@ def calculate_yield(db,schema):
         conn.close()
 
         return data,storename
+    except Exception as e:
+        print(e)
+        return e
+@csrf_exempt
+def calculate_yield_gid(db, schema, gid):
+
+    try:
+        conn = psycopg2.connect(
+            "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
+                                                               cfg.connection['password']))
+        cur = conn.cursor()
+        sql = """SELECT std_yield FROM {0}.yield where gid={1}""".format(schema, gid)
+        cur.execute(sql)
+        data = cur.fetchall()
+
+        data.sort()
+
+        conn.close()
+
+        return data
     except Exception as e:
         print(e)
         return e
