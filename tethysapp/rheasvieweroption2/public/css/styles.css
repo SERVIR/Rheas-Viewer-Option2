@@ -140,7 +140,7 @@ h2 {
 #vic-plot-modal1,
 #vic-plot-modal2,
 #dssat-plot-modal {
-	height:27vh;
+	height:25vh;
 	padding: 0px;
 }
 #cv_vic,
@@ -183,7 +183,7 @@ h2 {
 #vic_plotter_2,
 #dssat_plotter_1,
 #dssat_plotter_2 {
-	height:300px;
+	height:250px;
 }
 @media screen and (max-width: 1500px) {
 	#paramscontainer,
@@ -325,4 +325,13 @@ overflow: overlay;
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px;
+}
+#loading {
+    background: url('spinner.gif') no-repeat center center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 9999999;
 }

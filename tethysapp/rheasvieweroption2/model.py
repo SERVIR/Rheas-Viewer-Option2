@@ -10,6 +10,7 @@ import logging
 import tempfile, shutil,os,sys, zipfile
 from os.path import basename
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
 
 default_schemas = ['basin','crops','dssat','ken_test','information_schema','lai','precip','public','soilmoist','test','test_ke','test_tza','tmax','tmin','topology','vic','wind','pg_toast','pg_temp_1','pg_toast_temp_1','pg_catalog','ken_vic','tza_vic','eth_vic','tza_nrt']
 
@@ -34,9 +35,9 @@ def get_selected_raster(db,region,variable,date):
                 print( "No store")
                 raise Exception
             else:
-                mean, stddev, min, max = get_vic_summary(db,region, variable, date)
+                mean, stddev = get_vic_summary(db,region, variable, date)
                 # logging.info(str(mean)+str(stddev)+str(min)+str(max))
-                return storename, mean, stddev, min, max
+                return storename, mean, stddev
         except Exception  as e:
             # logging.info('Entering geoserver code')
 	    # logging.error('Error at failed request ' + str(e))
@@ -47,7 +48,7 @@ def get_selected_raster(db,region,variable,date):
                 data = cur.fetchall()
                 # logging.info(str(data))
 
-                mean, stddev, min, max = get_vic_summary(db,region, variable, date)
+                mean, stddev= get_vic_summary(db,region, variable, date)
                 # logging.info('Work you piece ...')
                 rest_url = cfg.geoserver['rest_url']
                 # logging.info(str(rest_url))
@@ -70,7 +71,7 @@ def get_selected_raster(db,region,variable,date):
                                  auth=(user, password))  # Creating the resource on the geoserver
 
                 # logging.info(request_url)
-                return storename, mean, stddev, min, max
+                return storename, mean, stddev
 
             except Exception as er:
 		# logging.info('Error at uplaoding tiff '+ str(e))
@@ -94,17 +95,14 @@ def get_vic_summary(db,region,variable,date):
         count = summary[0]
         mean = round(float(summary[2]), 3)
         stddev = round(float(summary[3]), 3)
-        min = 0.11
-        max = 0.2
-
         conn.close()
 
-        return mean,stddev,min,max
+        return mean,stddev
     except Exception as e:
         print(e)
         return e
 @csrf_exempt
-def get_vic_point(db,region,variable,point):
+def get_vic_point(db,region,variable,point,sd,ed):
 
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
@@ -122,8 +120,12 @@ def get_vic_point(db,region,variable,point):
         coords = point.split(',')
         lat = round(float(coords[1]),2)
         lon = round(float(coords[0]),2)
-        psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1)""".format(lon,lat,region,variable)
+       # if len(sd)>0 and len(ed)>0:
 
+        psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1) and fdate between {4} and {5} """.format(lon,lat,region,variable,"'"+sd+"'","'"+ed+"'")
+        #else:
+         #   psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1)""".format(lon,lat,region,variable)
+        print(psql)
         cur.execute(psql)
         ts = cur.fetchall()
 
@@ -144,7 +146,6 @@ def get_vic_point(db,region,variable,point):
         return e
 @csrf_exempt
 def get_vic_polygon(db,region,variable,polygon):
-    print("get vic poly")
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
         cur = conn.cursor()
@@ -153,7 +154,6 @@ def get_vic_polygon(db,region,variable,polygon):
         cur.execute(ssql)
         data = cur.fetchall()[0][0]
         summary = data.strip("(").strip(")").split(',')
-        print(str(summary))
         count = summary[0]
         mean = round(float(summary[2]), 3)
         stddev = round(float(summary[3]), 3)
@@ -345,25 +345,22 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
         e="'"+enddate+"'"
         sql1=""
 
-        if len(startdate)>9 and len(enddate)>9:
-            sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} AND fdate>={2} AND fdate<={3} GROUP BY ensemble) as foo""".format(schema,int(gid),s,e)
-        else:
-            sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} GROUP BY ensemble) as foo""".format(schema,int(gid))
-
+        #if len(startdate)>9 and len(enddate)>9:
+        sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} AND fdate>={2} AND fdate<={3} GROUP BY ensemble) as foo""".format(schema,int(gid),s,e)
+        #else:
+         #   sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} GROUP BY ensemble) as foo""".format(schema,int(gid))
         cur.execute(sql1)
         data1 = cur.fetchall()
-        print(len(data1))
         medianens = data1[math.ceil(len(data1)/2) - 1]
         lowens = data1[1]
         highens = data1[18]
 
-        med_wsgd_series, med_lai_series, med_gwad_series = get_dssat_ens_values(cur,gid,schema,medianens[1],"'"+startdate+"'","'"+enddate+"'")
-        low_wsgd_series, low_lai_series, low_gwad_series = get_dssat_ens_values(cur, gid, schema, lowens[1],"'"+startdate+"'","'"+enddate+"'")
-        high_wsgd_series, high_lai_series, high_gwad_series = get_dssat_ens_values(cur, gid, schema, highens[1],"'"+startdate+"'","'"+enddate+"'")
+        med_wsgd_series, med_lai_series, med_wsgd_cum_series, med_lai_cum_series,med_gwad_series = get_dssat_ens_values(cur,gid,schema,medianens[1],"'"+startdate+"'","'"+enddate+"'")
+        low_wsgd_series, low_lai_series,low_wsgd_cum_series, low_lai_cum_series, low_gwad_series = get_dssat_ens_values(cur, gid, schema, lowens[1],"'"+startdate+"'","'"+enddate+"'")
+        high_wsgd_series, high_lai_series,high_wsgd_cum_series, high_lai_cum_series, high_gwad_series = get_dssat_ens_values(cur, gid, schema, highens[1],"'"+startdate+"'","'"+enddate+"'")
         ensemble_info = [lowens[1],medianens[1],highens[1]]
         conn.close()
-
-        return med_wsgd_series, med_lai_series, med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
+        return med_wsgd_series, med_lai_series, med_wsgd_cum_series, med_lai_cum_series,med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
 
          #   wsgd_series, lai_series, gwad_series = get_dssat_ens_values(cur,gid,schema,ensemble)
             #conn.close()
@@ -385,8 +382,8 @@ def get_dssat_ens_values(cur,gid,schema,ensemble,startdate,enddate):
                 schema, int(gid), int(ensemble))
         cur.execute(sql)
         data = cur.fetchall()
-        wsgd_series, lai_series, gwad_series = parse_dssat_data(data)
-        return wsgd_series, lai_series, gwad_series
+        wsgd_series, lai_series, wsgd_cum_series, lai_cum_series, gwad_series = parse_dssat_data(data)
+        return wsgd_series, lai_series,wsgd_cum_series, lai_cum_series, gwad_series
     except Exception as e:
         print(e)
         return e
@@ -424,7 +421,7 @@ def calculate_yield(db,schema):
             temp_dir = tempfile.mkdtemp()
             pg_sql = """SELECT * FROM {0}.agareas""".format(schema)
 
-            export_pg_table(temp_dir,storename,cfg.connection['host'],cfg.connection['user'],cfg.connection['password'],db,pg_sql)
+            export_pg_table(temp_dir,storename,cfg.connection['host'],cfg.connection['user'],cfg.connection['password'],db ,pg_sql)
             target_zip = os.path.join(os.path.join(temp_dir,storename+'.zip'))
 
             with zipfile.ZipFile(target_zip, 'w') as pg_zip:
@@ -477,7 +474,7 @@ def calculate_yield_gid(db, schema, gid):
             "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
-        sql = """SELECT std_yield FROM {0}.yield where gid={1}""".format(schema, gid)
+        sql = """SELECT avg_yield FROM {0}.yield where gid={1}""".format(schema, gid)
         cur.execute(sql)
         data = cur.fetchall()
 

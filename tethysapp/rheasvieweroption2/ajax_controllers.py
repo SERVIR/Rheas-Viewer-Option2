@@ -76,15 +76,16 @@ def get_raster(request):
         variable = info.get("variable")
         region = info.get("region")
         date = info.get("date")
+        minimum = info.get("min")
+        maximum = info.get("max")
         try:
-            storename, mean, stddev, min, max = get_selected_raster(db,region,variable,date)
-            color_range = calc_color_range(min,max)
-
+            storename, mean, stddev= get_selected_raster(db,region,variable,date)
+            color_range = calc_color_range(minimum,maximum)
             return_obj["storename"] = storename
             return_obj["mean"] = mean
             return_obj["stddev"] = stddev
-            return_obj["min"] = min
-            return_obj["max"] = max
+            return_obj["min"] = minimum
+            return_obj["max"] = maximum
             return_obj["scale"] = color_range
             return_obj["variable"] = variable
             return_obj["region"] = region
@@ -126,15 +127,17 @@ def get_vector(request):
         variable = info.get("variable")
         region = info.get("region")
         date = info.get("date")
+        minimum = info.get("min")
+        maximum = info.get("max")
         try:
-            storename, mean, stddev, min, max = get_selected_raster(db,region,variable,date)
-            color_range = calc_color_range(min,max)
+            storename, mean, stddev= get_selected_raster(db,region,variable,date)
+            color_range = calc_color_range(minimum,maximum)
 
             return_obj["storename"] = storename
             return_obj["mean"] = mean
             return_obj["stddev"] = stddev
-            return_obj["min"] = min
-            return_obj["max"] = max
+            return_obj["min"] = minimum
+            return_obj["max"] = maximum
             return_obj["scale"] = color_range
             return_obj["variable"] = variable
             return_obj["region"] = region
@@ -161,11 +164,14 @@ def get_vic_plot(request):
         return_obj["region"] = region
 
         point = request.POST['point']
+
         polygon = request.POST['polygon']
 
         if point:
             try:
-                mean, stddev, min, max, time_series = get_vic_point(db,region,variable,point)
+                startdate = request.POST["startdate"]
+                enddate = request.POST["enddate"]
+                mean, stddev, min, max, time_series = get_vic_point(db,region,variable,point,startdate,enddate)
                 return_obj["mean"] = mean
                 return_obj["stddev"] = stddev
                 return_obj["min"] = min
@@ -181,7 +187,7 @@ def get_vic_plot(request):
                 return_obj["error"] = "Error Retrieving Data"
                 return JsonResponse(return_obj)
 
-        if polygon:
+        elif polygon:
             try:
                 mean, stddev, min, max, time_series = get_vic_polygon(db,region,variable,polygon)
                 return_obj["mean"] = mean
@@ -198,8 +204,9 @@ def get_vic_plot(request):
             except Exception as e:
                 return_obj["error"] = "Error Retrieving Data"
                 return JsonResponse(return_obj)
-
-
+        else:
+            return_obj["error"] = "Error Retrieving Data"
+            return JsonResponse(return_obj)
 
 def get_dssat_schemas(request):
     return_obj = {}
@@ -241,30 +248,34 @@ def get_ens_values(request):
         info = request.POST
 
         try:
-            db = info.get("db")
-            gid = info.get("gid")
-            schema = info.get("schema")
-            ensemble = info.get("ensemble")
-            startdate = info.get("startdate")
-            enddate = info.get("enddate")
-            # if "avg" in ensemble:
+            if info.get("gid") != "-1":
+                db = info.get("db")
+                gid = info.get("gid")
+                schema = info.get("schema")
+                ensemble = info.get("ensemble")
+                startdate = info.get("startdate")
+                enddate = info.get("enddate")
+                # if "avg" in ensemble:
 
 
-            wsgd_series,lai_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble,startdate,enddate)
+                wsgd_series,lai_series,wsgd_cum_series,lai_cum_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble,startdate,enddate)
 
-            return_obj["gid"] = gid
-            return_obj["schema"] = schema
-            return_obj["ensemble"] = ensemble
-            return_obj["wsgd_series"] = wsgd_series
-            return_obj["lai_series"] = lai_series
-            return_obj["gwad_series"] = gwad_series
-            return_obj["low_gwad_series"] = low_gwad_series
-            return_obj["high_gwad_series"] = high_gwad_series
-            return_obj["ensemble_info"] = ensemble_info
-            return_obj["success"] = "success"
-            print("_________________")
-            print(return_obj)
-            return JsonResponse(return_obj)
+                return_obj["gid"] = gid
+                return_obj["schema"] = schema
+                return_obj["ensemble"] = ensemble
+                return_obj["wsgd_series"] = wsgd_series
+                return_obj["lai_series"] = lai_series
+                return_obj["wsgd_cum_series"] = wsgd_cum_series
+                return_obj["lai_cum_series"] = lai_cum_series
+                return_obj["gwad_series"] = gwad_series
+                return_obj["low_gwad_series"] = low_gwad_series
+                return_obj["high_gwad_series"] = high_gwad_series
+                return_obj["ensemble_info"] = ensemble_info
+                return_obj["success"] = "success"
+                return JsonResponse(return_obj)
+            else:
+                return_obj["error"] = "error"
+                return JsonResponse(return_obj)
             # else:
             #     wsgd_series, lai_series, gwad_series = get_dssat_values(db,gid, schema, ensemble)
             #     return_obj["gid"] = gid

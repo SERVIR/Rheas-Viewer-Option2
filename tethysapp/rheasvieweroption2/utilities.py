@@ -55,51 +55,56 @@ def get_variables_meta():
             linevals = line.split('|')
             variable_id = linevals[0]
             display_name = linevals[1]
-            print(display_name)
             units = linevals[2]
             color1 = linevals[3]
             color2 = linevals[4]
-            color3 =linevals[5]
+            color3 = linevals[5]
             variable_list.append({
                 'id': variable_id,
                 'display_name': display_name,
                 'units': units,
-                'color1':color1,
-                'color2':color2,
-                'color3':color3,
+                'color1': color1,
+                'color2': color2,
+                'color3': color3,
+                'min': linevals[6],
+                'max': linevals[7]
             })
 
     return variable_list
 
 def parse_dssat_data(data):
 
-    wsgd_series, lai_series, gwad_series = [], [], []
-    lai=0.0
-    wsgd=0.0
+    wsgd_series, lai_series,wsgd_cum_series, lai_cum_series, gwad_series = [], [], [], [], []
+    lai_cum=0.0
+    wsgd_cum=0.0
     for item in data:
         time_stamp = time.mktime(datetime.strptime(str(item[0]), "%Y-%m-%d").timetuple()) * 1000
-        wsgd = wsgd+item[1]#cum
-        lai = lai+item[2]#cum
+        wsgd_cum = wsgd_cum+item[1]#cum
+        lai_cum = lai_cum+item[2]#cum
+        wsgd = item[1]
+        lai = item[2]
         gwad = item[3]
         wsgd_series.append([time_stamp, wsgd])
         lai_series.append([time_stamp, lai])
+        wsgd_cum_series.append([time_stamp, wsgd_cum])
+        lai_cum_series.append([time_stamp, lai_cum])
         gwad_series.append([time_stamp, gwad])
-    print(lai_series)
-    print(wsgd_series)
     wsgd_series.sort()
     lai_series.sort()
+    wsgd_cum_series.sort()
+    lai_cum_series.sort()
     gwad_series.sort()
 
-    return wsgd_series, lai_series, gwad_series
+    return wsgd_series, lai_series, wsgd_cum_series, lai_cum_series, gwad_series
 
 def calc_color_range(min,max):
-    interval = abs((max - min) / 20)
-
+    print(max)
+    print(min)
+    interval = abs((float(max) - float(min)) / 20)
     if interval == 0:
         scale = [0] * 20
     else:
-        scale = np.arange(min, max, interval).tolist()
-
+        scale = np.arange(float(min), float(max), interval).tolist()
     return scale
 
 def calc_color_range1(min,max):

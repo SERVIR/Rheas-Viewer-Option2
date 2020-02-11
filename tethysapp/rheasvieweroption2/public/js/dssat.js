@@ -1,3 +1,6 @@
+    $("#home").css("background-color","#ddd");
+  $("#home").css("color","black");
+
 var wms_url = $("#dssat").attr('data-geoserver-url');
 var wfs_url = $("#dssat").attr('data-geoserverwfs-url');
 var wms_workspace = $("#dssat").attr('data-geoserver-workspace');
@@ -63,11 +66,16 @@ xhr.done(function (data) {
 	if ("success" in data) {
 		var dates = data.dates;
 		date = dates.slice(-1)[0][1];
+		var index = find_var_index("spi3", var_data);
+                          var min = var_data[index]["min"];
+                              var max = var_data[index]["max"];
 		ajax_update_database("raster1", {
 				"db": "rheas",
 				"variable": "spi3",
 				"region": "kenya_tethys",
-				"date": date
+				"date": date,
+				"min":min,
+				"max":max
 			})
 			.done(function (data) {
 				if ("success" in data) {
@@ -302,7 +310,7 @@ gen_color_bar = function (colors, scale, cv, variable) {
                 k = k + 1;
                 if (k % 4 == 0) {
                     try {
-                        ctx.fillText(scale[k - 1].toFixed(2), j, 33);
+                        ctx.fillText(Math.round(scale[k - 1]).toFixed(2), j, 33);
                         j = j + (cv.width / 7);
                     } catch (e) {
                         console.log(e);

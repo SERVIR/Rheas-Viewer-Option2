@@ -133,7 +133,7 @@
             <span class="onoffswitch-switch"></span>
         </label>
     </div>
-   Select year
+   <label>Select year
                      </label><br>
                      <select class="seasonyear" name="seasonyear" id="seasonyear"  style="width: 100%">
                         <option>2016</option>
@@ -142,7 +142,15 @@
                      </select>
                      <br>
 
+    <label>  Select Type (for LAI/WSGD):
+                  </label><br>
+                     <select class="typeofchart" name="typeofchart" id="typeofchart"  style="width: 100%">
+                        <option>Daily</option>
+                        <option>Cumulative</option>
+                     </select>
+                     <br>
 
+ </div>
 
                      <!--			  <b>Map Interaction</b>-->
                      <!--			    <select id="interaction-type" class="btn btn-xs btn-primary" data-width="fit">-->
@@ -199,7 +207,7 @@
                      <div id="vic_chart_1">
                         <div class="chart-wrapper">
                            <div class="chart-inner">
-                              <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
+                              <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/spinner.gif" /></div>
                               <div id="vic_plotter_1" name="plotter"></div>
                            </div>
                         </div>
@@ -223,7 +231,7 @@
                      <div id="vic_chart_2">
                         <div class="chart-wrapper">
                            <div class="chart-inner">
-                              <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
+                              <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/spinner.gif" /></div>
                               <div id="vic_plotter_2" name="plotter" style="width:100%" ></div>
                            </div>
                         </div>
@@ -247,7 +255,7 @@
                      <div id="vic_chart_3">
                         <div class="chart-wrapper">
                            <div class="chart-inner">
-                              <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
+                              <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/spinner.gif" /></div>
                               <div id="dssat_plotter_1" name="plotter" style="width:100%" ></div>
                            </div>
                         </div>
@@ -271,7 +279,7 @@
                      <div id="dssat_chart">
                         <div class="chart-wrapper">
                            <div class="chart-inner">
-                              <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/loader.gif" /></div>
+                              <div align="center" class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/rheasvieweroption2/images/spinner.gif" /></div>
                               <div id="dssat_plotter_2" name="plotter" style="width:100%" ></div>
                            </div>
                         </div>
@@ -311,6 +319,7 @@
             </div>
          </div>
       </div>
+   <div id="loading"></div>
    </body>
 </html>
 

@@ -38,7 +38,7 @@ var LIBRARY_OBJECT = (function () {
         wms_workspace,
         wms_url,
         wms_layer,
-        wms_source, gid;
+        wms_source, gid,variable1,variable2,centeravg;
 
 
     /************************************************************************
@@ -55,9 +55,7 @@ var LIBRARY_OBJECT = (function () {
         init_jquery_vars,
         init_dropdown,
         init_all,
-        init_map,
-        getShortRange,
-        getLongRange;
+        init_map;
     var styleCache = {};
 
     var poor = [255, 0, 0, 0.81];
@@ -84,6 +82,9 @@ var LIBRARY_OBJECT = (function () {
         $("#point-lat-lon").val('');
     };
 
+
+
+
     init_jquery_vars = function () {
         $interactionModal = $("#interaction-modal");
         $plotModal = $("#plot-modal");
@@ -100,10 +101,13 @@ var LIBRARY_OBJECT = (function () {
         // wms_url = JSON.parse(wms_url);
         wms_workspace = $var_element.attr('data-geoserver-workspace');
         // wms_workspace = JSON.parse(wms_workspace);
+
     };
 
 
     init_dropdown = function () {
+           $("#analysis").css("background-color","#ddd");
+  $("#analysis").css("color","black");
         $(".db_table").select2();
         $(".schema_table").select2();
         $(".var_table").select2();
@@ -112,6 +116,7 @@ var LIBRARY_OBJECT = (function () {
         $(".region_table_plot").select2();
         $(".date_table_plot").select2();
         $(".ens_table").select2();
+
         $("#ens_table").append(new Option("Median", "avg")).trigger('change');
     };
 
@@ -230,8 +235,9 @@ var LIBRARY_OBJECT = (function () {
                 return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
             });
             var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
-            var variable1 = $("#var_table1 option:selected").val();
-            var variable2 = $("#var_table2 option:selected").val();
+            // var variable1 = $("#var_table1 option:selected").val();
+            // var variable2 = $("#var_table2 option:selected").val();
+            console.log(variable1);
             generate_vic_graph("#vic_plotter_1", variable1, "", json_object);
             generate_vic_graph("#vic_plotter_2", variable2, "", json_object);
 
@@ -479,31 +485,7 @@ var LIBRARY_OBJECT = (function () {
                 return;
             }
             var pixel = map.getEventPixel(evt.originalEvent);
-            var highlightStyle = new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: '#f00',
-                    width: 1
-                }),
-                text: new ol.style.Text({
-                    font: '12px Calibri,sans-serif',
-                    fill: new ol.style.Fill({
-                        color: '#000'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#f00',
-                        width: 3
-                    })
-                })
-            });
 
-            var featureOverlay = new ol.layer.Vector({
-                source: new ol.source.Vector(),
-                map: map,
-                style: function (feature) {
-                    highlightStyle.getText().setText(feature.get('name'));
-                    return highlightStyle;
-                }
-            });
 
             var highlight;
             var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
@@ -593,7 +575,7 @@ var LIBRARY_OBJECT = (function () {
                 k = k + 1;
                 if (k % 4 == 0) {
                     try {
-                        ctx.fillText(scale[k - 1].toFixed(2), j, 33);
+                        ctx.fillText(Math.round(scale[k - 1].toFixed(2)), j, 33);
                         j = j + (cv.width / 7);
                     } catch (e) {
                         console.log(e);
@@ -734,7 +716,6 @@ var LIBRARY_OBJECT = (function () {
             var colors = chroma.scale([color1, color2, color3]).mode('rgb').colors(20);
             if (variable == "dssat")
                 colors = (chroma.scale([color1, color2, color3])).colors(5);
-            console.log((colors));
             //colors = chroma.scale('Spectral').colors(5);
             gen_color_bar(colors, scale, cv, variable);
             colors.forEach(function (color, i) {
@@ -773,7 +754,7 @@ var LIBRARY_OBJECT = (function () {
     };
     var yield_data;
     var store;
-    var centeravg, lonlat;
+    var lonlat;
 
     function get_cal(bounds) {
         var layer_extent = bounds;
@@ -781,11 +762,14 @@ var LIBRARY_OBJECT = (function () {
         map.getView().fit(transformed_extent, map.getSize());
         var aa = layer_extent;
         centeravg = ol.extent.getCenter(aa);
-        var variable1 = $("#var_table1 option:selected").val();
-        var variable2 = $("#var_table2 option:selected").val();
+         $("#point-lat-lon").val(centeravg.toString());
+        // var variable1 = $("#var_table1 option:selected").val();
+        // var variable2 = $("#var_table2 option:selected").val();
+        console.log(variable1);
         generate_vic_graph("#vic_plotter_1", variable1, centeravg.toString(), "");
         generate_vic_graph("#vic_plotter_2", variable2, centeravg.toString(), "");
         map.updateSize();
+
     };
     var vectorLayer1 = new ol.layer.Vector({
         source: new ol.source.Vector(),
@@ -836,34 +820,33 @@ var tooltip = document.getElementById('tooltip11');
             }),
             wrapX: false
         });
-           map1.addInteraction(select_interaction);
-       var hoverInteraction = new ol.interaction.Select({
-           condition: ol.events.condition.pointerMove,
-           layers: [vectorLayer1],  //Setting layers to be hovered
-           style: new ol.style.Style({
-               stroke: new ol.style.Stroke({
-                   color: 'rgba(121,121,125,0.5)',
-                   lineDash: null,
-                   lineCap: 'butt',
-                   lineJoin: 'miter',
-                   width: 0,
-               }),
-               fill: new ol.style.Fill({
-                   color: '#0d0887',
-               }),
-           }),
-       });
-		map1.addInteraction(hoverInteraction);
+        map1.addInteraction(select_interaction);
+        var hoverInteraction = new ol.interaction.Select({
+            condition: ol.events.condition.pointerMove,
+            layers: [vectorLayer1],  //Setting layers to be hovered
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(121,121,125,0.5)',
+                    lineDash: null,
+                    lineCap: 'butt',
+                    lineJoin: 'miter',
+                    width: 0,
+                }),
+                fill: new ol.style.Fill({
+                    color: '#0d0887',
+                }),
+            }),
+        });
+        map1.addInteraction(hoverInteraction);
 
 
         select_interaction.on('select', function (e) {
             gid = e.selected[0].getId().split(".")[1];
-            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val(), rangedates);
-            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val(), rangedates);
+            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
         });
         selectedFeatures = select_interaction.getFeatures();
         selectedFeatures.on('add', function (event) {
-            console.log("dfdg");
             try {
 
                 $(".error").html('');
@@ -893,64 +876,60 @@ var tooltip = document.getElementById('tooltip11');
                 var name_0 = feature.getProperties().name;
 
 
-
             } catch (e) {
             }
         });
 
-         var hoverFeatures = hoverInteraction.getFeatures();
-      hoverInteraction.on('select', function(evt){
-    if(evt.selected.length > 0){
-        console.log( ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
-        var gid = evt.selected[0].getId().split(".")[1];
-         var county_name= "Unknown";
-          var yield_val="unavailable";
-        ajax_update_database("get-schema-yield-gid", {
-                "db":  $("#db_table option:selected").val(),
-                "schema": $("#schema_table option:selected").val(),
-            "gid":gid
-            }).done(function (data) {
-                if ("success" in data) {
-                      ajax_update_database("get-county", {
-            "db": $("#db_table option:selected").val(),
-            "gid": gid,
-            "schema": $("#schema_table option:selected").val(),
-        }).done(function (data1) {
+        var hoverFeatures = hoverInteraction.getFeatures();
+        hoverInteraction.on('select', function (evt) {
+            if (evt.selected.length > 0) {
+                console.log(ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+                var gid = evt.selected[0].getId().split(".")[1];
+                var county_name = "Unknown";
+                var yield_val = "unavailable";
+                ajax_update_database("get-schema-yield-gid", {
+                    "db": $("#db_table option:selected").val(),
+                    "schema": $("#schema_table option:selected").val(),
+                    "gid": gid
+                }).done(function (data) {
+                    if ("success" in data) {
+                        ajax_update_database("get-county", {
+                            "db": $("#db_table option:selected").val(),
+                            "gid": gid,
+                            "schema": $("#schema_table option:selected").val(),
+                        }).done(function (data1) {
 
-            if ("success" in data1) {
-                county_name = data1["county"][0][0];
-                if (data.yield[1]) {
-                    yield_val = data.yield[1][0];
-                }
-                  document.getElementById("tooltip11").style.display = data.yield[1] ? 'block' : 'none';
-                   document.getElementById("tooltip11").innerHTML = "County: "+county_name+"<br>"+"Yield: "+yield_val;
-                overlayt.setPosition( ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+                            if ("success" in data1) {
+                                county_name = data1["county"][0][0];
+                                if (data.yield[1]) {
+                                    yield_val = Math.round(data.yield[1][0]);
+                                }
+                                document.getElementById("tooltip11").style.display = data.yield[1] ? 'block' : 'none';
+                                document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
+                                overlayt.setPosition(ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
 
-                 map1.addOverlay(overlayt);
-
-
+                                map1.addOverlay(overlayt);
 
 
+                            }
+                        });
+
+
+                    } else {
+                        console.log("error");
+                    }
+                });
+
+            } else {
+                document.getElementById("tooltip11").style.display = 'none';
             }
         });
-
-
-
-                } else {
-                   console.log("error");
-                }
-            });
-
-    }
-    else{
-               document.getElementById("tooltip11").style.display =  'none';
-    }
-});
     }
 
     add_vic = function (data) {
         map.removeLayer(wms_layer);
         var layer_name = wms_workspace + ":" + data.storename;
+
         var styling = get_styling(data.variable, data.scale, 'cv_vic');
         var bbox = get_bounds(wms_workspace, data.storename, rest_url, get_cal);
 
@@ -978,323 +957,183 @@ var tooltip = document.getElementById('tooltip11');
         wms_layer = new ol.layer.Image({
             source: wms_source,
             id: "viclayer",
-            //opacity: $("#vicslider").val(),
         });
 
         wms_layer.setZIndex(2);
         map.addLayer(wms_layer);
-        var index = find_var_index($("#map_var_table option:selected").val(), variable_data);
-        var display_name = variable_data[index]["display_name"];
-        var units = variable_data[index]["units"];
-        $("#var_name").html(display_name);
-        $("#var_units").html(units);
+        map.addLayer(boundaryLayer);
+
 
     };
 
     get_plot = function () {
         var db = $("#db_table option:selected").val();
         var region = $("#schema_table option:selected").val();
-        var variable1 = $("#var_table1 option:selected").val();
-        var variable2 = $("#var_table2 option:selected").val();
+        // var variable1 = $("#var_table1 option:selected").val();
+        // var variable2 = $("#var_table2 option:selected").val();
         var point = $("#point-lat-lon").val();
         var polygon = $("#poly-lat-lon").val();
+        console.log(variable1);
         generate_vic_graph("#vic_plotter_1", variable1, point, polygon);
         generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
 
     };
-    var rangedates = [];
-
-    function getLongRange() {
-
-        var year = $("#seasonyear option:selected").val();
-        var db = $("#db_table option:selected").val();
-        var variable = $("#var_table1 option:selected").val();
-        var region = $("#schema_table option:selected").val();
-
-        var xhr = ajax_update_database("dates", {
-            "variable": variable,
-            "region": region,
-            "db": db
-        });
-        xhr.done(function (data) {
-            if ("success" in data) {
-                var dates = data.dates;
-                rangedates = [];
-                dates.forEach(function (date, i) {
-
-                    if (date[0].substring(0, 4) == year && (parseInt(date[0].substring(5, 8)) > 4 && parseInt(date[0].substring(5, 8)) < 9)) {
-                        rangedates.push(date[0]);
-                    }
 
 
-                });
 
-
+    function generate_dssat_graph(element, gid, variable) {
+    var startdate='';
+    var enddate='';
+ if ($("#myonoffswitch").is(':checked')) {
+                startdate=$("#seasonyear option:selected").val()+"-05-01";
+                  enddate=$("#seasonyear option:selected").val()+"-08-31";
             } else {
-                console.log("error");
+     startdate = $("#seasonyear option:selected").val() + "-09-01";
+     enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
 
-            }
-        });
-        return rangedates;
-
-    }
-
-    function getShortRange() {
-
-        var year = $("#seasonyear option:selected").val();
-        var db = $("#db_table option:selected").val();
-        var variable = $("#var_table1 option:selected").val();
-        var region = $("#schema_table option:selected").val();
-
-        var xhr = ajax_update_database("dates", {
-            "variable": variable,
-            "region": region,
-            "db": db
-        });
-        xhr.done(function (data) {
-            if ("success" in data) {
-                var dates = data.dates;
-                rangedates = [];
-                dates.forEach(function (date, i) {
-
-                    if ((parseInt(date[0].substring(5, 8)) > 9 && date[0].substring(0, 4) == year) || (parseInt(date[0].substring(0, 4)) == year + 1 && parseInt(date[0].substring(5, 8)) < 3)) {
-                        rangedates.push(date[0]);
-                    }
-
-                });
-
-
-            } else {
-                console.log("error");
-
-            }
-        });
-        return rangedates;
-
-    }
-
-
-    function generate_dssat_graph(element, gid, variable, rangedates) {
-
+ }
         var county_name = "";
         var db = $("#db_table option:selected").val();
         var schema = $("#schema_table option:selected").val();
         var ens = $("#ens_table option:selected").val();
-        var jsonObj = {};
-        if (rangedates.length > 0) {
-            jsonObj = {
+
+            var jsonObj = {
+                    "db": db,
+                    "gid": gid,
+                    "schema": schema,
+                    "ensemble": ens,
+                    "startdate": startdate,
+                    "enddate": enddate
+                };
+
+
+            var xhr = ajax_update_database("get-ens-values", jsonObj);
+            if (gid == undefined || gid == "") gid = 32;
+            ajax_update_database("get-county", {
                 "db": db,
                 "gid": gid,
-                "schema": schema,
-                "ensemble": ens,
-                "startdate": rangedates[0],
-                "enddate": rangedates[rangedates.length - 1]
-            };
-        } else {
-            jsonObj = {
-                "db": db,
-                "gid": gid,
-                "schema": schema,
-                "ensemble": ens,
-                "startdate": "",
-                "enddate": ""
-            };
-        }
-        console.log((jsonObj));
-        var xhr = ajax_update_database("get-ens-values", jsonObj);
-          if (gid == undefined || gid=="") gid = 32;
-        ajax_update_database("get-county", {
-            "db": db,
-            "gid": gid,
-            "schema": schema
-        }).done(function (data) {
-            if ("success" in data) {
-                county_name = data["county"][0][0];
-            } else {
-                county_name = "Unknown";
-            }
-        });
-        xhr.done(function (data) {
-            var input, title, titletext, gwad_low, gwad_high, series, lai_low, lai_high;
-            if (variable == "GWAD") {
-                input = data.gwad_series;
-                gwad_low = data.low_gwad_series;
-                gwad_high = data.high_gwad_series;
-                title = "Grain Weight " + $("#seasonyear option:selected").val() + " : ";
-                titletext = "GWAD (kg/ha)";
-                series = [{
-                    data: input,
-                    name: "Median",
-                    type: 'line',
-                    showInLegend: false,
-                    lineWidth: 5,
-                    color: "green",
-                },
-                    {
-                        data: gwad_low,
-                        name: "5th percentile",
+                "schema": schema
+            }).done(function (data) {
+                if ("success" in data) {
+                    county_name = data["county"][0][0];
+                } else {
+                    county_name = "Unknown";
+                }
+            });
+            xhr.done(function (data) {
+                var input, title, titletext, gwad_low, gwad_high, series, lai_low, lai_high;
+                series=[];
+                if (variable == "GWAD") {
+                    input = data.gwad_series;
+                    gwad_low = data.low_gwad_series;
+                    gwad_high = data.high_gwad_series;
+                    title = "Grain Weight " + $("#seasonyear option:selected").val() + " : ";
+                    titletext = "GWAD (kg/ha)";
+                    series = [{
+                        data: input,
+                        name: "Median",
                         type: 'line',
-                        color: "red",
                         showInLegend: false,
-                        fillOpacity: 0.1,
-                        zIndex: -1,
-                        dashStyle: "Dash"
+                        lineWidth: 5,
+                        color: "green",
+                    },
+                        {
+                            data: gwad_low,
+                            name: "5th percentile",
+                            type: 'line',
+                            color: "red",
+                            showInLegend: false,
+                            fillOpacity: 0.1,
+                            zIndex: -1,
+                            dashStyle: "Dash"
 
-                    }, {
-                        data: gwad_high,
-                        name: "95th percentile",
+                        }, {
+                            data: gwad_high,
+                            name: "95th percentile",
+                            type: 'line',
+                            color: "orange",
+                            fillOpacity: 0.1,
+                            showInLegend: false,
+                            zIndex: -2,
+                            dashStyle: "Dash"
+
+                        }
+                    ]
+                } else if (variable == "WSGD") {
+                    input = $("#typeofchart option:selected").val() == "Daily" ? data.wsgd_series : data.wsgd_cum_series;
+                    title = "Daily Water Stress " + $("#seasonyear option:selected").val() + " : ";
+                    titletext = "WSGD (0-1)";
+                    series = [{
+                        data: input,
+                        name: titletext,
                         type: 'line',
-                        color: "orange",
-                        fillOpacity: 0.1,
+                        lineWidth: 5,
                         showInLegend: false,
-                        zIndex: -2,
-                        dashStyle: "Dash"
-
-                    }
-                ]
-            } else if (variable == "WSGD") {
-                input = data.wsgd_series;
-                title = "Daily Water Stress " + $("#seasonyear option:selected").val() + " : ";
-                titletext = "WSGD (0-1)";
-                series = [{
-                    data: input,
-                    name: titletext,
-                    type: 'line',
-                    lineWidth: 5,
-                    showInLegend: false,
-                    color: "green",
-                }]
-            } else if (variable == "LAI") {
-                input = data.lai_series;
-                lai_low = data.low_lai_series;
-                lai_high = data.high_lai_series;
-                title = "LAI " + $("#seasonyear option:selected").val() + " :";
-                titletext = "LAI (m2/m2)";
-                series = [{
-                    data: input,
-                    name: "Median",
-                    type: 'line',
-                    showInLegend: false,
-                    lineWidth: 5,
-                    color: "green",
-                },
-                    {
-                        data: lai_low,
-                        name: "5th percentile",
+                        color: "green",
+                    }]
+                } else if (variable == "LAI") {
+                    input = $("#typeofchart option:selected").val() == "Daily" ? data.lai_series : data.lai_cum_series;
+                    lai_low = data.low_lai_series;
+                    lai_high = data.high_lai_series;
+                    title = "LAI " + $("#seasonyear option:selected").val() + " :";
+                    titletext = "LAI (m2/m2)";
+                    series = [{
+                        data: input,
+                        name: "Median",
                         type: 'line',
-                        color: "red",
                         showInLegend: false,
-                        fillOpacity: 0.1,
-                        zIndex: -1,
-                        dashStyle: "Dash"
-
-                    }, {
-                        data: lai_high,
-                        name: "95th percentile",
-                        type: 'line',
-                        color: "orange",
-                        fillOpacity: 0.1,
-                        showInLegend: false,
-                        zIndex: -2,
-                        dashStyle: "Dash"
-
-                    }
-                ]
-            }
-
-            if ("error" in data) series = [];
-
-            $(element).highcharts({
-                    chart: {
-                        zoomType: 'x'
+                        lineWidth: 5,
+                        color: "green",
                     },
-                    title: {
-                        text: title + county_name,
-                        style: {
-                            fontSize: '10px',
-                            fontWeight: 'bold'
+                        {
+                            data: lai_low,
+                            name: "5th percentile",
+                            type: 'line',
+                            color: "red",
+                            showInLegend: false,
+                            fillOpacity: 0.1,
+                            zIndex: -1,
+                            dashStyle: "Dash"
+
+                        }, {
+                            data: lai_high,
+                            name: "95th percentile",
+                            type: 'line',
+                            color: "orange",
+                            fillOpacity: 0.1,
+                            showInLegend: false,
+                            zIndex: -2,
+                            dashStyle: "Dash"
+
                         }
-                    },
-                    plotOptions: {
-                        series: {
-                            marker: {
-                                enabled: false
-                            }
-                        }
-                    },
-                    xAxis: {
-                        type: 'datetime',
-                        labels: {
-                            format: '{value:%d %b}'
-                        },
-                        title: {
-                            text: 'Date'
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: titletext
-                        }
+                    ]
+                }
 
-                    },
-                    exporting: {
-                        enabled: true
-                    },
-                    series: series,
 
-                },
-                function (chart) {
-                    if (chart.series.length < 1 || "error" in data) {
-                        chart.renderer.text("No data", 140, 120).css({
-                            color: "black",
-                            fontSize: "16px"
-                        }).add();
-                    }
-                });
+                if ("error" in data) series = [];
 
-        });
-
-    }
-
-    function generate_vic_graph(element, variable, point, polygon) {
-        var db = $("#db_table option:selected").val();
-        var region = $("#schema_table option:selected").val();
-        var xhr = ajax_update_database("get-vic-plot", {
-            "db": db,
-            "region": region,
-            "variable": variable,
-            "point": point,
-            "polygon": polygon
-        });
-        xhr.done(function (data) {
-            $vicplotModal.find('.info').html('');
-            $vicplotModal.find('.warning').html('');
-            $vicplotModal.find('.table').html('');
-            if ("success" in data) {
-                if (data.interaction == "point" || data.interaction == "polygon") {
-                    //var index = variable_data.findIndex(function(x){return variable.includes(x["id"])});
-                    var index = find_var_index(variable, variable_data);
-                    var display_name = variable_data[index]["display_name"];
-                    var units = variable_data[index]["units"];
-
-                    $(element).highcharts({
+                $(element).highcharts({
                         chart: {
-                            type: display_name=='Rainfall'?'bar':'area',
                             zoomType: 'x'
                         },
                         title: {
-                            text: "At [" + parseFloat(point[0]).toFixed(2) + ", " + parseFloat(point[1]).toFixed(2) + "]",
+                            text: title + county_name,
                             style: {
                                 fontSize: '10px',
                                 fontWeight: 'bold'
                             }
                         },
+                        plotOptions: {
+                            series: {
+                                marker: {
+                                    enabled: false
+                                }
+                            }
+                        },
                         xAxis: {
                             type: 'datetime',
                             labels: {
-                                format: '{value:%d %b %Y}'
-                                // rotation: 90,
-                                // align: 'left'
+                                format: '{value:%d %b}'
                             },
                             title: {
                                 text: 'Date'
@@ -1302,31 +1141,119 @@ var tooltip = document.getElementById('tooltip11');
                         },
                         yAxis: {
                             title: {
-                                text: display_name + ' ' + units
+                                text: titletext
                             }
 
                         },
                         exporting: {
                             enabled: true
                         },
-                        series: [{
-                            data: data.time_series,
-                            name: display_name,
-                            showInLegend: false
-                        }]
+                        series: series,
+
+                    },
+                    function (chart) {
+                        if (chart.series.length < 1 || "error" in data) {
+                            chart.renderer.text("No data", 140, 120).css({
+                                color: "black",
+                                fontSize: "16px"
+                            }).add();
+                        }
                     });
-                    $vicplotModal.find('.table').append('<thead></thead><tr><th>Mean</th><th>Standard Deviation</th><th>Minimum</th><th>Maximum</th></tr></thead>');
-                    $vicplotModal.find('.table').append('<tr><td>' + data.mean + '</td><td>' + data.stddev + '</td><td>' + data.min + '</td><td>' + data.max + '</td></tr>');
-                    $(element).removeClass('hidden');
-                    $("#summary").removeClass('hidden');
-                }
-            } else {
-                $vicplotModal.find('.warning').html('<b>' + data.error + '</b>');
-                console.log(data.error);
-            }
-        });
+
+            });
 
     }
+
+    function generate_vic_graph(element, variable, point, polygon) {
+        var db = $("#db_table option:selected").val();
+        var region = $("#schema_table option:selected").val();
+        var series = [];
+        var graph_data, display_name, units;
+        var index = find_var_index(variable, variable_data);
+        if (index >= 0) {
+            display_name = variable_data[index]["display_name"];
+            units = variable_data[index]["units"];
+        }
+        var startdate = '';
+        var enddate = '';
+        if ($("#myonoffswitch").is(':checked')) {
+            startdate = $("#seasonyear option:selected").val() + "-05-01";
+            enddate = $("#seasonyear option:selected").val() + "-08-31";
+        } else {
+            startdate = $("#seasonyear option:selected").val() + "-09-01";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+        }
+        var json={
+            "db": db,
+            "region": region,
+            "variable": variable,
+            "point": point,
+            "startdate": startdate,
+            "enddate": enddate,
+            "polygon": polygon
+        };
+        var xhr = ajax_update_database("get-vic-plot", json);
+        console.log(json);
+        xhr.done(function (data) {
+            graph_data = data;
+            console.log(graph_data);
+            if (data.time_series != undefined && data.time_series.length > 0)
+                series = [{
+                    data: data.time_series,
+                    name: display_name,
+                    showInLegend: false
+                }];
+            populate_vic_graph(element, display_name, units, point, graph_data, series);
+        });
+    }
+
+
+    function populate_vic_graph(element, display_name,units, point,graph_data,series){
+          $(element).highcharts({
+                chart: {
+                    type: display_name == 'Rainfall' ? 'column' : 'area',
+                    zoomType: 'x'
+                },
+                title: {
+                    text: "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]",
+                    style: {
+                        fontSize: '10px',
+                        fontWeight: 'bold'
+                    }
+                },
+                xAxis: {
+                    type: 'datetime',
+                    labels: {
+                        format: '{value:%d %b %Y}'
+                        // rotation: 90,
+                        // align: 'left'
+                    },
+                    title: {
+                        text: 'Date'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: display_name + ' ' + units
+                    }
+
+                },
+                exporting: {
+                    enabled: true
+                },
+                series: series
+            },
+            function (chart) {
+                if (chart.series.length < 1 || "error" in graph_data) {
+                    chart.renderer.text("No data", 140, 120).css({
+                        color: "black",
+                        fontSize: "16px"
+                    }).add();
+                }
+            });
+
+    }
+
 
 
     /************************************************************************
@@ -1344,17 +1271,36 @@ var tooltip = document.getElementById('tooltip11');
     $(function () {
         init_all();
 
+        function fillVarTables(element, variables) {
+            variables.forEach(function (variable, i) {
+                var index = find_var_index(variable, variable_data);
+                if (variable_data[index]!=undefined) {
+                    var display_name = variable_data[index]["display_name"];
+                    var new_option = new Option(display_name, variable);
+                    // if (i == 0) {
+                    //    // $(element).append(new_option).trigger('change');
+                    //      $(element).append(new_option);
+                    // } else {
+                        $(element).append(new_option);
+                    //}
+                }
+                else{
+                    console.log(variable);
+                }
+
+
+            });
+        }
+
         $('#dssatslider').change(function (e) {
             //  alert("dssat moved");
         });
         $("#interaction").on('click', function () {
             $interactionModal.modal('show');
         });
-        //   $("#db_table").val("rheassm").attr("selected","selected");
         $("#db_table").change(function () {
             var db = $("#db_table option:selected").val();
             $("#schema_table").html('');
-
             var xhr = ajax_update_database("schemas", {
                 "db": db
             });
@@ -1370,39 +1316,40 @@ var tooltip = document.getElementById('tooltip11');
                         }
                         $("#schema_table").val("kenya_tethys").attr("selected", "selected");
                     });
-                    // variables.forEach(function(variable,i){
-                    //     var new_option = new Option(variable,variable);
-                    //     $("#variable_table_plot").append(new_option);
-                    // });
+                    if (schemas.length == 0) {
+                        console.log("no schemas available");
+                        $("#time_table").html('');
+                        $("#var_table1").html('');
+                        $("#var_table2").html('');
+                        $("#map_var_table").html('');
+
+                        document.getElementsByClassName("cvs")[0].style.display = "none";
+                        document.getElementsByClassName("cvs")[1].style.display = "none";
+                         var point = $("#point-lat-lon").val();
+                        generate_vic_graph("#vic_plotter_1", variable1, point, "", "");
+                        generate_vic_graph("#vic_plotter_2", variable2, point, "", "");
+
+                        generate_dssat_graph("#dssat_plotter_1", -1, $("#var_table3 option:selected").val());
+                        generate_dssat_graph("#dssat_plotter_2", -1, $("#var_table4 option:selected").val());
+                        map.removeLayer(wms_layer);
+                        map.removeLayer(boundaryLayer);
+                        vectorLayer1.setSource(null);
+
+                    } else {
+                        document.getElementsByClassName("cvs")[0].style.display = "block";
+                        document.getElementsByClassName("cvs")[1].style.display = "block";
+                    }
 
                 } else {
                     console.log("error");
-
                 }
             });
 
         }).change();
 
-        function fillVarTables(element, variables) {
-            variables.forEach(function (variable, i) {
-                var index = find_var_index(variable, variable_data);
-                var display_name = variable_data[index]["display_name"];
-                var new_option = new Option(display_name, variable);
-                if (i == 0) {
-                    $(element).append(new_option).trigger('change');
-                } else {
-                    $(element).append(new_option);
-                }
-
-
-            });
-        }
-
         $("#schema_table").change(function () {
             var db = $("#db_table option:selected").val();
             var region = $("#schema_table option:selected").val();
-            if (region == undefined)
-                region = "kenya_tethys";
             $("#var_table1").html('');
             $("#var_table2").html('');
             ajax_update_database("variables", {
@@ -1410,25 +1357,32 @@ var tooltip = document.getElementById('tooltip11');
                 "db": db
             }).done(function (data) {
                 if ("success" in data) {
-                    fillVarTables("#var_table1", data.variables);
-                    fillVarTables("#map_var_table", data.variables);
-                    fillVarTables("#var_table2", data.variables);
-                    $("#var_table3").trigger('change');
-                    $("#var_table4").trigger('change');
+                    var vars = data.variables;
+                    console.log(vars);
+                    fillVarTables("#var_table1", vars);
+
+                    fillVarTables("#var_table2", vars);
                     $("#var_table1").val("rainf").attr("selected", "selected");
-                    $("#var_table2").val("evap").attr("selected", "selected");
+                    $("#var_table2").val("rainf").attr("selected", "selected");
+                    fillVarTables("#map_var_table", vars);
+                    $("#map_var_table").trigger('change');
+                    //     $("#var_table1").trigger('change');
+                    //   $("#var_table2").trigger('change');
+
 
                 } else {
                     console.log("error");
                 }
             });
 
-        }).change();
+        });
+
         $("#map_var_table").change(function () {
             var db = $("#db_table option:selected").val();
-            var variable = $("#var_table1 option:selected").val();
+            var variable = $("#map_var_table option:selected").val();
             var region = $("#schema_table option:selected").val();
-
+            variable1 = $("#var_table1 option:selected").val();
+            variable2 = $("#var_table2 option:selected").val();
             var xhr = ajax_update_database("dates", {
                 "variable": variable,
                 "region": region,
@@ -1439,23 +1393,32 @@ var tooltip = document.getElementById('tooltip11');
                     var dates = data.dates;
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
-
                         var new_option = new Option(date[0], date[1]);
                         if (i == 0) {
-
-
                             $("#time_table").append(new_option).trigger('change');
-
                         } else {
                             $("#time_table").append(new_option);
-
                         }
-
                     });
+                    if (dates.length == 0) {
+                        console.log("no dates");
+                        document.getElementsByClassName("cvs")[0].style.display = "none";
+                        document.getElementsByClassName("cvs")[1].style.display = "none";
+                         var point = $("#point-lat-lon").val();
+                        generate_vic_graph("#vic_plotter_1", variable1, point, "");
+                        generate_vic_graph("#vic_plotter_2", variable2, point, "");
+                        generate_dssat_graph("#dssat_plotter_1", -1, $("#var_table3 option:selected").val());
+                        generate_dssat_graph("#dssat_plotter_2", -1, $("#var_table4 option:selected").val());
+                        map.removeLayer(wms_layer);
+                        map.removeLayer(boundaryLayer);
+                        vectorLayer1.setSource(null);
+                    } else {
+                        document.getElementsByClassName("cvs")[0].style.display = "block";
+                        document.getElementsByClassName("cvs")[1].style.display = "block";
+                    }
 
                 } else {
                     console.log("error");
-
                 }
             });
 
@@ -1463,11 +1426,11 @@ var tooltip = document.getElementById('tooltip11');
 
         $("#var_table1").change(function () {
             var db = $("#db_table option:selected").val();
-            var variable = $("#var_table1 option:selected").val();
+            variable1 = $("#var_table1 option:selected").val();
             var region = $("#schema_table option:selected").val();
-
+            console.log(variable1);
             var xhr = ajax_update_database("dates", {
-                "variable": variable,
+                "variable": variable1,
                 "region": region,
                 "db": db
             });
@@ -1479,7 +1442,6 @@ var tooltip = document.getElementById('tooltip11');
 
                         var new_option = new Option(date[0], date[1]);
                         if (i == 0) {
-
 
                             $("#time_table").append(new_option).trigger('change');
 
@@ -1499,11 +1461,12 @@ var tooltip = document.getElementById('tooltip11');
         });
         $("#var_table2").change(function () {
             var db = $("#db_table option:selected").val();
-            var variable = $("#var_table2 option:selected").val();
+           variable2 = $("#var_table2 option:selected").val();
+            console.log(variable2);
             var region = $("#schema_table option:selected").val();
 
             var xhr = ajax_update_database("dates", {
-                "variable": variable,
+                "variable": variable2,
                 "region": region,
                 "db": db
             });
@@ -1515,7 +1478,7 @@ var tooltip = document.getElementById('tooltip11');
 
                         var new_option = new Option(date[0], date[1]);
                         if (i == 0) {
-                            $("#time_table").append(new_option);
+                            $("#time_table").append(new_option).trigger('change');
                         } else {
                             $("#time_table").append(new_option);
                         }
@@ -1530,62 +1493,75 @@ var tooltip = document.getElementById('tooltip11');
         });
         $("#var_table3").change(function () {
             if (gid == undefined || gid == "") gid = 32;
-            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val(), rangedates);
-            //  $("#time_table").trigger('change');
+            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
         });
         $("#var_table4").change(function () {
             if (gid == undefined || gid == "") gid = 32;
-            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val(), rangedates);
+            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
         });
 
 
         $("#time_table").change(function () {
+
             var db = $("#db_table option:selected").val();
             var variable = $("#map_var_table option:selected").val();
             var region = $("#schema_table option:selected").val();
             var date = $("#time_table option:selected").val();
 
+            var index = find_var_index(variable, variable_data);
+            var min = variable_data[index]["min"];
+            var max = variable_data[index]["max"];
+            var display_name = variable_data[index]["display_name"];
+            var units = variable_data[index]["units"];
+            $("#var_name").html(display_name);
+            $("#var_units").html(units);
             $(".error").html('');
-
-            var xhr = ajax_update_database("raster", {
-                "db": db,
-                "variable": variable,
-                "region": region,
-                "date": date
-            });
-
-            xhr.done(function (data) {
-                if ("success" in data) {
-                    add_vic(data);
+            if (region != undefined) {
+                var xhr = ajax_update_database("raster", {
+                    "db": db,
+                    "variable": variable,
+                    "region": region,
+                    "date": date,
+                    "min": min,
+                    "max": max
+                });
 
 
-                } else {
-                    $(".error").html('<h3>Error Retrieving the layer</h3>');
-                }
-            });
+                xhr.done(function (data) {
+                    if ("success" in data) {
+                        add_vic(data);
+                    } else {
+                        $(".error").html('<h3>Error Retrieving the layer</h3>');
+                    }
+                }).fail(function () {
+                    map.removeLayer(wms_layer);
+                });
 
-            ajax_update_database("get-schema-yield", {
-                "db": db,
-                "schema": region
-            }).done(function (data) {
-                if ("success" in data) {
-                    ajax_update_database("scale", {
-                        "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
-                        "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
-                    }).done(function (data1) {
-                        if ("success" in data1) {
-                            add_dssat(data, data1.scale);
-                        } else {
-                            $(".error").html('<h3>Error Retrieving the layer</h3>');
-                        }
-                    });
-                    $("#seasonyear").trigger('change');
+                ajax_update_database("get-schema-yield", {
+                    "db": db,
+                    "schema": region
+                }).done(function (data) {
+                    if ("success" in data) {
+                        ajax_update_database("scale", {
+                            "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                            "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                        }).done(function (data1) {
+                            if ("success" in data1) {
+                                add_dssat(data, data1.scale);
+                            } else {
+                                $(".error").html('<h3>Error Retrieving the layer</h3>');
+                            }
+                        });
 
-                } else {
-                    $(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
-                }
-            });
+                        $("#seasonyear").trigger('change');
 
+                    } else {
+                        $(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
+                    }
+                });
+            } else {
+                console.log("undefinedd");
+            }
 
         });
         $("#ens_table").change(function () {
@@ -1595,42 +1571,46 @@ var tooltip = document.getElementById('tooltip11');
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 32;
             var xhr = ajax_update_database("get-ens-values", {"db": db, "gid": gid, "schema": schema, "ensemble": ens});
-
             xhr.done(function (data) {
                 if ("success" in data) {
-                    generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val(), rangedates);
-                    generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val(), rangedates);
+                    generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+                    generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
                 }
             });
         });
         $("#myonoffswitch").change(function () {
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 32;
-            if ($("#myonoffswitch").is(':checked')) {
-                //may-aug long
-                var arr = getLongRange();
-            } else {
-                var arr = getShortRange();
 
-            }
+               var point = $("#point-lat-lon").val();
+        var polygon = $("#poly-lat-lon").val();
+        console.log(variable1);
+          generate_vic_graph("#vic_plotter_1", variable1, point, polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
 
-            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val(), rangedates);
-            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val(), rangedates);
+            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 
         });
         $("#seasonyear").change(function () {
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 32;
-            if ($("#myonoffswitch").is(':checked')) {
-                //may-aug long
-                var arr = getLongRange();
-            } else {
-                var arr = getShortRange();
 
-            }
+            var point = $("#point-lat-lon").val();
+            var polygon = $("#poly-lat-lon").val();
+            generate_vic_graph("#vic_plotter_1", variable1, point, "", polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, point, "", polygon);
+            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
+            // hideLoader();
 
-            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val(), rangedates);
-            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val(), rangedates);
+
+        });
+        $("#typeofchart").change(function () {
+            var gid = $("#gid").val();
+            if (gid == undefined || gid == "") gid = 32;
+            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 
         });
 
@@ -1697,7 +1677,6 @@ var tooltip = document.getElementById('tooltip11');
             r.onload = (function (file) {
                 return function (e) {
                     var contents = e.target.result;
-                    //   console.log(contents);
                     var vs = new ol.source.Vector({
                         features: (new ol.format.GeoJSON()).readFeatures(contents, {
                             featureProjection: 'EPSG:3857'
@@ -1733,8 +1712,7 @@ var tooltip = document.getElementById('tooltip11');
                     map.addLayer(shapeFile);
                     var res = JSON.parse(contents).features[0].geometry.coordinates[0];
                     var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(res) + ']}';
-                    var variable1 = $("#var_table1 option:selected").val();
-                    var variable2 = $("#var_table2 option:selected").val();
+
                     generate_vic_graph("#vic_plotter_1", variable1, "", json_object);
                     generate_vic_graph("#vic_plotter_2", variable2, "", json_object);
                 };
@@ -1743,7 +1721,6 @@ var tooltip = document.getElementById('tooltip11');
         }
 
         var fileupload = $("#FileUpload1");
-        var filePath = $("#spnFilePath");
         var button = $("#drawUploadShapeFile");
         button.click(function () {
             fileupload.click();
@@ -1754,7 +1731,15 @@ var tooltip = document.getElementById('tooltip11');
 
 
     });
+function hideLoader() {
+    $('#loading').hide();
+}
+$('#loading').hide();
 
+
+
+// Strongly recommended: Hide loader after 20 seconds, even if the page hasn't finished loading
+setTimeout(hideLoader, 10 * 1000);
 	return public_interface;
 
 }()); // End of package wrapper
