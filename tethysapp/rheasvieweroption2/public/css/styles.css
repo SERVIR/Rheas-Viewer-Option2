@@ -158,6 +158,7 @@ h2 {
 	display: inline-block;
 	margin: 10 10 10 10;
 	right:20px;
+    width:220px;
 }
 .vic_params {
 	position: absolute;
@@ -178,6 +179,9 @@ h2 {
 	display: inline-block;
 	margin: 10 10 10 10;
 	right:20px;
+}
+#var_name{
+    font-size:smaller;
 }
 #vic_plotter_1,
 #vic_plotter_2,
