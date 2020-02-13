@@ -125,7 +125,6 @@ def get_vic_point(db,region,variable,point,sd,ed):
         psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1) and fdate between {4} and {5} """.format(lon,lat,region,variable,"'"+sd+"'","'"+ed+"'")
         #else:
          #   psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1)""".format(lon,lat,region,variable)
-        print(psql)
         cur.execute(psql)
         ts = cur.fetchall()
 

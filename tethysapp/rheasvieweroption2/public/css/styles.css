@@ -10,6 +10,60 @@ body {
 	overflow-y: hidden;
 	font-family: Arial, Helvetica, sans-serif;
 }
+.onoffswitch {
+    position: relative; width: 90px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+
+.onoffswitch-checkbox {
+    display: none;
+}
+
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+
+.onoffswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+
+.onoffswitch-inner:before {
+    content: "LONG";
+    padding-left: 10px;
+    background-color: #5b8555; color: #FFFFFF;
+}
+
+.onoffswitch-inner:after {
+    content: "SHORT";
+    padding-right: 10px;
+    background-color: #947c7c; color: #FFFFFF;
+    text-align: right;
+}
+
+.onoffswitch-switch {
+    display: block; width: 18px; margin: 6px;
+    background: #FFFFFF;
+    border: 2px solid #999999; border-radius: 20px;
+    position: absolute; top: 0; bottom: 0; right: 56px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px;
+}
 #crow{
 	margin-left:6%;
 
@@ -94,114 +148,163 @@ margin-right:0px;
 	margin: 5px;
 	overflow: hidden;
 }
-.chartpanel {
-	padding: 0;
-	overflow: hidden;
-}
-#paramscontainer {
-	height: 92.5vh;
-	width: 15%;
-	margin-top: 5px;
-	padding-right:0px;
-}
-#mapcontainer,
-#mapcontainer1 {
-	height: 63vh;
-	margin-bottom:5px;
-	padding: 0;
+	.chartpanel {
+		padding: 0;
+		overflow: hidden;
+	}
 
-}
-#mappanel,
-#mappanel1 {
-	height: 100%;
-	position: relative;
-	overflow: hidden;
-	margin: 5px;
-}
-h2 {
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
-.text {
-	margin-left: 10px;
-	margin-right: 10px;
-}
-#mappanelbody,
-#mappanelbody1 {
-	height: 100%;
-	position: relative;
-	padding: 0;
-}
-.panel-heading {
-	padding: 3px 5px;
-}
-#params {
-	height: 89vh;
-	overflow-x: hidden;
-}
-#paramspanel{
-	margin-bottom:0;
-}
-#vic-plot-modal,
-#vic-plot-modal1,
-#vic-plot-modal2,
-#dssat-plot-modal {
-	height:25vh;
-	padding: 0px;
-}
-.insidepanel {
-	margin: 5px 5px 0 0;
-	height: 26vh;
-}
-#cv_vic,
-#cv_dssat,
-#curr_vic,
-#curr_dssat {
-	z-index: 1;
-	margin: 10 0 0 10;
-}
-.cvs {
-	position: absolute;
-	background: white;
-	bottom: 5%;
-	border: 1px solid #337ab7;
-	display: inline-block;
-	margin: 10 10 10 10;
-	right:20px;
-    width:220px;
-}
-.vic_params {
-	position: absolute;
-	background: white;
-	bottom: 5%;
-	border: 1px solid #337ab7;
-	border-radius: 3px;
-	display: inline-block;
-	margin: 10 10 10 10;
-	padding: 5px;
-}
+	#paramscontainer {
+		height: 92.5vh;
+		width: 15%;
+		margin-top: 5px;
+		padding-right: 0px;
+	}
 
-.cvs1 {
-	position: absolute;
-	background: white;
-	bottom: 5%;
-	border: 1px solid #337ab7;
-	display: inline-block;
-	margin: 10 10 10 10;
-	right: 20px;
-	width: 220px;
+	#mapcontainer,
+	#mapcontainer1 {
+		height: 63vh;
+		margin-bottom: 5px;
+		padding: 0;
 
-}
-#var_name{
-    font-size:smaller;
-}
-#vic_plotter_1,
-#vic_plotter_2,
-#dssat_plotter_1,
-#dssat_plotter_2 {
-	height:26.5vh;
-}
-@media screen and (max-width: 1500px) {
+	}
+
+	#mappanel,
+	#mappanel1 {
+		height: 100%;
+		position: relative;
+		overflow: hidden;
+		margin: 5px;
+	}
+
+	h2 {
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+
+	.text {
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+
+	#mappanelbody,
+	#mappanelbody1 {
+		height: 100%;
+		position: relative;
+		padding: 0;
+	}
+
+	.panel-heading {
+		padding: 3px 5px;
+	}
+
+	#params {
+		height: 89vh;
+		overflow-x: hidden;
+	}
+
+	#paramspanel {
+		margin-bottom: 0;
+	}
+
+	#vic-plot-modal,
+	#vic-plot-modal1,
+	#vic-plot-modal2,
+	#dssat-plot-modal {
+		height: 25vh;
+		padding: 0px;
+	}
+
+	.insidepanel {
+		margin: 5px 5px 0 0;
+		height: 29vh;
+	}
+
+	#cv_vic,
+	#cv_dssat,
+	#curr_vic,
+	#curr_dssat {
+		z-index: 1;
+		margin: 10 0 0 10;
+	}
+
+	.cvs {
+		position: absolute;
+		background: white;
+		bottom: 5%;
+		border: 1px solid #337ab7;
+		display: inline-block;
+		margin: 10 10 10 10;
+		right: 20px;
+		width: 220px;
+	}
+
+	.vic_params {
+		position: absolute;
+		background: white;
+		bottom: 5%;
+		border: 1px solid #337ab7;
+		border-radius: 3px;
+		display: inline-block;
+		margin: 10 10 10 10;
+		padding: 5px;
+	}
+
+	.cvs1 {
+		position: absolute;
+		background: white;
+		bottom: 5%;
+		border: 1px solid #337ab7;
+		display: inline-block;
+		margin: 10 10 10 10;
+		right: 20px;
+		width: 220px;
+
+	}
+
+	#var_name {
+		font-size: smaller;
+	}
+
+	#vic_plotter_1,
+	#vic_plotter_2,
+	#dssat_plotter_1,
+	#dssat_plotter_2 {
+		height: 28vh;
+	}
+
+/*@media screen and (min-width: 1000px) {*/
+	/*#paramscontainer,*/
+	/*#mapcontainer {*/
+		/*width: 25%;*/
+	/*}*/
+	/*.cvs {*/
+		/*bottom: 5%;*/
+	/*}*/
+	/*.chartpanel {*/
+		/*width: 17.5%;*/
+
+		/*margin: 5px;*/
+		/*overflow: hidden;*/
+	/*}*/
+	/*.insidepanel {*/
+		/*height: 24vh;*/
+	/*}*/
+	/*#vic_plotter_1,*/
+/*#vic_plotter_2,*/
+/*#dssat_plotter_1,*/
+/*#dssat_plotter_2 {*/
+	/*height:22vh;*/
+/*}*/
+	/*#mapcontainer,*/
+	/*#mapcontainer1 {*/
+		/*width: 35.5%;*/
+		/*height: 65vh;*/
+		/*margin: 5px;*/
+		/*padding-left: 0;*/
+		/*padding-right: 0;*/
+	/*}*/
+/*}*/
+@media screen and (max-width: 1500px and min-height:1000px) {
 	#paramscontainer,
 	#mapcontainer {
 		width: 25%;
@@ -233,6 +336,7 @@ h2 {
 		padding-right: 0;
 	}
 }
+
 /*@media screen and (max-height: 1000px) {*/
 	/*#paramscontainer,*/
 	/*#mapcontainer {*/
@@ -265,34 +369,39 @@ h2 {
 		/*padding-right: 0;*/
 	/*}*/
 /*}*/
-@media screen and (min-width: 1830px) {
-	#paramscontainer {
-		height: 92.5vh;
-	}
+/*@media screen and (min-height:1000px) {*/
+/*#paramscontainer,*/
+	/*#mapcontainer {*/
+		/*width: 25%;*/
+	/*}*/
+	/*.cvs {*/
+		/*bottom: 5%;*/
+	/*}*/
+	/*.chartpanel {*/
+		/*width: 17.5%;*/
 
-	#vic_plotter_1,
-	#vic_plotter_2,
-	#dssat_plotter_1,
-	#dssat_plotter_2 {
-		height: 28vh;
-	}
+		/*margin: 5px;*/
+		/*overflow: hidden;*/
+	/*}*/
+	/*.insidepanel {*/
+		/*height: 24vh;*/
+	/*}*/
+	/*#vic_plotter_1,*/
+/*#vic_plotter_2,*/
+/*#dssat_plotter_1,*/
+/*#dssat_plotter_2 {*/
+	/*height:22vh;*/
+/*}*/
+	/*#mapcontainer,*/
+	/*#mapcontainer1 {*/
+		/*width: 35.5%;*/
+		/*height: 65vh;*/
+		/*margin: 5px;*/
+		/*padding-left: 0;*/
+		/*padding-right: 0;*/
+	/*}*/
+/*}*/
 
-	#params {
-		height: 90vh;
-	}
-
-	.chartpanel {
-		width: 25%;
-	}
-
-	.insidepanel {
-		height: 29vh;
-	}
-
-	#mappanel, #mappanel1 {
-		margin: 1px;
-	}
-}
 
 
 @media screen and (max-height: 800px) {
@@ -333,9 +442,7 @@ h2 {
 }
 
 @media screen and (max-width: 600px) {
-#paramspanel{
-overflow: overlay;
-}
+
 #viccom, #dssatcom {
     width: 350px;
 }
@@ -344,61 +451,9 @@ overflow: overlay;
 }
 }
 
-.onoffswitch {
-    position: relative; width: 90px;
-    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
-}
 
-.onoffswitch-checkbox {
-    display: none;
-}
 
-.onoffswitch-label {
-    display: block; overflow: hidden; cursor: pointer;
-    border: 2px solid #999999; border-radius: 20px;
-}
 
-.onoffswitch-inner {
-    display: block; width: 200%; margin-left: -100%;
-    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
-    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
-}
-
-.onoffswitch-inner:before, .onoffswitch-inner:after {
-    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
-    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
-    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
-}
-
-.onoffswitch-inner:before {
-    content: "LONG";
-    padding-left: 10px;
-    background-color: #5b8555; color: #FFFFFF;
-}
-
-.onoffswitch-inner:after {
-    content: "SHORT";
-    padding-right: 10px;
-    background-color: #947c7c; color: #FFFFFF;
-    text-align: right;
-}
-
-.onoffswitch-switch {
-    display: block; width: 18px; margin: 6px;
-    background: #FFFFFF;
-    border: 2px solid #999999; border-radius: 20px;
-    position: absolute; top: 0; bottom: 0; right: 56px;
-    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
-    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
-}
-
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
-    margin-left: 0;
-}
-
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
-    right: 0px;
-}
 #loading {
     background: url('spinner.gif') no-repeat center center;
     position: absolute;
