@@ -1291,6 +1291,7 @@ hideLoader3();
         init_all();
 
         function fillVarTables(element, variables) {
+            console.log(variables);
             variables.forEach(function (variable, i) {
                 var index = find_var_index(variable, variable_data);
                 if (variable_data[index]!=undefined) {
@@ -1328,13 +1329,16 @@ hideLoader3();
                     var schemas = data.schemas;
                     schemas.forEach(function (schema, i) {
                         var new_option = new Option(schema, schema);
-                        if (i == 0) {
-                            $("#schema_table").append(new_option).trigger('change');
-                        } else {
-                            $("#schema_table").append(new_option);
-                        }
-                        $("#schema_table").val("kenya_tethys").attr("selected", "selected");
-                    });
+                        // if (i == 0) {
+                        //     $("#schema_table").append(new_option).trigger('change');
+                        // } else {
+                        $("#schema_table").append(new_option);
+                        //}
+                        });
+                            $("#schema_table").val("kenya_tethys").attr("selected", "selected");
+                             $("#schema_table").trigger('change');
+
+
                     if (schemas.length == 0) {
                         console.log("no schemas available");
                         $("#time_table").html('');
@@ -1369,10 +1373,11 @@ hideLoader3();
         $("#schema_table").change(function () {
             var db = $("#db_table option:selected").val();
             var region = $("#schema_table option:selected").val();
+            console.log(region);
             $("#var_table1").html('');
             $("#var_table2").html('');
             ajax_update_database("variables", {
-                "region": region,
+                "region": $("#schema_table option:selected").val(),
                 "db": db
             }).done(function (data) {
                 if ("success" in data) {

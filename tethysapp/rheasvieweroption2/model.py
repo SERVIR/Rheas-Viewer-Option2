@@ -225,13 +225,14 @@ def get_variables(db,region):
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
         cur = conn.cursor()
+        print(region)
         sql = """SELECT table_name FROM information_schema.tables WHERE table_schema = '{0}'""".format(region)
         cur.execute(sql)
         data = cur.fetchall()
+        print(data)
         variables = [var[0] for var in data if var[0] != "basin" if var[0] != "agareas" if var[0] != "state" if var[0] != "dssat" if var[0] != "dssat_all" if var[0] != "yield"]
         variables.sort()
         conn.close()
-
         return variables
     except Exception as e:
         print(e)

@@ -35,7 +35,6 @@ def get_vars(request):
             region = info.get("region")
             variables = get_variables(db,region)
 
-
             return_obj["variables"] = variables
             return_obj["success"] = "success"
             return_obj["region"]  = region
