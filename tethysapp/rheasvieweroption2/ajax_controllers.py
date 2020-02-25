@@ -23,7 +23,7 @@ def get_db_schemas(request):
             return_obj["error"] = e
 
         return JsonResponse(return_obj)
-
+@csrf_exempt
 def get_vars(request):
     return_obj = {}
 
