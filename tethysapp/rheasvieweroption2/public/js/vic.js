@@ -116,6 +116,8 @@ var LIBRARY_OBJECT = (function () {
         $(".region_table_plot").select2();
         $(".date_table_plot").select2();
         $(".ens_table").select2();
+        $(".seasonyear").select2();
+        $(".typeofchart").select2();
 
         $("#ens_table").append(new Option("Median", "avg")).trigger('change');
     };
@@ -815,7 +817,7 @@ var tooltip = document.getElementById('tooltip11');
                     width: 6
                 }),
                 fill: new ol.style.Fill({
-                    color: 'rgba(0,0,255,0.7)'
+                    color: 'rgba(0,0,255,0.2)'
                 })
             }),
             wrapX: false
@@ -825,15 +827,13 @@ var tooltip = document.getElementById('tooltip11');
             condition: ol.events.condition.pointerMove,
             layers: [vectorLayer1],  //Setting layers to be hovered
             style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(121,121,125,0.5)',
-                    lineDash: null,
-                    lineCap: 'butt',
-                    lineJoin: 'miter',
-                    width: 0,
-                }),
+
                 fill: new ol.style.Fill({
-                    color: '#0d0887',
+                     color: 'rgba(0,0,255,0.2)'
+                }),
+                 stroke: new ol.style.Stroke({
+                    color: 'blue',
+                    width: 6,
                 }),
             }),
         });
@@ -842,6 +842,9 @@ var tooltip = document.getElementById('tooltip11');
 
         select_interaction.on('select', function (e) {
             gid = e.selected[0].getId().split(".")[1];
+            var polygon = $("#poly-lat-lon").val();
+            generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
         });
@@ -851,6 +854,14 @@ var tooltip = document.getElementById('tooltip11');
 
                 $(".error").html('');
                 var feature = event.target.item(0);
+                var res = feature.getGeometry().getCoordinates()[0];
+                 var result = res[0].map(coord => {
+                return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
+            });
+                    var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
+                 $("#poly-lat-lon").val(json_object);
+
+
                 var gid = feature.getId().split(".")[1];
                 $("#gid").val(gid);
                 var schema = $("#schema_table option:selected").val();
@@ -982,189 +993,194 @@ var tooltip = document.getElementById('tooltip11');
 
 
     function generate_dssat_graph(element, gid, variable) {
-    var startdate='';
-    var enddate='';
- if ($("#myonoffswitch").is(':checked')) {
-                startdate=$("#seasonyear option:selected").val()+"-05-01";
-                  enddate=$("#seasonyear option:selected").val()+"-08-31";
-            } else {
-     startdate = $("#seasonyear option:selected").val() + "-09-01";
-     enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+        showLoader3();
+        showLoader4();
+        var startdate = '';
+        var enddate = '';
+        if ($("#myonoffswitch").is(':checked')) {
+            startdate = $("#seasonyear option:selected").val() + "-05-01";
+            enddate = $("#seasonyear option:selected").val() + "-08-31";
+        } else {
+            startdate = $("#seasonyear option:selected").val() + "-09-01";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
 
- }
+        }
         var county_name = "";
         var db = $("#db_table option:selected").val();
         var schema = $("#schema_table option:selected").val();
         var ens = $("#ens_table option:selected").val();
 
-            var jsonObj = {
-                    "db": db,
-                    "gid": gid,
-                    "schema": schema,
-                    "ensemble": ens,
-                    "startdate": startdate,
-                    "enddate": enddate
-                };
+        var jsonObj = {
+            "db": db,
+            "gid": gid,
+            "schema": schema,
+            "ensemble": ens,
+            "startdate": startdate,
+            "enddate": enddate
+        };
 
 
-            var xhr = ajax_update_database("get-ens-values", jsonObj);
-            if (gid == undefined || gid == "") gid = 32;
-            ajax_update_database("get-county", {
-                "db": db,
-                "gid": gid,
-                "schema": schema
-            }).done(function (data) {
-                if ("success" in data) {
-                    county_name = data["county"][0][0];
-                } else {
-                    county_name = "Unknown";
-                }
-            });
-            xhr.done(function (data) {
-                var input, title, titletext, gwad_low, gwad_high, series, lai_low, lai_high;
-                series=[];
-                if (variable == "GWAD") {
-                    input = data.gwad_series;
-                    gwad_low = data.low_gwad_series;
-                    gwad_high = data.high_gwad_series;
-                    title = "Grain Weight " + $("#seasonyear option:selected").val() + " : ";
-                    titletext = "GWAD (kg/ha)";
-                    series = [{
-                        data: input,
-                        name: "Median",
+        var xhr = ajax_update_database("get-ens-values", jsonObj);
+        if (gid == undefined || gid == "") gid = 32;
+        ajax_update_database("get-county", {
+            "db": db,
+            "gid": gid,
+            "schema": schema
+        }).done(function (data) {
+            if ("success" in data) {
+                county_name = data["county"][0][0];
+            } else {
+                county_name = "Unknown";
+            }
+        });
+        xhr.done(function (data) {
+            var input, title, titletext, gwad_low, gwad_high, series, lai_low, lai_high;
+            series = [];
+            if (variable == "GWAD") {
+                input = data.gwad_series;
+                gwad_low = data.low_gwad_series;
+                gwad_high = data.high_gwad_series;
+                title = "Grain Weight " + $("#seasonyear option:selected").val() + " : ";
+                titletext = "GWAD (kg/ha)";
+                series = [{
+                    data: input,
+                    name: "Median",
+                    type: 'line',
+                    showInLegend: false,
+                    lineWidth: 5,
+                    color: "green",
+                },
+                    {
+                        data: gwad_low,
+                        name: "5th percentile",
                         type: 'line',
+                        color: "red",
                         showInLegend: false,
-                        lineWidth: 5,
-                        color: "green",
+                        fillOpacity: 0.1,
+                        zIndex: -1,
+                        dashStyle: "Dash"
+
+                    }, {
+                        data: gwad_high,
+                        name: "95th percentile",
+                        type: 'line',
+                        color: "orange",
+                        fillOpacity: 0.1,
+                        showInLegend: false,
+                        zIndex: -2,
+                        dashStyle: "Dash"
+
+                    }
+                ]
+            } else if (variable == "WSGD") {
+                input = $("#typeofchart option:selected").val() == "Daily" ? data.wsgd_series : data.wsgd_cum_series;
+                title = "Daily Water Stress " + $("#seasonyear option:selected").val() + " : ";
+                titletext = "WSGD (0-1)";
+                series = [{
+                    data: input,
+                    name: titletext,
+                    type: 'line',
+                    lineWidth: 5,
+                    showInLegend: false,
+                    color: "green",
+                }]
+            } else if (variable == "LAI") {
+                input = $("#typeofchart option:selected").val() == "Daily" ? data.lai_series : data.lai_cum_series;
+                lai_low = data.low_lai_series;
+                lai_high = data.high_lai_series;
+                title = "LAI " + $("#seasonyear option:selected").val() + " :";
+                titletext = "LAI (m2/m2)";
+                series = [{
+                    data: input,
+                    name: "Median",
+                    type: 'line',
+                    showInLegend: false,
+                    lineWidth: 5,
+                    color: "green",
+                },
+                    {
+                        data: lai_low,
+                        name: "5th percentile",
+                        type: 'line',
+                        color: "red",
+                        showInLegend: false,
+                        fillOpacity: 0.1,
+                        zIndex: -1,
+                        dashStyle: "Dash"
+
+                    }, {
+                        data: lai_high,
+                        name: "95th percentile",
+                        type: 'line',
+                        color: "orange",
+                        fillOpacity: 0.1,
+                        showInLegend: false,
+                        zIndex: -2,
+                        dashStyle: "Dash"
+
+                    }
+                ]
+            }
+
+
+            if ("error" in data) series = [];
+
+            $(element).highcharts({
+                    chart: {
+                        zoomType: 'x'
                     },
-                        {
-                            data: gwad_low,
-                            name: "5th percentile",
-                            type: 'line',
-                            color: "red",
-                            showInLegend: false,
-                            fillOpacity: 0.1,
-                            zIndex: -1,
-                            dashStyle: "Dash"
-
-                        }, {
-                            data: gwad_high,
-                            name: "95th percentile",
-                            type: 'line',
-                            color: "orange",
-                            fillOpacity: 0.1,
-                            showInLegend: false,
-                            zIndex: -2,
-                            dashStyle: "Dash"
-
+                    title: {
+                        text: title + county_name,
+                        style: {
+                            fontSize: '10px',
+                            fontWeight: 'bold'
                         }
-                    ]
-                } else if (variable == "WSGD") {
-                    input = $("#typeofchart option:selected").val() == "Daily" ? data.wsgd_series : data.wsgd_cum_series;
-                    title = "Daily Water Stress " + $("#seasonyear option:selected").val() + " : ";
-                    titletext = "WSGD (0-1)";
-                    series = [{
-                        data: input,
-                        name: titletext,
-                        type: 'line',
-                        lineWidth: 5,
-                        showInLegend: false,
-                        color: "green",
-                    }]
-                } else if (variable == "LAI") {
-                    input = $("#typeofchart option:selected").val() == "Daily" ? data.lai_series : data.lai_cum_series;
-                    lai_low = data.low_lai_series;
-                    lai_high = data.high_lai_series;
-                    title = "LAI " + $("#seasonyear option:selected").val() + " :";
-                    titletext = "LAI (m2/m2)";
-                    series = [{
-                        data: input,
-                        name: "Median",
-                        type: 'line',
-                        showInLegend: false,
-                        lineWidth: 5,
-                        color: "green",
                     },
-                        {
-                            data: lai_low,
-                            name: "5th percentile",
-                            type: 'line',
-                            color: "red",
-                            showInLegend: false,
-                            fillOpacity: 0.1,
-                            zIndex: -1,
-                            dashStyle: "Dash"
-
-                        }, {
-                            data: lai_high,
-                            name: "95th percentile",
-                            type: 'line',
-                            color: "orange",
-                            fillOpacity: 0.1,
-                            showInLegend: false,
-                            zIndex: -2,
-                            dashStyle: "Dash"
-
+                    plotOptions: {
+                        series: {
+                            marker: {
+                                enabled: false
+                            }
                         }
-                    ]
-                }
-
-
-                if ("error" in data) series = [];
-
-                $(element).highcharts({
-                        chart: {
-                            zoomType: 'x'
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        labels: {
+                            format: '{value:%d %b}'
                         },
                         title: {
-                            text: title + county_name,
-                            style: {
-                                fontSize: '10px',
-                                fontWeight: 'bold'
-                            }
-                        },
-                        plotOptions: {
-                            series: {
-                                marker: {
-                                    enabled: false
-                                }
-                            }
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            labels: {
-                                format: '{value:%d %b}'
-                            },
-                            title: {
-                                text: 'Date'
-                            }
-                        },
-                        yAxis: {
-                            title: {
-                                text: titletext
-                            }
-
-                        },
-                        exporting: {
-                            enabled: true
-                        },
-                        series: series,
+                            text: 'Date'
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: titletext
+                        }
 
                     },
-                    function (chart) {
-                        if (chart.series.length < 1 || "error" in data) {
-                            chart.renderer.text("No data", 140, 120).css({
-                                color: "black",
-                                fontSize: "16px"
-                            }).add();
-                        }
-                    });
+                    exporting: {
+                        enabled: true
+                    },
+                    series: series,
 
-            });
+                },
+                function (chart) {
+                    if (chart.series.length < 1 || "error" in data) {
+                        chart.renderer.text("No data", 140, 120).css({
+                            color: "black",
+                            fontSize: "16px"
+                        }).add();
+                    }
+                });
 
+        });
+hideLoader3();
+                    hideLoader4();
     }
 
     function generate_vic_graph(element, variable, point, polygon) {
+         showLoader1();
+                    showLoader2();
         var db = $("#db_table option:selected").val();
         var region = $("#schema_table option:selected").val();
         var series = [];
@@ -1205,13 +1221,14 @@ var tooltip = document.getElementById('tooltip11');
                 }];
             populate_vic_graph(element, display_name, units, point, graph_data, series);
         });
+
     }
 
 
     function populate_vic_graph(element, display_name,units, point,graph_data,series){
           $(element).highcharts({
                 chart: {
-                    type: display_name == 'Rainfall' ? 'column' : 'area',
+                    type: display_name == 'Rainfall' ? 'column' : 'line',
                     zoomType: 'x'
                 },
                 title: {
@@ -1251,6 +1268,8 @@ var tooltip = document.getElementById('tooltip11');
                     }).add();
                 }
             });
+          hideLoader1();
+                    hideLoader2();
 
     }
 
@@ -1383,11 +1402,15 @@ var tooltip = document.getElementById('tooltip11');
             var region = $("#schema_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
             variable2 = $("#var_table2 option:selected").val();
+            console.log("varampa");
+            console.log($("#map_var_table option:selected").val());
             var xhr = ajax_update_database("dates", {
                 "variable": variable,
                 "region": region,
                 "db": db
             });
+             console.log("aftervarmap");
+
             xhr.done(function (data) {
                 if ("success" in data) {
                     var dates = data.dates;
@@ -1428,12 +1451,13 @@ var tooltip = document.getElementById('tooltip11');
             var db = $("#db_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
             var region = $("#schema_table option:selected").val();
-            console.log(variable1);
+            console.log("var1");
             var xhr = ajax_update_database("dates", {
                 "variable": variable1,
                 "region": region,
                 "db": db
             });
+             console.log("after_var1");
             xhr.done(function (data) {
                 if ("success" in data) {
                     var dates = data.dates;
@@ -1462,14 +1486,15 @@ var tooltip = document.getElementById('tooltip11');
         $("#var_table2").change(function () {
             var db = $("#db_table option:selected").val();
            variable2 = $("#var_table2 option:selected").val();
-            console.log(variable2);
+            console.log("var2");
             var region = $("#schema_table option:selected").val();
-
             var xhr = ajax_update_database("dates", {
                 "variable": variable2,
                 "region": region,
                 "db": db
             });
+             console.log("aftervar2");
+
             xhr.done(function (data) {
                 if ("success" in data) {
                     var dates = data.dates;
@@ -1734,12 +1759,36 @@ var tooltip = document.getElementById('tooltip11');
 function hideLoader() {
     $('#loading').hide();
 }
+function hideLoader1() {
+    document.getElementById("chartloading1").style.display="none";
+}
+function hideLoader2() {
+    $('#chartloading2').hide();
+}
+function showLoader1() {
+    document.getElementById("chartloading1").style.display="block";
+}
+function showLoader2() {
+    $('#chartloading2').show();
+}
+function showLoader3() {
+      $('#chartloading3').show();
+}
+function showLoader4() {
+    $('#chartloading4').show();
+}
+function hideLoader3() {
+    $('#chartloading3').hide();
+}
+function hideLoader4() {
+    $('#chartloading4').hide();
+}
 $('#loading').hide();
 
 
 
 // Strongly recommended: Hide loader after 20 seconds, even if the page hasn't finished loading
-setTimeout(hideLoader, 10 * 1000);
+setTimeout(hideLoader, 5 * 1000);
 	return public_interface;
 
 }()); // End of package wrapper

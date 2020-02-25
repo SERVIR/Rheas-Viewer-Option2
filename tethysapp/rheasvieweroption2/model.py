@@ -144,7 +144,7 @@ def get_vic_point(db,region,variable,point,sd,ed):
         print( e)
         return e
 @csrf_exempt
-def get_vic_polygon(db,region,variable,polygon):
+def get_vic_polygon(db,region,variable,polygon,sd,ed):
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
         cur = conn.cursor()
@@ -169,7 +169,7 @@ def get_vic_polygon(db,region,variable,polygon):
 
 
         polygon_str = polygon_str[:-1]
-        poly_sql = """SELECT fdate, CAST(AVG(((foo.geomval).val)) AS decimal(9,3)) as avgimr FROM (SELECT fdate, ST_Intersection(rast,ST_GeomFromText('POLYGON(({0}))',4326)) AS geomval FROM {1}.{2} WHERE ST_Intersects(ST_GeomFromText('POLYGON(({0}))',4326), rast)) AS foo GROUP BY fdate ORDER BY fdate""".format(polygon_str,region,variable)
+        poly_sql = """SELECT fdate, CAST(AVG(((foo.geomval).val)) AS decimal(9,3)) as avgimr FROM (SELECT fdate, ST_Intersection(rast,ST_GeomFromText('POLYGON(({0}))',4326)) AS geomval FROM {1}.{2} WHERE ST_Intersects(ST_GeomFromText('POLYGON(({0}))',4326), rast) AND fdate between {3} and {4}) AS foo GROUP BY fdate ORDER BY fdate""".format(polygon_str,region,variable,"'"+sd+"'","'"+ed+"'")
         cur.execute(poly_sql)
         poly_ts = cur.fetchall()
         time_series = []
@@ -452,8 +452,9 @@ def calculate_yield(db,schema):
                     print('whooo')
                     #shutil.rmtree(temp_dir)
 
-       # sql = """SELECT gid,avg(max) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
-        sql = """SELECT gid,avg_yield FROM {0}.yield""".format(schema)
+       # sql = """SELECT gid,amax) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
+        sql="""select x.gid,max(avg_yield) yield,max(lai) lai,x.fdate from {0}.dssat_all x,(select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z where x.gid=y.gid and z.gid=x.gid and x.fdate=y.maxdate group by x.gid,x.fdate""".format(schema)
+       # sql = """SELECT gid,avg_yield FROM {0}.yield""".format(schema)
         cur.execute(sql)
         data = cur.fetchall()
 

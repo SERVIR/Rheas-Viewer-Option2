@@ -53,6 +53,7 @@ def get_dates(request):
         db = info.get("db")
         variable = info.get("variable")
         region = info.get("region")
+        print(variable)
 
         try:
             dates = get_times(db,region, variable)
@@ -189,7 +190,9 @@ def get_vic_plot(request):
 
         elif polygon:
             try:
-                mean, stddev, min, max, time_series = get_vic_polygon(db,region,variable,polygon)
+                startdate = request.POST["startdate"]
+                enddate = request.POST["enddate"]
+                mean, stddev, min, max, time_series = get_vic_polygon(db,region,variable,polygon,startdate,enddate)
                 return_obj["mean"] = mean
                 return_obj["stddev"] = stddev
                 return_obj["min"] = min

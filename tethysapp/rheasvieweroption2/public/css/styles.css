@@ -82,6 +82,7 @@ body {
 .topnav {
 	overflow: hidden;
 	background-color: #333;
+	border-bottom:#716b62 1px solid;
 }
 .topnav a {
 	float: left;
@@ -98,6 +99,7 @@ body {
 .topnav a.active {
 	background-color: #4CAF50;
 	color: white;
+border:#716b62 1px solid;
 }
 .topnav-right {
 	float: right;
@@ -177,8 +179,15 @@ margin-right:0px;
 	}
 
 	h2 {
-		margin-top: 5px;
-		margin-bottom: 5px;
+		margin-top: 0px;
+		margin-bottom: 0px;
+		background-color: #403d3d;
+		color:#d0c8c8;
+		font-size:40px;
+		letter-spacing: 0.1em;
+		text-shadow: 2px 2px 2px #a29b9b;
+		border-bottom:#716b62 1px solid;
+		padding-left: 10px;
 	}
 
 	.text {
@@ -195,7 +204,16 @@ margin-right:0px;
 
 	.panel-heading {
 		padding: 3px 5px;
+
 	}
+	.panel-primary > .panel-heading{
+		background-color:#666363bf;
+		border-color: #666363bf;
+	}
+	.panel-primary{
+		border-color: #666363bf;
+	}
+
 
 	#params {
 		height: 89vh;
@@ -454,8 +472,16 @@ margin-right:0px;
 
 
 
-#loading {
+#loading{
     background: url('spinner.gif') no-repeat center center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 9999999;
+}
+#chartloading1,#chartloading2,#chartloading3,#chartloading4 {
     position: absolute;
     top: 0;
     left: 0;

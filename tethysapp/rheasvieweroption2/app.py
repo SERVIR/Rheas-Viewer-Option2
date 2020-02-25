@@ -6,7 +6,7 @@ class Rheasvieweroption2(TethysAppBase):
     Tethys app class for wer.
     """
 
-    name = 'RHEAS Viewer V2'
+    name = 'RHEAS Viewer Beta'
     index = 'rheasvieweroption2:home'
     icon = 'rheasvieweroption2/images/logo.png'
     package = 'rheasvieweroption2'

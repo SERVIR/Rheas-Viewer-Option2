@@ -66,6 +66,7 @@ xhr.done(function (data) {
 	if ("success" in data) {
 		var dates = data.dates;
 		date = dates.slice(-1)[0][1];
+		document.getElementById("vicdate").innerHTML =dates.slice(-1)[0][0];
 		var index = find_var_index("spi3", var_data);
                           var min = var_data[index]["min"];
                               var max = var_data[index]["max"];
@@ -79,6 +80,7 @@ xhr.done(function (data) {
 			})
 			.done(function (data) {
 				if ("success" in data) {
+console.log(data);
 					add_wms_vic(data);
 				} else {
 					$(".error").html('<h3>Error Retrieving the layer</h3>');
@@ -101,6 +103,7 @@ function get_cal(bounds) {
 
 function add_dssat(data, scale) {
 	yield_data = data.yield;
+	document.getElementById("dssatdate").innerHTML=yield_data[yield_data.length-1][3];
 	store = data.storename;
 	var styling = get_styling("dssat", scale, 'curr_dssat');
 	var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
@@ -139,10 +142,11 @@ xhr.done(function (data) {
 });
 
 var styleCache = {};
-var high = [64, 196, 64, 0.81];
-var mid = [108, 152, 64, 0.81];
-var low = [152, 108, 64, 0.81];
-var poor = [196, 32, 32, 0.81];
+   var poor = [255, 0, 0, 0.81];
+    var low=[255, 128, 0, 0.81];
+    var mid = [255, 255, 0, 0.81];
+    var much = [128, 192, 0, 0.81];
+    var high = [0, 128, 0, 0.81];
 var default_style = new ol.style.Style({
 	fill: new ol.style.Fill({
 		color: [250, 250, 250, 1]
@@ -172,9 +176,9 @@ function styleFunction(feature, resolution) {
 		// check the cache and create a new style for the income
 		// level if its not been created before.
 		if (index != "-1") {
-			var avg_val = yield_data[index][1];
+			var avg_val = yield_data[index][2];
 
-			if (avg_val > 2000) {
+			if (avg_val > 2.0) {
 				styleCache[index] = new ol.style.Style({
 					fill: new ol.style.Fill({
 						color: high
@@ -184,7 +188,17 @@ function styleFunction(feature, resolution) {
 						width: 3
 					})
 				});
-			} else if (avg_val > 1500 && avg_val < 2000) {
+			} else if (avg_val > 0.8 && avg_val < 1.9) {
+				styleCache[index] = new ol.style.Style({
+					fill: new ol.style.Fill({
+						color: much
+					}),
+					stroke: new ol.style.Stroke({
+						color: '#030303',
+						width: 3
+					})
+				});
+			} else if (avg_val > 0.4 && avg_val < 0.8) {
 				styleCache[index] = new ol.style.Style({
 					fill: new ol.style.Fill({
 						color: mid
@@ -194,7 +208,7 @@ function styleFunction(feature, resolution) {
 						width: 3
 					})
 				});
-			} else if (avg_val > 1000 && avg_val < 1500) {
+			} else if (avg_val > 0.0 && avg_val < 0.4) {
 				styleCache[index] = new ol.style.Style({
 					fill: new ol.style.Fill({
 						color: low
@@ -204,7 +218,8 @@ function styleFunction(feature, resolution) {
 						width: 3
 					})
 				});
-			} else if (avg_val < 1000) {
+			}
+			else if (avg_val < 0.0) {
 				styleCache[index] = new ol.style.Style({
 					fill: new ol.style.Fill({
 						color: poor
@@ -310,7 +325,7 @@ gen_color_bar = function (colors, scale, cv, variable) {
                 k = k + 1;
                 if (k % 4 == 0) {
                     try {
-                        ctx.fillText(Math.round(scale[k - 1]).toFixed(2), j, 33);
+                        ctx.fillText(Math.round(scale[k - 1]), j, 33);
                         j = j + (cv.width / 7);
                     } catch (e) {
                         console.log(e);

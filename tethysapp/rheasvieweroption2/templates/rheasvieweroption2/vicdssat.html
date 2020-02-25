@@ -8,9 +8,14 @@
       <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
       <link rel="stylesheet" href="{% static 'rheasvieweroption2/css/styles.css' %}" />
       {% endblock %}
+         {% block header_buttons %}
+<div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Graph">
+   <img src="{% static 'mkaqx/images/servir-logo.png' %}" width="200px" height="40px" style="right:0;position: absolute;filter:brightness(200%);">
+</div>
+{% endblock %}
    </head>
    <body>
-      <h2>RHEAS Viewer 2</h2>
+      <h2>RHEAS Viewer Beta</h2>
       <div class="topnav">
          <a id="home" href="{% url 'rheasvieweroption2:home' %}">Current</a>
          <a id="analysis" href="{% url 'rheasvieweroption2:vicdssat' %}">Analysis</a>
@@ -27,7 +32,7 @@
          </p>
          <div class="m-3 col-xs-6 col-sm-6" id="viccom">
             <div class="panel panel-primary"   class="mapstyle">
-               <div class="panel-heading">VIC Standard Precipitation Index (SPI3)</div>
+               <div class="panel-heading">VIC Standard Precipitation Index (SPI3) <span id="vicdate"></span></div>
                <div class="panel-body" style="padding:0;">
                   <div id="vicmap" class="map"></div>
                   <div class="cvs1">
@@ -38,7 +43,7 @@
          </div>
          <div class="m-3 col-xs-6 col-sm-6" id="dssatcom">
             <div class="panel panel-primary"   class="mapstyle">
-               <div class="panel-heading">DSSAT Yield Map</div>
+               <div class="panel-heading">DSSAT Cropland LAI Map  <span id="dssatdate"></div>
                <div class="panel-body" style="padding:0;">
                   <div id="dssatmap" class="map"></div>
                   <div class="cvs1">
