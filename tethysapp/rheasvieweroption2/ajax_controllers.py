@@ -4,7 +4,7 @@ import requests
 import tethysapp.rheasvieweroption2.config as cfg
 import xmltodict
 from django.views.decorators.csrf import csrf_exempt
-
+@csrf_exempt
 def get_db_schemas(request):
     return_obj = {}
 
