@@ -142,9 +142,9 @@ var LIBRARY_OBJECT = (function () {
 
 
         var view = new ol.View({
-            center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
+            center: ol.proj.transform([39.669571, -1.036878], 'EPSG:4326', 'EPSG:3857'),
             projection: projection,
-            zoom: 4
+            zoom: 6
         });
         wms_source = new ol.source.ImageWMS();
 
@@ -291,9 +291,9 @@ var LIBRARY_OBJECT = (function () {
             if (which == "Recenter") {
                 console.log("Process as Recenter");
                 map.getView().animate({
-                    center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
+                    center: ol.proj.transform([39.669571, -1.036878], 'EPSG:4326', 'EPSG:3857'),
                     duration: 1000,
-                    zoom: 5
+                    zoom: 6
                 });
             } else if (which == "ToggleDistrict") {
                 if (boundaryLayer.getVisible()) {
@@ -774,7 +774,7 @@ var LIBRARY_OBJECT = (function () {
     function get_cal(bounds) {
         var layer_extent = bounds;
         var transformed_extent = ol.proj.transformExtent(layer_extent, 'EPSG:4326', 'EPSG:3857');
-        map.getView().fit(transformed_extent, map.getSize());
+       // map.getView().fit(transformed_extent, map.getSize());
         var aa = layer_extent;
         centeravg = ol.extent.getCenter(aa);
          $("#point-lat-lon").val(centeravg.toString());
