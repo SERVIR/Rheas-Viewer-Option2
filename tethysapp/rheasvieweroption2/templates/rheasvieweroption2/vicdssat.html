@@ -10,12 +10,12 @@
       {% endblock %}
          {% block header_buttons %}
 <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Graph">
-   <img src="{% static 'mkaqx/images/servir-logo.png' %}" width="200px" height="40px" style="right:0;position: absolute;filter:brightness(200%);">
+   <img src="{% static 'rheasvieweroption2/images/servir-logo.png' %}" width="200px" height="40px" style="right:0;position: absolute;filter:brightness(200%);">
 </div>
 {% endblock %}
    </head>
    <body>
-      <h2>RHEAS Viewer Beta</h2>
+      <h2><img src="{% static 'rheasvieweroption2/images/logo.png' %}" width="45" height="35" style="padding-bottom: 5px">RHEAS Viewer Beta</h2>
       <div class="topnav">
          <a id="home" href="{% url 'rheasvieweroption2:home' %}">Current</a>
          <a id="analysis" href="{% url 'rheasvieweroption2:vicdssat' %}">Analysis</a>

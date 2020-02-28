@@ -623,6 +623,7 @@ var LIBRARY_OBJECT = (function () {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
             var index = -1;
             for (var i = 0; i < yield_data.length; ++i) {
+
                 if (yield_data[i][0] == level) {
                     index = i;
                     break;
@@ -688,12 +689,24 @@ var LIBRARY_OBJECT = (function () {
                         })
                     });
                 }
+                  if(level==3) {
+                      styleCache[index] = new ol.style.Style({
+                          stroke: new ol.style.Stroke({
+                              color: 'rgba(0, 0, 255, 0.7)',
+                              width: 6
+                          }),
+                          fill: new ol.style.Fill({
+                              color: 'rgba(0,0,255,0.6)'
+                          })
+                      });
+                  }
 
             }
             return [styleCache[index]];
         } else {
             return [default_style];
         }
+
 
     };
 
@@ -829,7 +842,7 @@ var tooltip = document.getElementById('tooltip11');
             style: new ol.style.Style({
 
                 fill: new ol.style.Fill({
-                     color: 'rgba(0,0,255,0.2)'
+                     color: 'rgba(0,0,255,0.5)'
                 }),
                  stroke: new ol.style.Stroke({
                     color: 'blue',
@@ -1021,7 +1034,7 @@ var tooltip = document.getElementById('tooltip11');
 
 
         var xhr = ajax_update_database("get-ens-values", jsonObj);
-        if (gid == undefined || gid == "") gid = 32;
+        if (gid == undefined || gid == "") gid = 3;
         ajax_update_database("get-county", {
             "db": db,
             "gid": gid,
@@ -1387,7 +1400,7 @@ hideLoader3();
 
                     fillVarTables("#var_table2", vars);
                     $("#var_table1").val("rainf").attr("selected", "selected");
-                    $("#var_table2").val("rainf").attr("selected", "selected");
+                    $("#var_table2").val("evap").attr("selected", "selected");
                     fillVarTables("#map_var_table", vars);
                     $("#map_var_table").trigger('change');
                     //     $("#var_table1").trigger('change');
@@ -1522,11 +1535,11 @@ hideLoader3();
 
         });
         $("#var_table3").change(function () {
-            if (gid == undefined || gid == "") gid = 32;
+            if (gid == undefined || gid == "") gid = 3;
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
         });
         $("#var_table4").change(function () {
-            if (gid == undefined || gid == "") gid = 32;
+            if (gid == undefined || gid == "") gid = 3;
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
         });
 
@@ -1599,7 +1612,7 @@ hideLoader3();
             var schema = $("#schema_table option:selected").val();
             var ens = $("#ens_table option:selected").val();
             var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 32;
+            if (gid == undefined || gid == "") gid = 3;
             var xhr = ajax_update_database("get-ens-values", {"db": db, "gid": gid, "schema": schema, "ensemble": ens});
             xhr.done(function (data) {
                 if ("success" in data) {
@@ -1610,7 +1623,7 @@ hideLoader3();
         });
         $("#myonoffswitch").change(function () {
             var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 32;
+            if (gid == undefined || gid == "") gid = 3;
 
                var point = $("#point-lat-lon").val();
         var polygon = $("#poly-lat-lon").val();
@@ -1624,7 +1637,7 @@ hideLoader3();
         });
         $("#seasonyear").change(function () {
             var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 32;
+            if (gid == undefined || gid == "") gid = 3;
 
             var point = $("#point-lat-lon").val();
             var polygon = $("#poly-lat-lon").val();
@@ -1638,7 +1651,7 @@ hideLoader3();
         });
         $("#typeofchart").change(function () {
             var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 32;
+            if (gid == undefined || gid == "") gid = 3;
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 
