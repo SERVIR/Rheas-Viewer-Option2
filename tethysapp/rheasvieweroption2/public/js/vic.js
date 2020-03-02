@@ -1299,6 +1299,7 @@ var tooltip = document.getElementById('tooltip11');
         });
 hideLoader3();
                     hideLoader4();
+                      hideLoader();
     }
 
     function generate_vic_graph(element, variable, point, polygon) {
@@ -1706,6 +1707,7 @@ hideLoader3();
                 console.log("undefinedd");
             }
 
+
         });
         $("#ens_table").change(function () {
             var db = $("#db_table option:selected").val();
@@ -1905,7 +1907,7 @@ $('#loading').hide();
 
 
 // Strongly recommended: Hide loader after 20 seconds, even if the page hasn't finished loading
-setTimeout(hideLoader, 5 * 1000);
+//setTimeout(hideLoader, 5 * 1000);
 	return public_interface;
 
 }()); // End of package wrapper
