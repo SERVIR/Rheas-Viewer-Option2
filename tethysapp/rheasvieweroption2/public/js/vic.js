@@ -11,6 +11,7 @@
  *****************************************************************************/
 var gwms, gmap, feat,testvar,testevt,boundaryLayer;
 var eventt = [];
+var selected=false;
 var LIBRARY_OBJECT = (function () {
     // Wrap the library in a package function
     "use strict"; // And enable strict mode for this library
@@ -232,6 +233,7 @@ var LIBRARY_OBJECT = (function () {
         map.addInteraction(sel);
 
         sel.on('select', function (e) {
+
             testvar = e.target.getFeatures().getArray()[0].getGeometry().getCoordinates();
             var result = testvar[0].map(coord => {
                 return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
@@ -239,7 +241,6 @@ var LIBRARY_OBJECT = (function () {
             var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
             // var variable1 = $("#var_table1 option:selected").val();
             // var variable2 = $("#var_table2 option:selected").val();
-            console.log(variable1);
             generate_vic_graph("#vic_plotter_1", variable1, "", json_object);
             generate_vic_graph("#vic_plotter_2", variable2, "", json_object);
 
@@ -406,7 +407,6 @@ var LIBRARY_OBJECT = (function () {
         };
 
         vector_layer.getSource().on('addfeature', function (event) {
-            console.log("from get sourceeee");
             //Extracting the point/polygon values from the drawn feature
             var feature_json = saveData(vector_layer);
             var parsed_feature = JSON.parse(feature_json);
@@ -482,47 +482,42 @@ var LIBRARY_OBJECT = (function () {
 
         map.on('pointermove', function (evt) {
 
-            testevt = evt;
-            if (evt.dragging) {
-                return;
-            }
-            var pixel = map.getEventPixel(evt.originalEvent);
-
-
-            var highlight;
-            var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-                return feature;
-            });
-            boundaryLayer.getSource().getFeatures().map(f => {
-                var coords = evt.coordinate;
-                let poli = new ol.geom.Polygon(f.getGeometry().getCoordinates());
-                console.log(ol.extent.containsXY(poli.getExtent(), coords[0], coords[1]));
-                if(ol.extent.containsXY(poli.getExtent(), coords[0], coords[1]))
-                    highlight = f;
-                if (feature !== highlight) {
-                    if (highlight) {
-                        featureOverlay.getSource().removeFeature(highlight);
-                    }
-                    if (feature) {
-                        //console.log(feature);
-                        featureOverlay.getSource().addFeature(feature);
-                    }
-                    highlight = feature;
-                }
-
-                // let intersectPolygon = intersect(polygonGeometry, coords);
-
-//let polygon = new Polygon(intersectPolygon.geometry.coordinates);
-
-            });
-
-
-
+//             testevt = evt;
+//             if (evt.dragging) {
+//                 return;
+//             }
+//             var pixel = map.getEventPixel(evt.originalEvent);
+//
+//
+//             var highlight;
+//             var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+//                 return feature;
+//             });
+//             boundaryLayer.getSource().getFeatures().map(f => {
+//                 var coords = evt.coordinate;
+//                 let poli = new ol.geom.Polygon(f.getGeometry().getCoordinates());
+//                 if(ol.extent.containsXY(poli.getExtent(), coords[0], coords[1]))
+//                     highlight = f;
+//                 if (feature !== highlight) {
+//                     if (highlight) {
+//                         featureOverlay.getSource().removeFeature(highlight);
+//                     }
+//                     if (feature) {
+//                         //console.log(feature);
+//                         featureOverlay.getSource().addFeature(feature);
+//                     }
+//                     highlight = feature;
+//                 }
+//
+//                 // let intersectPolygon = intersect(polygonGeometry, coords);
+//
+// //let polygon = new Polygon(intersectPolygon.geometry.coordinates);
+//
+//             });
         });
 
-        map.on("singleclick", function (evt) {
-
-
+        map1.on("singleclick", function (evt) {
+selected=false;
         });
 
         // map.on('pointermove', function (evt) {
@@ -616,9 +611,10 @@ var LIBRARY_OBJECT = (function () {
 
     };
 
-    function styleFunction(feature, resolution) {
+    function styleFunction1(feature, resolution) {
         // get the incomeLevel from the feature properties
         var level = feature.getId().split(".")[1];
+
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
             var index = -1;
@@ -637,6 +633,7 @@ var LIBRARY_OBJECT = (function () {
             // level if its not been created before.
             if (index != "-1") {
                 var avg_val = yield_data[index][1];
+
 
                 if (avg_val > 1182) {
                     styleCache[index] = new ol.style.Style({
@@ -689,18 +686,106 @@ var LIBRARY_OBJECT = (function () {
                         })
                     });
                 }
-                  if(level==3) {
-                      styleCache[index] = new ol.style.Style({
-                          stroke: new ol.style.Stroke({
-                              color: 'rgba(0, 0, 255, 0.7)',
-                              width: 6
-                          }),
-                          fill: new ol.style.Fill({
-                              color: 'rgba(0,0,255,0.6)'
-                          })
-                      });
-                  }
+                   if(level==3 && selected==false) {
+                    styleCache[index] = new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(0, 0, 255, 0.7)',
+                            width: 6
+                        }),
+                        fill: new ol.style.Fill({
+                            color: 'rgba(0,0,255,0.6)'
+                        })
+                    });
 
+                }
+
+
+
+            }
+            return [styleCache[index]];
+        } else {
+            return [default_style];
+        }
+
+
+    };
+
+
+    function styleFunction(feature, resolution) {
+        // get the incomeLevel from the feature properties
+        var level = feature.getId().split(".")[1];
+
+        if (yield_data != null) {
+            // var index = yield_data.findIndex(function(x) { return x[0]==level });
+            var index = -1;
+            for (var i = 0; i < yield_data.length; ++i) {
+
+                if (yield_data[i][0] == level) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index == "-1") {
+                return [default_style];
+            }
+            // check the cache and create a new style for the income
+            // level if its not been created before.
+            if (index != "-1") {
+                var avg_val = yield_data[index][1];
+
+
+                if (avg_val > 1182) {
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: high
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                } else if (avg_val > 905 && avg_val < 1182) {
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: much
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                } else if (avg_val > 628 && avg_val < 905) {
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: mid
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                } else if (avg_val > 350 && avg_val < 628) {
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: low
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                } else if (avg_val < 73) {
+                    styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: poor
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 3
+                        })
+                    });
+                }
             }
             return [styleCache[index]];
         } else {
@@ -780,16 +865,21 @@ var LIBRARY_OBJECT = (function () {
          $("#point-lat-lon").val(centeravg.toString());
         // var variable1 = $("#var_table1 option:selected").val();
         // var variable2 = $("#var_table2 option:selected").val();
-        console.log(variable1);
         generate_vic_graph("#vic_plotter_1", variable1, centeravg.toString(), "");
         generate_vic_graph("#vic_plotter_2", variable2, centeravg.toString(), "");
         map.updateSize();
 
     };
-    var vectorLayer1 = new ol.layer.Vector({
-        source: new ol.source.Vector(),
-        style: styleFunction
-    });
+    var  vectorLayer1 = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: styleFunction
+        });
+
+       var vectorLayer2 = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: styleFunction1
+        });
+
     var select_interaction;
 var tooltip = document.getElementById('tooltip11');
 
@@ -820,10 +910,26 @@ var tooltip = document.getElementById('tooltip11');
         }));
         vectorLayer1.setZIndex(3);
         map1.addLayer(vectorLayer1);
+            vectorLayer2.setSource(new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: function (extent) {
+                return wms_url + '?service=WFS&' +
+                    'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
+                    'outputFormat=application/json&srsname=EPSG:3857&' +
+                    'bbox=' + extent.join(',') + ',EPSG:3857';
+            },
+            strategy: ol.loadingstrategy.bbox,
+            wrapX: false,
+
+        }));
+        vectorLayer2.setZIndex(4);
+        map1.addLayer(vectorLayer2);
 
         map1.crossOrigin = 'anonymous';
+        console.log(selected);
+
         select_interaction = new ol.interaction.Select({
-            layers: [vectorLayer1],
+            layers: selected==false && vectorLayer2.getSource()!=null?[vectorLayer2]:[vectorLayer1],
             style: new ol.style.Style({
                 stroke: new ol.style.Stroke({
                     color: 'rgba(0, 0, 255, 0.7)',
@@ -838,7 +944,7 @@ var tooltip = document.getElementById('tooltip11');
         map1.addInteraction(select_interaction);
         var hoverInteraction = new ol.interaction.Select({
             condition: ol.events.condition.pointerMove,
-            layers: [vectorLayer1],  //Setting layers to be hovered
+            layers: vectorLayer2.getSource()==null?[vectorLayer1]:[vectorLayer2],  //Setting layers to be hovered
             style: new ol.style.Style({
 
                 fill: new ol.style.Fill({
@@ -854,12 +960,18 @@ var tooltip = document.getElementById('tooltip11');
 
 
         select_interaction.on('select', function (e) {
+            selected=true;
+
             gid = e.selected[0].getId().split(".")[1];
             var polygon = $("#poly-lat-lon").val();
             generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
             generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
+            // vectorLayer2.setSource(null);
+            // console.log(vectorLayer2.getSource());
+              vectorLayer2.setZIndex(3);
+                vectorLayer1.setZIndex(4);
         });
         selectedFeatures = select_interaction.getFeatures();
         selectedFeatures.on('add', function (event) {
@@ -907,7 +1019,6 @@ var tooltip = document.getElementById('tooltip11');
         var hoverFeatures = hoverInteraction.getFeatures();
         hoverInteraction.on('select', function (evt) {
             if (evt.selected.length > 0) {
-                console.log(ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
                 var gid = evt.selected[0].getId().split(".")[1];
                 var county_name = "Unknown";
                 var yield_val = "unavailable";
@@ -997,7 +1108,6 @@ var tooltip = document.getElementById('tooltip11');
         // var variable2 = $("#var_table2 option:selected").val();
         var point = $("#point-lat-lon").val();
         var polygon = $("#poly-lat-lon").val();
-        console.log(variable1);
         generate_vic_graph("#vic_plotter_1", variable1, point, polygon);
         generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
 
@@ -1222,10 +1332,8 @@ hideLoader3();
             "polygon": polygon
         };
         var xhr = ajax_update_database("get-vic-plot", json);
-        console.log(json);
         xhr.done(function (data) {
             graph_data = data;
-            console.log(graph_data);
             if (data.time_series != undefined && data.time_series.length > 0)
                 series = [{
                     data: data.time_series,
@@ -1304,7 +1412,6 @@ hideLoader3();
         init_all();
 
         function fillVarTables(element, variables) {
-            console.log(variables);
             variables.forEach(function (variable, i) {
                 var index = find_var_index(variable, variable_data);
                 if (variable_data[index]!=undefined) {
@@ -1370,6 +1477,7 @@ hideLoader3();
                         map.removeLayer(wms_layer);
                         map.removeLayer(boundaryLayer);
                         vectorLayer1.setSource(null);
+                         vectorLayer2.setSource(null);
 
                     } else {
                         document.getElementsByClassName("cvs")[0].style.display = "block";
@@ -1386,7 +1494,6 @@ hideLoader3();
         $("#schema_table").change(function () {
             var db = $("#db_table option:selected").val();
             var region = $("#schema_table option:selected").val();
-            console.log(region);
             $("#var_table1").html('');
             $("#var_table2").html('');
             ajax_update_database("variables", {
@@ -1395,7 +1502,6 @@ hideLoader3();
             }).done(function (data) {
                 if ("success" in data) {
                     var vars = data.variables;
-                    console.log(vars);
                     fillVarTables("#var_table1", vars);
 
                     fillVarTables("#var_table2", vars);
@@ -1420,14 +1526,12 @@ hideLoader3();
             var region = $("#schema_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
             variable2 = $("#var_table2 option:selected").val();
-            console.log("varampa");
-            console.log($("#map_var_table option:selected").val());
+
             var xhr = ajax_update_database("dates", {
                 "variable": variable,
                 "region": region,
                 "db": db
             });
-             console.log("aftervarmap");
 
             xhr.done(function (data) {
                 if ("success" in data) {
@@ -1442,7 +1546,6 @@ hideLoader3();
                         }
                     });
                     if (dates.length == 0) {
-                        console.log("no dates");
                         document.getElementsByClassName("cvs")[0].style.display = "none";
                         document.getElementsByClassName("cvs")[1].style.display = "none";
                          var point = $("#point-lat-lon").val();
@@ -1453,6 +1556,7 @@ hideLoader3();
                         map.removeLayer(wms_layer);
                         map.removeLayer(boundaryLayer);
                         vectorLayer1.setSource(null);
+                         vectorLayer2.setSource(null);
                     } else {
                         document.getElementsByClassName("cvs")[0].style.display = "block";
                         document.getElementsByClassName("cvs")[1].style.display = "block";
@@ -1469,13 +1573,11 @@ hideLoader3();
             var db = $("#db_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
             var region = $("#schema_table option:selected").val();
-            console.log("var1");
             var xhr = ajax_update_database("dates", {
                 "variable": variable1,
                 "region": region,
                 "db": db
             });
-             console.log("after_var1");
             xhr.done(function (data) {
                 if ("success" in data) {
                     var dates = data.dates;
@@ -1504,14 +1606,12 @@ hideLoader3();
         $("#var_table2").change(function () {
             var db = $("#db_table option:selected").val();
            variable2 = $("#var_table2 option:selected").val();
-            console.log("var2");
             var region = $("#schema_table option:selected").val();
             var xhr = ajax_update_database("dates", {
                 "variable": variable2,
                 "region": region,
                 "db": db
             });
-             console.log("aftervar2");
 
             xhr.done(function (data) {
                 if ("success" in data) {
@@ -1627,7 +1727,6 @@ hideLoader3();
 
                var point = $("#point-lat-lon").val();
         var polygon = $("#poly-lat-lon").val();
-        console.log(variable1);
           generate_vic_graph("#vic_plotter_1", variable1, point, polygon);
             generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
 
