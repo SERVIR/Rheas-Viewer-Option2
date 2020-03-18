@@ -1,7 +1,7 @@
 # This file may be committed to your app code.
 version: 1.0
 # This should match the app - package name in your setup.py
-name: 'rheasvieweroption2'
+name: rheasvieweroption2
 
 # see tethys documentation for how to setup this file
 requirements:
@@ -9,6 +9,8 @@ requirements:
   skip: false
   conda:
     channels:
+      - conda-forge
     packages:
+      - xmltodict
   pip:
 post:

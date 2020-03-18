@@ -8,4 +8,5 @@ config.py
 *.db
 *.sqlite
 *.DS_Store
+*.idea
 tethysapp/rheasvieweroption2/config.py
