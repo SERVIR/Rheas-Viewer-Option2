@@ -225,11 +225,9 @@ def get_variables(db,region):
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
         cur = conn.cursor()
-        print(region)
         sql = """SELECT table_name FROM information_schema.tables WHERE table_schema = '{0}'""".format(region)
         cur.execute(sql)
         data = cur.fetchall()
-        print(data)
         variables = [var[0] for var in data if var[0] != "basin" if var[0] != "agareas" if var[0] != "state" if var[0] != "dssat" if var[0] != "dssat_all" if var[0] != "yield"]
         variables.sort()
         conn.close()
@@ -398,14 +396,14 @@ def get_county_name(db,gid,schema):
     data = cur.fetchall()
     return data
 @csrf_exempt
-def calculate_yield(db,schema):
+def calculate_yield(db,schema,startdate,enddate):
 
     try:
         conn = psycopg2.connect(
             "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
-        storename = db+'_'+schema+'_agareas'
+        storename = str(db+'_'+schema+'_agareas')
 
         cat = Catalog(cfg.geoserver['rest_url'], username=cfg.geoserver['user'], password=cfg.geoserver['password'],disable_ssl_certificate_validation=True)
         try:
@@ -453,8 +451,15 @@ def calculate_yield(db,schema):
                     print('whooo')
                     #shutil.rmtree(temp_dir)
 
-       # sql = """SELECT gid,amax) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
-        sql="""select x.gid,max(avg_yield) yield,max(lai) lai,x.fdate from {0}.dssat_all x,(select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z where x.gid=y.gid and z.gid=x.gid and x.fdate=y.maxdate group by x.gid,x.fdate""".format(schema)
+       #sql = """SELECT gid,max(gwad) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
+        if len(startdate)>9:
+            sql="""select x.gid,max(avg_yield) yield,max(lai) lai, x.fdate from {0}.dssat_all x,(select gid,max(fdate) maxdate from {0}.dssat_all where fdate>={1} and fdate<={2} group by gid) y,{0}.yield z
+                where x.gid=y.gid and z.gid=x.gid and x.fdate=y.maxdate group by x.gid,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
+        else:
+            sql = """select x.gid,max(avg_yield) yield,max(lai) lai, x.fdate from {0}.dssat_all x,(select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
+                         where x.gid=y.gid and z.gid=x.gid and x.fdate=y.maxdate group by x.gid,x.fdate""".format(
+                schema, "'" + str(startdate) + "'", "'" + str(enddate) + "'")
+        print(sql)
        # sql = """SELECT gid,avg_yield FROM {0}.yield""".format(schema)
         cur.execute(sql)
         data = cur.fetchall()
@@ -468,14 +473,16 @@ def calculate_yield(db,schema):
         print(e)
         return e
 @csrf_exempt
-def calculate_yield_gid(db, schema, gid):
+def calculate_yield_gid(db, schema, gid,startdate,enddate):
 
     try:
         conn = psycopg2.connect(
             "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
-        sql = """SELECT avg_yield FROM {0}.yield where gid={1}""".format(schema, gid)
+        sql = """select y.gid,min(gwad),max(y.gwad),percentile_disc(0.5) within group (order by y.gwad) from (select gid,ensemble,max(gwad) gwad from kenya_tethys.dssat_all where fdate>={1} and fdate<={2} and gid={3} group by gid,ensemble order by ensemble)  y
+                    group by y.gid""".format(schema,"'"+startdate+"'","'"+enddate+"'",gid)
+
         cur.execute(sql)
         data = cur.fetchall()
 

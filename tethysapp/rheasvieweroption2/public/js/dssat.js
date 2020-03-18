@@ -122,7 +122,9 @@ function add_dssat(data, scale) {
 }
 var xhr = ajax_update_database("get-schema-yield", {
 	"db": "rheas",
-	"schema": "kenya_tethys"
+	"schema": "kenya_tethys",
+	  "startdate": "",
+                    "enddate": "",
 });
 xhr.done(function (data) {
 	if ("success" in data) {
@@ -142,7 +144,7 @@ xhr.done(function (data) {
 });
 
 var styleCache = {};
-   var poor = [255, 0, 0, 0.81];
+   var poor = [153, 0, 0, 0.81];
     var low=[255, 128, 0, 0.81];
     var mid = [255, 255, 0, 0.81];
     var much = [128, 192, 0, 0.81];

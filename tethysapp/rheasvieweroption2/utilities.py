@@ -98,8 +98,6 @@ def parse_dssat_data(data):
     return wsgd_series, lai_series, wsgd_cum_series, lai_cum_series, gwad_series
 
 def calc_color_range(min,max):
-    print(max)
-    print(min)
     interval = abs((float(max) - float(min)) / 20)
     if interval == 0:
         scale = [0] * 20

@@ -30,6 +30,9 @@ var LIBRARY_OBJECT = (function () {
         $plotModal,
         public_interface, // Object returned by the module
         rest_url,
+        db,
+        region,
+        db_enabled,
         selectedFeatures,
         variable_data,
         $vicplotModal,
@@ -59,7 +62,7 @@ var LIBRARY_OBJECT = (function () {
         init_map;
     var styleCache = {};
 
-    var poor = [255, 0, 0, 0.81];
+    var poor = [153, 0, 0, 0.81];
     var low=[255, 128, 0, 0.81];
     var mid = [255, 255, 0, 0.81];
     var much = [128, 192, 0, 0.81];
@@ -99,6 +102,7 @@ var LIBRARY_OBJECT = (function () {
         variable_data = JSON.parse(variable_data);
         wms_url = $var_element.attr('data-geoserver-url');
         rest_url = $var_element.attr('data-rest-url');
+        db_enabled=$var_element.attr('data-db-enabled');
         // wms_url = JSON.parse(wms_url);
         wms_workspace = $var_element.attr('data-geoserver-workspace');
         // wms_workspace = JSON.parse(wms_workspace);
@@ -109,8 +113,9 @@ var LIBRARY_OBJECT = (function () {
     init_dropdown = function () {
            $("#analysis").css("background-color","#ddd");
   $("#analysis").css("color","black");
-        $(".db_table").select2();
+         $(".db_table").select2();
         $(".schema_table").select2();
+
         $(".var_table").select2();
         $(".time_table").select2();
         $(".interaction").select2();
@@ -880,7 +885,7 @@ selected=false;
             style: styleFunction1
         });
 
-    var select_interaction;
+    var select_interaction,hoverInteraction;
 var tooltip = document.getElementById('tooltip11');
 
  var overlayt = new ol.Overlay({
@@ -891,6 +896,8 @@ var tooltip = document.getElementById('tooltip11');
                 });
 
     function add_dssat(data, scale) {
+
+
         yield_data = data.yield;
         store = data.storename;
         var styling = get_styling("dssat", scale, 'cv_dssat');
@@ -936,13 +943,13 @@ var tooltip = document.getElementById('tooltip11');
                     width: 6
                 }),
                 fill: new ol.style.Fill({
-                    color: 'rgba(0,0,255,0.2)'
+                    color: 'rgba(64,224,208,0.7)'
                 })
             }),
             wrapX: false
         });
         map1.addInteraction(select_interaction);
-        var hoverInteraction = new ol.interaction.Select({
+         hoverInteraction = new ol.interaction.Select({
             condition: ol.events.condition.pointerMove,
             layers: vectorLayer2.getSource()==null?[vectorLayer1]:[vectorLayer2],  //Setting layers to be hovered
             style: new ol.style.Style({
@@ -990,7 +997,7 @@ var tooltip = document.getElementById('tooltip11');
                 var gid = feature.getId().split(".")[1];
                 $("#gid").val(gid);
                 var schema = $("#schema_table option:selected").val();
-                var db = $("#db_table option:selected").val();
+
                 $("#gid").val(gid);
                 $("#schema").val(schema);
                 var xhr = ajax_update_database("get-ensemble", {"db": db, "gid": gid, "schema": schema});
@@ -1022,24 +1029,39 @@ var tooltip = document.getElementById('tooltip11');
                 var gid = evt.selected[0].getId().split(".")[1];
                 var county_name = "Unknown";
                 var yield_val = "unavailable";
+                  var startdate = '';
+        var enddate = '';
+        if ($("#myonoffswitch").is(':checked')) {
+            startdate = $("#seasonyear option:selected").val() + "-05-01";
+            enddate = $("#seasonyear option:selected").val() + "-08-31";
+        } else {
+            startdate = $("#seasonyear option:selected").val() + "-09-01";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+
+        }
                 ajax_update_database("get-schema-yield-gid", {
                     "db": $("#db_table option:selected").val(),
-                    "schema": $("#schema_table option:selected").val(),
-                    "gid": gid
+                    "schema":region,
+                    "gid": gid,
+                    "startdate":startdate,
+                    "enddate":enddate
                 }).done(function (data) {
                     if ("success" in data) {
+                        console.log(data);
                         ajax_update_database("get-county", {
                             "db": $("#db_table option:selected").val(),
                             "gid": gid,
-                            "schema": $("#schema_table option:selected").val(),
+                            "schema": region,
                         }).done(function (data1) {
 
                             if ("success" in data1) {
                                 county_name = data1["county"][0][0];
-                                if (data.yield[1]) {
-                                    yield_val = Math.round(data.yield[1][0]);
+                                console.log(county_name);
+                                console.log(data.yield[0][3]);
+                                if (data.yield[0]) {
+                                    yield_val = Math.round(data.yield[0][3]);
                                 }
-                                document.getElementById("tooltip11").style.display = data.yield[1] ? 'block' : 'none';
+                                document.getElementById("tooltip11").style.display = data.yield[0][3] ? 'block' : 'none';
                                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
                                 overlayt.setPosition(ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
 
@@ -1102,8 +1124,6 @@ var tooltip = document.getElementById('tooltip11');
     };
 
     get_plot = function () {
-        var db = $("#db_table option:selected").val();
-        var region = $("#schema_table option:selected").val();
         // var variable1 = $("#var_table1 option:selected").val();
         // var variable2 = $("#var_table2 option:selected").val();
         var point = $("#point-lat-lon").val();
@@ -1129,14 +1149,12 @@ var tooltip = document.getElementById('tooltip11');
 
         }
         var county_name = "";
-        var db = $("#db_table option:selected").val();
-        var schema = $("#schema_table option:selected").val();
         var ens = $("#ens_table option:selected").val();
 
         var jsonObj = {
             "db": db,
             "gid": gid,
-            "schema": schema,
+            "schema": region,
             "ensemble": ens,
             "startdate": startdate,
             "enddate": enddate
@@ -1148,7 +1166,7 @@ var tooltip = document.getElementById('tooltip11');
         ajax_update_database("get-county", {
             "db": db,
             "gid": gid,
-            "schema": schema
+            "schema": region
         }).done(function (data) {
             if ("success" in data) {
                 county_name = data["county"][0][0];
@@ -1305,8 +1323,6 @@ hideLoader3();
     function generate_vic_graph(element, variable, point, polygon) {
          showLoader1();
                     showLoader2();
-        var db = $("#db_table option:selected").val();
-        var region = $("#schema_table option:selected").val();
         var series = [];
         var graph_data, display_name, units;
         var index = find_var_index(variable, variable_data);
@@ -1439,62 +1455,66 @@ hideLoader3();
         $("#interaction").on('click', function () {
             $interactionModal.modal('show');
         });
+
+              db=$("#db_table option:selected").val();
+              region= $("#schema_table option:selected").val();
+
         $("#db_table").change(function () {
-            var db = $("#db_table option:selected").val();
-            $("#schema_table").html('');
-            var xhr = ajax_update_database("schemas", {
-                "db": db
-            });
-            xhr.done(function (data) {
-                if ("success" in data) {
-                    var schemas = data.schemas;
-                    schemas.forEach(function (schema, i) {
-                        var new_option = new Option(schema, schema);
-                        // if (i == 0) {
-                        //     $("#schema_table").append(new_option).trigger('change');
-                        // } else {
-                        $("#schema_table").append(new_option);
-                        //}
+
+                $("#schema_table").html('');
+                var xhr = ajax_update_database("schemas", {
+                    "db": db
+                });
+                xhr.done(function (data) {
+                    if ("success" in data) {
+                        var schemas = data.schemas;
+                        schemas.forEach(function (schema, i) {
+                            var new_option = new Option(schema, schema);
+                            // if (i == 0) {
+                            //     $("#schema_table").append(new_option).trigger('change');
+                            // } else {
+                            $("#schema_table").append(new_option);
+                            //}
                         });
-                            $("#schema_table").val("kenya_tethys").attr("selected", "selected");
-                             $("#schema_table").trigger('change');
+                        $("#schema_table").val("kenya_tethys").attr("selected", "selected");
+                        $("#schema_table").trigger('change');
 
 
-                    if (schemas.length == 0) {
-                        console.log("no schemas available");
-                        $("#time_table").html('');
-                        $("#var_table1").html('');
-                        $("#var_table2").html('');
-                        $("#map_var_table").html('');
+                        if (schemas.length == 0) {
+                            console.log("no schemas available");
+                            $("#time_table").html('');
+                            $("#var_table1").html('');
+                            $("#var_table2").html('');
+                            $("#map_var_table").html('');
 
-                        document.getElementsByClassName("cvs")[0].style.display = "none";
-                        document.getElementsByClassName("cvs")[1].style.display = "none";
-                         var point = $("#point-lat-lon").val();
-                        generate_vic_graph("#vic_plotter_1", variable1, point, "", "");
-                        generate_vic_graph("#vic_plotter_2", variable2, point, "", "");
+                            document.getElementsByClassName("cvs")[0].style.display = "none";
+                            document.getElementsByClassName("cvs")[1].style.display = "none";
+                            var point = $("#point-lat-lon").val();
+                            generate_vic_graph("#vic_plotter_1", variable1, point, "", "");
+                            generate_vic_graph("#vic_plotter_2", variable2, point, "", "");
 
-                        generate_dssat_graph("#dssat_plotter_1", -1, $("#var_table3 option:selected").val());
-                        generate_dssat_graph("#dssat_plotter_2", -1, $("#var_table4 option:selected").val());
-                        map.removeLayer(wms_layer);
-                        map.removeLayer(boundaryLayer);
-                        vectorLayer1.setSource(null);
-                         vectorLayer2.setSource(null);
+                            generate_dssat_graph("#dssat_plotter_1", -1, $("#var_table3 option:selected").val());
+                            generate_dssat_graph("#dssat_plotter_2", -1, $("#var_table4 option:selected").val());
+                            map.removeLayer(wms_layer);
+                            map.removeLayer(boundaryLayer);
+                            vectorLayer1.setSource(null);
+                            vectorLayer2.setSource(null);
+
+                        } else {
+                            document.getElementsByClassName("cvs")[0].style.display = "block";
+                            document.getElementsByClassName("cvs")[1].style.display = "block";
+                        }
 
                     } else {
-                        document.getElementsByClassName("cvs")[0].style.display = "block";
-                        document.getElementsByClassName("cvs")[1].style.display = "block";
+                        console.log("error");
                     }
+                });
 
-                } else {
-                    console.log("error");
-                }
-            });
 
         }).change();
 
         $("#schema_table").change(function () {
-            var db = $("#db_table option:selected").val();
-            var region = $("#schema_table option:selected").val();
+
             $("#var_table1").html('');
             $("#var_table2").html('');
             ajax_update_database("variables", {
@@ -1522,15 +1542,13 @@ hideLoader3();
         });
 
         $("#map_var_table").change(function () {
-            var db = $("#db_table option:selected").val();
             var variable = $("#map_var_table option:selected").val();
-            var region = $("#schema_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
             variable2 = $("#var_table2 option:selected").val();
 
             var xhr = ajax_update_database("dates", {
                 "variable": variable,
-                "region": region,
+                "region": $("#schema_table option:selected").val(),
                 "db": db
             });
 
@@ -1571,9 +1589,7 @@ hideLoader3();
         });
 
         $("#var_table1").change(function () {
-            var db = $("#db_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
-            var region = $("#schema_table option:selected").val();
             var xhr = ajax_update_database("dates", {
                 "variable": variable1,
                 "region": region,
@@ -1605,9 +1621,7 @@ hideLoader3();
 
         });
         $("#var_table2").change(function () {
-            var db = $("#db_table option:selected").val();
            variable2 = $("#var_table2 option:selected").val();
-            var region = $("#schema_table option:selected").val();
             var xhr = ajax_update_database("dates", {
                 "variable": variable2,
                 "region": region,
@@ -1647,9 +1661,7 @@ hideLoader3();
 
         $("#time_table").change(function () {
 
-            var db = $("#db_table option:selected").val();
             var variable = $("#map_var_table option:selected").val();
-            var region = $("#schema_table option:selected").val();
             var date = $("#time_table option:selected").val();
 
             var index = find_var_index(variable, variable_data);
@@ -1680,29 +1692,39 @@ hideLoader3();
                 }).fail(function () {
                     map.removeLayer(wms_layer);
                 });
-
-                ajax_update_database("get-schema-yield", {
-                    "db": db,
-                    "schema": region
-                }).done(function (data) {
-                    if ("success" in data) {
-                        ajax_update_database("scale", {
-                            "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
-                            "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
-                        }).done(function (data1) {
-                            if ("success" in data1) {
-                                add_dssat(data, data1.scale);
-                            } else {
-                                $(".error").html('<h3>Error Retrieving the layer</h3>');
-                            }
-                        });
+                // var startdate="",enddate="";
+                // if ($("#myonoffswitch").is(':checked')) {
+                //             startdate = $("#seasonyear option:selected").val() + "-05-01";
+                //             enddate = $("#seasonyear option:selected").val() + "-08-31";
+                //         } else {
+                //             startdate = $("#seasonyear option:selected").val() + "-09-01";
+                //             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+                //
+                //         }
+                // ajax_update_database("get-schema-yield", {
+                //     "db": db,
+                //     "schema": region,
+                //     "startdate": startdate,
+                //     "enddate": enddate,
+                // }).done(function (data) {
+                //     if ("success" in data) {
+                //         ajax_update_database("scale", {
+                //             "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                //             "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                //         }).done(function (data1) {
+                //             if ("success" in data1) {
+                //                 add_dssat(data, data1.scale);
+                //             } else {
+                //                 $(".error").html('<h3>Error Retrieving the layer</h3>');
+                //             }
+                //         });
 
                         $("#seasonyear").trigger('change');
 
-                    } else {
-                        $(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
-                    }
-                });
+                    // } else {
+                    //     $(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
+                    // }
+               // });
             } else {
                 console.log("undefinedd");
             }
@@ -1710,12 +1732,10 @@ hideLoader3();
 
         });
         $("#ens_table").change(function () {
-            var db = $("#db_table option:selected").val();
-            var schema = $("#schema_table option:selected").val();
             var ens = $("#ens_table option:selected").val();
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 3;
-            var xhr = ajax_update_database("get-ens-values", {"db": db, "gid": gid, "schema": schema, "ensemble": ens});
+            var xhr = ajax_update_database("get-ens-values", {"db": db, "gid": gid, "schema": region, "ensemble": ens});
             xhr.done(function (data) {
                 if ("success" in data) {
                     generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
@@ -1724,6 +1744,37 @@ hideLoader3();
             });
         });
         $("#myonoffswitch").change(function () {
+              var startdate="",enddate="";
+                if ($("#myonoffswitch").is(':checked')) {
+                            startdate = $("#seasonyear option:selected").val() + "-05-01";
+                            enddate = $("#seasonyear option:selected").val() + "-08-31";
+                        } else {
+                            startdate = $("#seasonyear option:selected").val() + "-09-01";
+                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+
+                        }
+                ajax_update_database("get-schema-yield", {
+                    "db": db,
+                    "schema": region,
+                    "startdate": startdate,
+                    "enddate": enddate,
+                }).done(function (data) {
+                    if ("success" in data) {
+                        ajax_update_database("scale", {
+                            "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                            "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                        }).done(function (data1) {
+                            if ("success" in data1) {
+                                 vectorLayer1.setSource(null);
+                                    vectorLayer2.setSource(null);
+                                add_dssat(data, data1.scale);
+
+                            } else {
+                                $(".error").html('<h3>Error Retrieving the layer</h3>');
+                            }
+                        });
+                    }
+                });
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 3;
 
@@ -1737,6 +1788,36 @@ hideLoader3();
 
         });
         $("#seasonyear").change(function () {
+              var startdate="",enddate="";
+                if ($("#myonoffswitch").is(':checked')) {
+                            startdate = $("#seasonyear option:selected").val() + "-05-01";
+                            enddate = $("#seasonyear option:selected").val() + "-08-31";
+                        } else {
+                            startdate = $("#seasonyear option:selected").val() + "-09-01";
+                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+
+                        }
+                ajax_update_database("get-schema-yield", {
+                    "db": db,
+                    "schema": region,
+                    "startdate": startdate,
+                    "enddate": enddate,
+                }).done(function (data) {
+                    if ("success" in data) {
+                        ajax_update_database("scale", {
+                            "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                            "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                        }).done(function (data1) {
+                            if ("success" in data1) {
+                                 vectorLayer1.setSource(null);
+                                    vectorLayer2.setSource(null);
+                                add_dssat(data, data1.scale);
+                            } else {
+                                $(".error").html('<h3>Error Retrieving the layer</h3>');
+                            }
+                        });
+                    }
+                });
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 3;
 

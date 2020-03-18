@@ -1,6 +1,5 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
 
-
 class Rheasvieweroption2(TethysAppBase):
     """
     Tethys app class for wer.
@@ -16,6 +15,7 @@ class Rheasvieweroption2(TethysAppBase):
     tags = 'VIC,DSSAT'
     enable_feedback = False
     feedback_emails = []
+
 
     def url_maps(self):
         """

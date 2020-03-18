@@ -52,7 +52,6 @@ def get_dates(request):
         db = info.get("db")
         variable = info.get("variable")
         region = info.get("region")
-        print(variable)
 
         try:
             dates = get_times(db,region, variable)
@@ -325,8 +324,10 @@ def get_schema_yield(request):
         db = info.get("db")
 
         schema = info.get("schema")
+        startdate=info.get("startdate")
+        enddate=info.get("enddate")
 
-        yield_data,storename = calculate_yield(db,schema)
+        yield_data,storename = calculate_yield(db,schema,startdate,enddate)
 
 
         return_obj["storename"] = storename
@@ -345,9 +346,10 @@ def get_schema_yield_gid(request):
         db = info.get("db")
 
         schema = info.get("schema")
-
+        startdate = info.get("startdate")
+        enddate = info.get("enddate")
         gid = info.get("gid")
-        yield_data = calculate_yield_gid(db,schema,gid)
+        yield_data = calculate_yield_gid(db,schema,gid,startdate,enddate)
         return_obj["yield"] = yield_data
         return_obj["success"] = "success"
 
@@ -371,6 +373,7 @@ def get_bounds(request):
             xml_url = str(rest_url)+'workspaces/'+str(workspace)+'/coveragestores/'+str(store)+'/coverages/'+str(store)+'.xml'
             r = requests.get(xml_url, auth=(cfg.geoserver['user'], cfg.geoserver['password']))
             r_json = xmltodict.parse(r.content)
+
             bbox = r_json['coverage']['latLonBoundingBox']
             bounds = [float(bbox['minx']), float(bbox['miny']), float(bbox['maxx']), float(bbox['maxy'])]
             return_obj["bounds"] = bounds
