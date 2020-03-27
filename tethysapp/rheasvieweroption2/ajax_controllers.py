@@ -13,12 +13,8 @@ def get_db_schemas(request):
             info = request.POST
             db = info.get("db")
             schemas = get_schemas(db)
-
-
             return_obj["schemas"] = schemas
             return_obj["success"] = "success"
-
-
         except Exception as e:
             return_obj["error"] = e
 
@@ -322,13 +318,11 @@ def get_schema_yield(request):
         info = request.POST
 
         db = info.get("db")
+
         schema = info.get("schema")
         startdate=info.get("startdate")
         enddate=info.get("enddate")
-
         yield_data,storename = calculate_yield(db,schema,startdate,enddate)
-
-
         return_obj["storename"] = storename
         return_obj["yield"] = yield_data
         return_obj["schema"] = schema
@@ -341,9 +335,7 @@ def get_schema_yield_gid(request):
 
     if request.is_ajax() and request.method == 'POST':
         info = request.POST
-
         db = info.get("db")
-
         schema = info.get("schema")
         startdate = info.get("startdate")
         enddate = info.get("enddate")
@@ -380,7 +372,6 @@ def get_bounds(request):
 
         if type =='vector':
             xml_url = str(rest_url) + 'workspaces/' + str(workspace) + '/datastores/' + str(store) + '/featuretypes/' + str(store) + '.xml'
-            print(xml_url)
             r = requests.get(xml_url, auth=(cfg.geoserver['user'], cfg.geoserver['password']))
             r_json = xmltodict.parse(r.content)
             bbox = r_json['featureType']['latLonBoundingBox']

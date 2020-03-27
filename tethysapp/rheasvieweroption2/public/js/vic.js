@@ -773,7 +773,7 @@ return [styleCache[index]];
 
     function styleFunction(feature, resolution) {
         // get the incomeLevel from the feature properties
-        console.log(feature.getProperties().OBJECTID);
+      //  console.log(feature.getProperties().OBJECTID);
        // var level = feature.getId().split(".")[1];
 var level = feature.getProperties().OBJECTID;
         if (yield_data != null) {
@@ -961,7 +961,7 @@ var tooltip = document.getElementById('tooltip11');
         store = data.storename;
         var styling = get_styling("dssat", scale, 'cv_dssat');
         var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
-
+        console.log(bbox);
         vectorLayer1.setSource(new ol.source.Vector({
             // format: new ol.format.GeoJSON(),
             // url: function (extent) {
@@ -1051,7 +1051,7 @@ var tooltip = document.getElementById('tooltip11');
         select_interaction.on('select', function (e) {
             selected=true;
 
-            gid = e.selected[0].getId().split(".")[1];
+            gid =e.selected[0].getProperties().OBJECTID;// e.selected[0].getId().split(".")[1];
             temp=gid;
             var polygon = $("#poly-lat-lon").val();
             generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
@@ -1077,7 +1077,7 @@ var tooltip = document.getElementById('tooltip11');
                  $("#poly-lat-lon").val(json_object);
 
 
-                var gid = feature.getId().split(".")[1];
+                var gid = feature.getProperties().OBJECTID;//feature.getId().split(".")[1];
                 $("#gid").val(gid);
                 var schema = $("#schema_table option:selected").val();
 
@@ -1109,7 +1109,7 @@ var tooltip = document.getElementById('tooltip11');
         var hoverFeatures = hoverInteraction.getFeatures();
         hoverInteraction.on('select', function (evt) {
             if (evt.selected.length > 0) {
-                var gid = evt.selected[0].getId().split(".")[1];
+                var gid = evt.selected[0].getProperties().OBJECTID;//evt.selected[0].getId().split(".")[1];
                 var county_name = "Unknown";
                 var yield_val = "unavailable";
                   var startdate = '';
@@ -1220,6 +1220,7 @@ var tooltip = document.getElementById('tooltip11');
         showLoader4();
         var startdate = '';
         var enddate = '';
+        console.log(gid);
         if ($("#myonoffswitch").is(':checked')) {
             startdate = $("#seasonyear option:selected").val() + "-05-01";
             enddate = $("#seasonyear option:selected").val() + "-08-31";
@@ -1232,7 +1233,7 @@ var tooltip = document.getElementById('tooltip11');
         var ens = $("#ens_table option:selected").val();
 
         var jsonObj = {
-            "db": db,
+            "db": $("#db_table option:selected").val(),
             "gid": gid,
             "schema": $("#schema_table option:selected").val(),
             "ensemble": ens,
@@ -1522,7 +1523,7 @@ hideLoader3();
                     //}
                 }
                 else{
-                    console.log(variable);
+                 //   console.log(variable);
                 }
 
 
@@ -1862,13 +1863,14 @@ hideLoader3();
 
                         }
                 ajax_update_database("get-schema-yield", {
-                    "db": $("#db_table:selected").val(),
-                    "schema": $("#schema_table:selected").val(),
+                    "db": $("#db_table option:selected").val(),
+                    "schema": $("#schema_table option:selected").val(),
                     "startdate": startdate,
                     "enddate": enddate,
                 }).done(function (data) {
 
                     if ("success" in data) {
+                        console.log(data);
                         ajax_update_database("scale", {
                             "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
                             "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
@@ -1919,7 +1921,7 @@ hideLoader3();
                         }).done(function (data1) {
                             if ("success" in data1) {
                                  vectorLayer1.setSource(null);
-                                    vectorLayer2.setSource(null);
+                                 vectorLayer2.setSource(null);
                                 add_dssat(data, data1.scale);
                             } else {
                                 $(".error").html('<h3>Error Retrieving the layer</h3>');
@@ -1934,6 +1936,7 @@ hideLoader3();
             var polygon = $("#poly-lat-lon").val();
             generate_vic_graph("#vic_plotter_1", variable1, point, "", polygon);
             generate_vic_graph("#vic_plotter_2", variable2, point, "", polygon);
+            console.log(gid);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
             // hideLoader();
