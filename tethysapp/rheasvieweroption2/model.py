@@ -399,12 +399,13 @@ def get_county_name(db,gid,schema):
 def calculate_yield(db,schema,startdate,enddate):
 
     try:
+        print(db)
         conn = psycopg2.connect(
             "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
         storename = str(db+'_'+schema+'_agareas')
-
+        print(storename)
         cat = Catalog(cfg.geoserver['rest_url'], username=cfg.geoserver['user'], password=cfg.geoserver['password'],disable_ssl_certificate_validation=True)
         try:
             print('Check if the layer exists')
@@ -413,12 +414,11 @@ def calculate_yield(db,schema,startdate,enddate):
                 print("No store")
                 raise Exception
             else:
-
                 print("Store exists")
         except Exception  as e:
             temp_dir = tempfile.mkdtemp()
             pg_sql = """SELECT * FROM {0}.agareas""".format(schema)
-
+            print(pg_sql)
             export_pg_table(temp_dir,storename,cfg.connection['host'],cfg.connection['user'],cfg.connection['password'],db ,pg_sql)
             target_zip = os.path.join(os.path.join(temp_dir,storename+'.zip'))
 
@@ -441,6 +441,7 @@ def calculate_yield(db,schema,startdate,enddate):
                                                                                      cfg.geoserver['workspace'],
                                                                                      storename)  # Creating the rest url
 
+            print(request_url)
             user = cfg.geoserver['user']
             password = cfg.geoserver['password']
             requests.put(request_url, verify=False, headers=headers, data=open(target_zip,'rb'),
@@ -459,7 +460,6 @@ def calculate_yield(db,schema,startdate,enddate):
             sql = """select x.gid,max(avg_yield) yield,max(lai) lai, x.fdate from {0}.dssat_all x,(select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
                          where x.gid=y.gid and z.gid=x.gid and x.fdate=y.maxdate group by x.gid,x.fdate""".format(
                 schema, "'" + str(startdate) + "'", "'" + str(enddate) + "'")
-        print(sql)
        # sql = """SELECT gid,avg_yield FROM {0}.yield""".format(schema)
         cur.execute(sql)
         data = cur.fetchall()

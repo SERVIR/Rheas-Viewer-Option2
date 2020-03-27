@@ -322,7 +322,6 @@ def get_schema_yield(request):
         info = request.POST
 
         db = info.get("db")
-
         schema = info.get("schema")
         startdate=info.get("startdate")
         enddate=info.get("enddate")
@@ -381,6 +380,7 @@ def get_bounds(request):
 
         if type =='vector':
             xml_url = str(rest_url) + 'workspaces/' + str(workspace) + '/datastores/' + str(store) + '/featuretypes/' + str(store) + '.xml'
+            print(xml_url)
             r = requests.get(xml_url, auth=(cfg.geoserver['user'], cfg.geoserver['password']))
             r_json = xmltodict.parse(r.content)
             bbox = r_json['featureType']['latLonBoundingBox']

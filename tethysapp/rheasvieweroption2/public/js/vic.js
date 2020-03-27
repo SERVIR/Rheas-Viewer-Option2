@@ -12,6 +12,7 @@
 var gwms, gmap, feat,testvar,testevt,boundaryLayer;
 var eventt = [];
 var selected=false;
+var temp=0;
 var LIBRARY_OBJECT = (function () {
     // Wrap the library in a package function
     "use strict"; // And enable strict mode for this library
@@ -73,6 +74,13 @@ var LIBRARY_OBJECT = (function () {
         }),
         stroke: new ol.style.Stroke({
             color: [220, 220, 220, 1],
+            width: 4
+        })
+    });
+ var default_sty = new ol.style.Style({
+
+        stroke: new ol.style.Stroke({
+            color: [97, 97, 97, 1],
             width: 4
         })
     });
@@ -228,14 +236,14 @@ var LIBRARY_OBJECT = (function () {
         vector_layer.setZIndex(Infinity);
         map.addLayer(vector_layer);
         vectorLayerDistrict.setZIndex(77777);
-        map.addLayer(vectorLayerDistrict);
+       // map.addLayer(vectorLayerDistrict);
         boundaryLayer = vectorLayerDistrict;
 
         var sel = new ol.interaction.Select({
             source: vectorLayerDistrict
         });
 
-        map.addInteraction(sel);
+       // map.addInteraction(sel);
 
         sel.on('select', function (e) {
 
@@ -255,7 +263,7 @@ var LIBRARY_OBJECT = (function () {
         var modify = new ol.interaction.Modify({
             source: vector_source
         });
-        map.addInteraction(modify);
+       // map.addInteraction(modify);
         addControls();
 
         function addControls() {
@@ -615,6 +623,51 @@ selected=false;
         return bbox;
 
     };
+    function styleFunction11(feature, resolution) {
+        // get the incomeLevel from the feature properties
+        var level = feature.getId().split(".")[1];
+
+        if (yield_data != null) {
+            // var index = yield_data.findIndex(function(x) { return x[0]==level });
+            var index = -1;
+            for (var i = 0; i < yield_data.length; ++i) {
+
+                if (yield_data[i][0] == level) {
+                    index = i;
+                    break;
+                }
+
+            }
+      
+            if (level == 3 & index != -1) {
+                styleCache[index] = new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 255, 0.7)',
+                        width: 6
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(0,0,255,0.8)'
+                    })
+                });
+            }
+            else{
+
+           styleCache[index] = new ol.style.Style({
+
+        stroke: new ol.style.Stroke({
+            color: [97, 97, 97, 1],
+            width: 4
+        })
+    });
+
+            }
+return [styleCache[index]];
+
+        }
+                return [default_sty];
+
+    };
+
 
     function styleFunction1(feature, resolution) {
         // get the incomeLevel from the feature properties
@@ -692,6 +745,8 @@ selected=false;
                     });
                 }
                    if(level==3 && selected==false) {
+                       temp=3;
+
                     styleCache[index] = new ol.style.Style({
                         stroke: new ol.style.Stroke({
                             color: 'rgba(0, 0, 255, 0.7)',
@@ -879,7 +934,10 @@ selected=false;
             source: new ol.source.Vector(),
             style: styleFunction
         });
-
+var  vectorLayer11= new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: styleFunction11
+        });
        var vectorLayer2 = new ol.layer.Vector({
             source: new ol.source.Vector(),
             style: styleFunction1
@@ -915,8 +973,22 @@ var tooltip = document.getElementById('tooltip11');
             wrapX: false,
 
         }));
+          vectorLayer11.setSource(new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: function (extent) {
+                return wms_url + '?service=WFS&' +
+                    'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
+                    'outputFormat=application/json&srsname=EPSG:3857&' +
+                    'bbox=' + extent.join(',') + ',EPSG:3857';
+            },
+            strategy: ol.loadingstrategy.bbox,
+            wrapX: false,
+
+        }));
         vectorLayer1.setZIndex(3);
         map1.addLayer(vectorLayer1);
+         vectorLayer11.setZIndex(Infinity);
+        map.addLayer(vectorLayer11);
             vectorLayer2.setSource(new ol.source.Vector({
             format: new ol.format.GeoJSON(),
             url: function (extent) {
@@ -970,6 +1042,7 @@ var tooltip = document.getElementById('tooltip11');
             selected=true;
 
             gid = e.selected[0].getId().split(".")[1];
+            temp=gid;
             var polygon = $("#poly-lat-lon").val();
             generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
             generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
@@ -1047,7 +1120,6 @@ var tooltip = document.getElementById('tooltip11');
                     "enddate":enddate
                 }).done(function (data) {
                     if ("success" in data) {
-                        console.log(data);
                         ajax_update_database("get-county", {
                             "db": $("#db_table option:selected").val(),
                             "gid": gid,
@@ -1056,8 +1128,6 @@ var tooltip = document.getElementById('tooltip11');
 
                             if ("success" in data1) {
                                 county_name = data1["county"][0][0];
-                                console.log(county_name);
-                                console.log(data.yield[0][3]);
                                 if (data.yield[0]) {
                                     yield_val = Math.round(data.yield[0][3]);
                                 }
@@ -1118,7 +1188,7 @@ var tooltip = document.getElementById('tooltip11');
 
         wms_layer.setZIndex(2);
         map.addLayer(wms_layer);
-        map.addLayer(boundaryLayer);
+     //   map.addLayer(boundaryLayer);
 
 
     };
@@ -1154,7 +1224,7 @@ var tooltip = document.getElementById('tooltip11');
         var jsonObj = {
             "db": db,
             "gid": gid,
-            "schema": region,
+            "schema": $("#schema_table option:selected").val(),
             "ensemble": ens,
             "startdate": startdate,
             "enddate": enddate
@@ -1166,7 +1236,7 @@ var tooltip = document.getElementById('tooltip11');
         ajax_update_database("get-county", {
             "db": db,
             "gid": gid,
-            "schema": region
+            "schema": $("#schema_table option:selected").val()
         }).done(function (data) {
             if ("success" in data) {
                 county_name = data["county"][0][0];
@@ -1340,8 +1410,8 @@ hideLoader3();
             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
         }
         var json={
-            "db": db,
-            "region": region,
+            "db": $("#db_table option:selected").val(),
+            "region": $("#schema_table option:selected").val(),
             "variable": variable,
             "point": point,
             "startdate": startdate,
@@ -1460,10 +1530,9 @@ hideLoader3();
               region= $("#schema_table option:selected").val();
 
         $("#db_table").change(function () {
-
                 $("#schema_table").html('');
                 var xhr = ajax_update_database("schemas", {
-                    "db": db
+                    "db": $("#db_table option:selected").val()
                 });
                 xhr.done(function (data) {
                     if ("success" in data) {
@@ -1475,8 +1544,12 @@ hideLoader3();
                             // } else {
                             $("#schema_table").append(new_option);
                             //}
+                            // if(schema=="kenya_tethys"){
+                            //
+                            //
+                            // }
                         });
-                        $("#schema_table").val("kenya_tethys").attr("selected", "selected");
+                    if($("#db_table option:selected").val()=="rheas")$("#schema_table").val("kenya_tethys");
                         $("#schema_table").trigger('change');
 
 
@@ -1514,15 +1587,15 @@ hideLoader3();
         }).change();
 
         $("#schema_table").change(function () {
-
             $("#var_table1").html('');
             $("#var_table2").html('');
             ajax_update_database("variables", {
                 "region": $("#schema_table option:selected").val(),
-                "db": db
+                "db": $("#db_table option:selected").val()
             }).done(function (data) {
                 if ("success" in data) {
                     var vars = data.variables;
+
                     fillVarTables("#var_table1", vars);
 
                     fillVarTables("#var_table2", vars);
@@ -1540,6 +1613,9 @@ hideLoader3();
             });
 
         });
+  const unique = (value, index, self) => {
+                            return self.indexOf(value) === index
+                        };
 
         $("#map_var_table").change(function () {
             var variable = $("#map_var_table option:selected").val();
@@ -1549,12 +1625,14 @@ hideLoader3();
             var xhr = ajax_update_database("dates", {
                 "variable": variable,
                 "region": $("#schema_table option:selected").val(),
-                "db": db
+                "db": $("#db_table option:selected").val()
             });
 
             xhr.done(function (data) {
+                 var dts = [];
                 if ("success" in data) {
                     var dates = data.dates;
+
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
                         var new_option = new Option(date[0], date[1]);
@@ -1563,7 +1641,27 @@ hideLoader3();
                         } else {
                             $("#time_table").append(new_option);
                         }
+                        var d = new Date(date[0]);
+
+
+                        dts.push(d.getFullYear());
+
+
+
+
                     });
+                       const uniquedts = dts.filter(unique);
+                         $("#seasonyear").html('');
+                        uniquedts.forEach(function (date, i) {
+
+                            var new_option = new Option(date, date);
+                            if (i == 0) {
+                            $("#seasonyear").append(new_option).trigger('change');
+                        } else {
+                           $("#seasonyear").append(new_option);
+                        }
+
+                        });
                     if (dates.length == 0) {
                         document.getElementsByClassName("cvs")[0].style.display = "none";
                         document.getElementsByClassName("cvs")[1].style.display = "none";
@@ -1674,9 +1772,9 @@ hideLoader3();
             $(".error").html('');
             if (region != undefined) {
                 var xhr = ajax_update_database("raster", {
-                    "db": db,
+                    "db": $("#db_table option:selected").val(),
                     "variable": variable,
-                    "region": region,
+                    "region": $("#schema_table option:selected").val(),
                     "date": date,
                     "min": min,
                     "max": max
@@ -1754,11 +1852,12 @@ hideLoader3();
 
                         }
                 ajax_update_database("get-schema-yield", {
-                    "db": db,
-                    "schema": region,
+                    "db": $("#db_table:selected").val(),
+                    "schema": $("#schema_table:selected").val(),
                     "startdate": startdate,
                     "enddate": enddate,
                 }).done(function (data) {
+
                     if ("success" in data) {
                         ajax_update_database("scale", {
                             "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
@@ -1797,9 +1896,9 @@ hideLoader3();
                             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
 
                         }
-                ajax_update_database("get-schema-yield", {
-                    "db": db,
-                    "schema": region,
+               ajax_update_database("get-schema-yield", {
+                    "db": $("#db_table option:selected").val(),
+                    "schema": $("#schema_table option:selected").val(),
                     "startdate": startdate,
                     "enddate": enddate,
                 }).done(function (data) {
