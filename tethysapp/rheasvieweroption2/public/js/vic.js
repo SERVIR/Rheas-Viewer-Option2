@@ -625,7 +625,7 @@ selected=false;
     };
     function styleFunction11(feature, resolution) {
         // get the incomeLevel from the feature properties
-        var level = feature.getId().split(".")[1];
+        var level =feature.getProperties().OBJECTID;
 
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
@@ -671,7 +671,7 @@ return [styleCache[index]];
 
     function styleFunction1(feature, resolution) {
         // get the incomeLevel from the feature properties
-        var level = feature.getId().split(".")[1];
+        var level = feature.getProperties().OBJECTID;
 
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
@@ -773,8 +773,9 @@ return [styleCache[index]];
 
     function styleFunction(feature, resolution) {
         // get the incomeLevel from the feature properties
-        var level = feature.getId().split(".")[1];
-
+        console.log(feature.getProperties().OBJECTID);
+       // var level = feature.getId().split(".")[1];
+var level = feature.getProperties().OBJECTID;
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
             var index = -1;
@@ -962,43 +963,52 @@ var tooltip = document.getElementById('tooltip11');
         var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
 
         vectorLayer1.setSource(new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: function (extent) {
-                return wms_url + '?service=WFS&' +
-                    'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
-                    'outputFormat=application/json&srsname=EPSG:3857&' +
-                    'bbox=' + extent.join(',') + ',EPSG:3857';
-            },
-            strategy: ol.loadingstrategy.bbox,
-            wrapX: false,
+            // format: new ol.format.GeoJSON(),
+            // url: function (extent) {
+            //     return wms_url + '?service=WFS&' +
+            //         'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
+            //         'outputFormat=application/json&srsname=EPSG:3857&' +
+            //         'bbox=' + extent.join(',') + ',EPSG:3857';
+            // },
+            // strategy: ol.loadingstrategy.bbox,
+            // wrapX: false,
+
+             features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+                featureProjection: 'EPSG:3857'
+            })
 
         }));
           vectorLayer11.setSource(new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: function (extent) {
-                return wms_url + '?service=WFS&' +
-                    'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
-                    'outputFormat=application/json&srsname=EPSG:3857&' +
-                    'bbox=' + extent.join(',') + ',EPSG:3857';
-            },
-            strategy: ol.loadingstrategy.bbox,
-            wrapX: false,
-
+            // format: new ol.format.GeoJSON(),
+            // url: function (extent) {
+            //     return wms_url + '?service=WFS&' +
+            //         'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
+            //         'outputFormat=application/json&srsname=EPSG:3857&' +
+            //         'bbox=' + extent.join(',') + ',EPSG:3857';
+            // },
+            // strategy: ol.loadingstrategy.bbox,
+            // wrapX: false,
+   features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+                featureProjection: 'EPSG:3857'
+            })
         }));
         vectorLayer1.setZIndex(3);
         map1.addLayer(vectorLayer1);
          vectorLayer11.setZIndex(Infinity);
         map.addLayer(vectorLayer11);
             vectorLayer2.setSource(new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: function (extent) {
-                return wms_url + '?service=WFS&' +
-                    'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
-                    'outputFormat=application/json&srsname=EPSG:3857&' +
-                    'bbox=' + extent.join(',') + ',EPSG:3857';
-            },
-            strategy: ol.loadingstrategy.bbox,
-            wrapX: false,
+            // format: new ol.format.GeoJSON(),
+            // url: function (extent) {
+            //     return wms_url + '?service=WFS&' +
+            //         'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
+            //         'outputFormat=application/json&srsname=EPSG:3857&' +
+            //         'bbox=' + extent.join(',') + ',EPSG:3857';
+            // },
+            // strategy: ol.loadingstrategy.bbox,
+            // wrapX: false,
+                  features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+                featureProjection: 'EPSG:3857'
+            })
 
         }));
         vectorLayer2.setZIndex(4);
