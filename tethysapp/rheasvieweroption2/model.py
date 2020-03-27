@@ -256,7 +256,7 @@ def get_times(db,region,variable):
 
 def export_pg_table(export_path, pgtable_name, host, username, password, db, pg_sql_select):
 
-    cmd = '''/home/Socrates/spulla/tethys/miniconda/envs/tethys/bin/ogr2ogr -overwrite -f \"ESRI Shapefile\" {export_path}/{pgtable_name}.shp PG:"host={host} user={username} dbname={db} password={password}" -sql "{pg_sql_select}"'''.format(
+    cmd = '''/home/tethys/miniconda/envs/tethys/bin/ogr2ogr -overwrite -f \"ESRI Shapefile\" {export_path}/{pgtable_name}.shp PG:"host={host} user={username} dbname={db} password={password}" -sql "{pg_sql_select}"'''.format(
         pgtable_name=pgtable_name, export_path=export_path, host=host, username=username, db=db, password=password,
         pg_sql_select=pg_sql_select)
     os.system(cmd)
