@@ -625,7 +625,7 @@ selected=false;
     };
     function styleFunction11(feature, resolution) {
         // get the incomeLevel from the feature properties
-        var level =feature.getProperties().OBJECTID;
+        var level =feature.getProperties().countyid;
 
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
@@ -639,7 +639,7 @@ selected=false;
 
             }
       
-            if (level == 3 & index != -1) {
+            if (level == 'KE041' & index != -1) {
                 styleCache[index] = new ol.style.Style({
                     stroke: new ol.style.Stroke({
                         color: 'rgba(0, 0, 255, 0.7)',
@@ -671,7 +671,7 @@ return [styleCache[index]];
 
     function styleFunction1(feature, resolution) {
         // get the incomeLevel from the feature properties
-        var level = feature.getProperties().OBJECTID;
+        var level = feature.getProperties().countyid;
 
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
@@ -773,14 +773,13 @@ return [styleCache[index]];
 
     function styleFunction(feature, resolution) {
         // get the incomeLevel from the feature properties
-      //  console.log(feature.getProperties().OBJECTID);
        // var level = feature.getId().split(".")[1];
-var level = feature.getProperties().OBJECTID;
+var level = feature.getProperties().countyid;
+
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
             var index = -1;
             for (var i = 0; i < yield_data.length; ++i) {
-
                 if (yield_data[i][0] == level) {
                     index = i;
                     break;
@@ -959,6 +958,7 @@ var tooltip = document.getElementById('tooltip11');
 
         yield_data = data.yield;
         store = data.storename;
+        console.log(yield_data);
         var styling = get_styling("dssat", scale, 'cv_dssat');
         var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
         console.log(bbox);
@@ -996,7 +996,7 @@ var tooltip = document.getElementById('tooltip11');
         map1.addLayer(vectorLayer1);
          vectorLayer11.setZIndex(Infinity);
         map.addLayer(vectorLayer11);
-            vectorLayer2.setSource(new ol.source.Vector({
+          //  vectorLayer2.setSource(new ol.source.Vector({
             // format: new ol.format.GeoJSON(),
             // url: function (extent) {
             //     return wms_url + '?service=WFS&' +
@@ -1006,19 +1006,19 @@ var tooltip = document.getElementById('tooltip11');
             // },
             // strategy: ol.loadingstrategy.bbox,
             // wrapX: false,
-                  features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
-                featureProjection: 'EPSG:3857'
-            })
+            //      features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+              //  featureProjection: 'EPSG:3857'
+            //})
 
-        }));
-        vectorLayer2.setZIndex(4);
-        map1.addLayer(vectorLayer2);
+       // }));
+     //   vectorLayer2.setZIndex(4);
+   //     map1.addLayer(vectorLayer2);
 
         map1.crossOrigin = 'anonymous';
         console.log(selected);
 
         select_interaction = new ol.interaction.Select({
-            layers: selected==false && vectorLayer2.getSource()!=null?[vectorLayer2]:[vectorLayer1],
+            layers: [vectorLayer1],//selected==false && vectorLayer2.getSource()!=null?[vectorLayer2]:[vectorLayer1],
             style: new ol.style.Style({
                 stroke: new ol.style.Stroke({
                     color: 'rgba(0, 0, 255, 0.7)',
@@ -1033,7 +1033,7 @@ var tooltip = document.getElementById('tooltip11');
         map1.addInteraction(select_interaction);
          hoverInteraction = new ol.interaction.Select({
             condition: ol.events.condition.pointerMove,
-            layers: vectorLayer2.getSource()==null?[vectorLayer1]:[vectorLayer2],  //Setting layers to be hovered
+            layers: [vectorLayer1],//vectorLayer2.getSource()==null?[vectorLayer1]:[vectorLayer2],  //Setting layers to be hovered
             style: new ol.style.Style({
 
                 fill: new ol.style.Fill({
@@ -1051,7 +1051,7 @@ var tooltip = document.getElementById('tooltip11');
         select_interaction.on('select', function (e) {
             selected=true;
 
-            gid =e.selected[0].getProperties().OBJECTID;// e.selected[0].getId().split(".")[1];
+            gid =e.selected[0].getProperties().countyid;// e.selected[0].getId().split(".")[1];
             temp=gid;
             var polygon = $("#poly-lat-lon").val();
             generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
@@ -1060,7 +1060,7 @@ var tooltip = document.getElementById('tooltip11');
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
             // vectorLayer2.setSource(null);
             // console.log(vectorLayer2.getSource());
-              vectorLayer2.setZIndex(3);
+            //  vectorLayer2.setZIndex(3);
                 vectorLayer1.setZIndex(4);
         });
         selectedFeatures = select_interaction.getFeatures();
@@ -1077,13 +1077,13 @@ var tooltip = document.getElementById('tooltip11');
                  $("#poly-lat-lon").val(json_object);
 
 
-                var gid = feature.getProperties().OBJECTID;//feature.getId().split(".")[1];
+                var gid = feature.getProperties().countyid;//feature.getId().split(".")[1];
                 $("#gid").val(gid);
                 var schema = $("#schema_table option:selected").val();
 
                 $("#gid").val(gid);
                 $("#schema").val(schema);
-                var xhr = ajax_update_database("get-ensemble", {"db": db, "gid": gid, "schema": schema});
+                var xhr = ajax_update_database("get-ensemble", {"db": db, "gid": gid, "schema": $("#schema_table option:selected").val()});
                 xhr.done(function (data) {
                     if ("success" in data) {
                         $(".ensemble").removeClass('hidden');
@@ -1109,7 +1109,7 @@ var tooltip = document.getElementById('tooltip11');
         var hoverFeatures = hoverInteraction.getFeatures();
         hoverInteraction.on('select', function (evt) {
             if (evt.selected.length > 0) {
-                var gid = evt.selected[0].getProperties().OBJECTID;//evt.selected[0].getId().split(".")[1];
+                var gid = evt.selected[0].getProperties().countyid;//evt.selected[0].getId().split(".")[1];
                 var county_name = "Unknown";
                 var yield_val = "unavailable";
                   var startdate = '';
@@ -1124,7 +1124,7 @@ var tooltip = document.getElementById('tooltip11');
         }
                 ajax_update_database("get-schema-yield-gid", {
                     "db": $("#db_table option:selected").val(),
-                    "schema":region,
+                    "schema":$("#schema_table option:selected").val(),
                     "gid": gid,
                     "startdate":startdate,
                     "enddate":enddate
@@ -1133,7 +1133,7 @@ var tooltip = document.getElementById('tooltip11');
                         ajax_update_database("get-county", {
                             "db": $("#db_table option:selected").val(),
                             "gid": gid,
-                            "schema": region,
+                            "schema": $("#schema_table option:selected").val(),
                         }).done(function (data1) {
 
                             if ("success" in data1) {
@@ -1220,7 +1220,6 @@ var tooltip = document.getElementById('tooltip11');
         showLoader4();
         var startdate = '';
         var enddate = '';
-        console.log(gid);
         if ($("#myonoffswitch").is(':checked')) {
             startdate = $("#seasonyear option:selected").val() + "-05-01";
             enddate = $("#seasonyear option:selected").val() + "-08-31";
@@ -1243,13 +1242,14 @@ var tooltip = document.getElementById('tooltip11');
 
 
         var xhr = ajax_update_database("get-ens-values", jsonObj);
-        if (gid == undefined || gid == "") gid = 3;
+        if (gid == undefined || gid == "") gid = 'KE041';
         ajax_update_database("get-county", {
-            "db": db,
+            "db": $("#db_table option:selected").val(),
             "gid": gid,
             "schema": $("#schema_table option:selected").val()
         }).done(function (data) {
             if ("success" in data) {
+                console.log(data);
                 county_name = data["county"][0][0];
             } else {
                 county_name = "Unknown";
@@ -1577,12 +1577,12 @@ hideLoader3();
                             generate_vic_graph("#vic_plotter_1", variable1, point, "", "");
                             generate_vic_graph("#vic_plotter_2", variable2, point, "", "");
 
-                            generate_dssat_graph("#dssat_plotter_1", -1, $("#var_table3 option:selected").val());
-                            generate_dssat_graph("#dssat_plotter_2", -1, $("#var_table4 option:selected").val());
+                            generate_dssat_graph("#dssat_plotter_1", "", $("#var_table3 option:selected").val());
+                            generate_dssat_graph("#dssat_plotter_2", "", $("#var_table4 option:selected").val());
                             map.removeLayer(wms_layer);
                             map.removeLayer(boundaryLayer);
                             vectorLayer1.setSource(null);
-                            vectorLayer2.setSource(null);
+                           // vectorLayer2.setSource(null);
 
                         } else {
                             document.getElementsByClassName("cvs")[0].style.display = "block";
@@ -1679,12 +1679,12 @@ hideLoader3();
                          var point = $("#point-lat-lon").val();
                         generate_vic_graph("#vic_plotter_1", variable1, point, "");
                         generate_vic_graph("#vic_plotter_2", variable2, point, "");
-                        generate_dssat_graph("#dssat_plotter_1", -1, $("#var_table3 option:selected").val());
-                        generate_dssat_graph("#dssat_plotter_2", -1, $("#var_table4 option:selected").val());
+                        generate_dssat_graph("#dssat_plotter_1", "", $("#var_table3 option:selected").val());
+                        generate_dssat_graph("#dssat_plotter_2", "", $("#var_table4 option:selected").val());
                         map.removeLayer(wms_layer);
                         map.removeLayer(boundaryLayer);
                         vectorLayer1.setSource(null);
-                         vectorLayer2.setSource(null);
+                       //  vectorLayer2.setSource(null);
                     } else {
                         document.getElementsByClassName("cvs")[0].style.display = "block";
                         document.getElementsByClassName("cvs")[1].style.display = "block";
@@ -1701,7 +1701,7 @@ hideLoader3();
             variable1 = $("#var_table1 option:selected").val();
             var xhr = ajax_update_database("dates", {
                 "variable": variable1,
-                "region": region,
+                "region": $("#schema_table option:selected").val(),
                 "db": db
             });
             xhr.done(function (data) {
@@ -1759,11 +1759,11 @@ hideLoader3();
 
         });
         $("#var_table3").change(function () {
-            if (gid == undefined || gid == "") gid = 3;
+            if (gid == undefined || gid == "") gid = 'KE041';
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
         });
         $("#var_table4").change(function () {
-            if (gid == undefined || gid == "") gid = 3;
+            if (gid == undefined || gid == "") gid = 'KE041';
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
         });
 
@@ -1843,7 +1843,7 @@ hideLoader3();
         $("#ens_table").change(function () {
             var ens = $("#ens_table option:selected").val();
             var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 3;
+            if (gid == undefined || gid == "") gid = 'KE041';
             var xhr = ajax_update_database("get-ens-values", {"db": db, "gid": gid, "schema": region, "ensemble": ens});
             xhr.done(function (data) {
                 if ("success" in data) {
@@ -1877,7 +1877,7 @@ hideLoader3();
                         }).done(function (data1) {
                             if ("success" in data1) {
                                  vectorLayer1.setSource(null);
-                                    vectorLayer2.setSource(null);
+                                //    vectorLayer2.setSource(null);
                                 add_dssat(data, data1.scale);
 
                             } else {
@@ -1887,7 +1887,7 @@ hideLoader3();
                     }
                 });
             var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 3;
+            if (gid == undefined || gid == "") gid = 'KE041';
 
                var point = $("#point-lat-lon").val();
         var polygon = $("#poly-lat-lon").val();
@@ -1921,7 +1921,7 @@ hideLoader3();
                         }).done(function (data1) {
                             if ("success" in data1) {
                                  vectorLayer1.setSource(null);
-                                 vectorLayer2.setSource(null);
+                                // vectorLayer2.setSource(null);
                                 add_dssat(data, data1.scale);
                             } else {
                                 $(".error").html('<h3>Error Retrieving the layer</h3>');
@@ -1930,7 +1930,7 @@ hideLoader3();
                     }
                 });
             var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 3;
+            if (gid == undefined || gid == "") gid = 'KE041';
 
             var point = $("#point-lat-lon").val();
             var polygon = $("#poly-lat-lon").val();
@@ -1945,7 +1945,7 @@ hideLoader3();
         });
         $("#typeofchart").change(function () {
             var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 3;
+            if (gid == undefined || gid == "") gid = 'KE041';
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 
