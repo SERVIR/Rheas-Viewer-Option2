@@ -1083,7 +1083,7 @@ var tooltip = document.getElementById('tooltip11');
 
                 $("#gid").val(gid);
                 $("#schema").val(schema);
-                var xhr = ajax_update_database("get-ensemble", {"db": db, "gid": gid, "schema": $("#schema_table option:selected").val()});
+                var xhr = ajax_update_database("get-ensemble", {"db": $("#db_table option:selected").val(), "gid": gid, "schema": $("#schema_table option:selected").val()});
                 xhr.done(function (data) {
                     if ("success" in data) {
                         $(".ensemble").removeClass('hidden');
@@ -1445,6 +1445,7 @@ hideLoader3();
 
 
     function populate_vic_graph(element, display_name,units, point,graph_data,series){
+        console.log(graph_data);
           $(element).highcharts({
                 chart: {
                     type: display_name == 'Rainfall' ? 'column' : 'line',
@@ -1702,7 +1703,7 @@ hideLoader3();
             var xhr = ajax_update_database("dates", {
                 "variable": variable1,
                 "region": $("#schema_table option:selected").val(),
-                "db": db
+                "db": $("#db_table option:selected").val(),
             });
             xhr.done(function (data) {
                 if ("success" in data) {
@@ -1733,8 +1734,8 @@ hideLoader3();
            variable2 = $("#var_table2 option:selected").val();
             var xhr = ajax_update_database("dates", {
                 "variable": variable2,
-                "region": region,
-                "db": db
+                "region": $("#schema_table option:selected").val(),
+                "db": $("#db_table option:selected").val(),
             });
 
             xhr.done(function (data) {
@@ -1844,7 +1845,7 @@ hideLoader3();
             var ens = $("#ens_table option:selected").val();
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
-            var xhr = ajax_update_database("get-ens-values", {"db": db, "gid": gid, "schema": region, "ensemble": ens});
+            var xhr = ajax_update_database("get-ens-values", {"db": $("#db_table option:selected").val(), "gid": gid, "schema": region, "ensemble": ens});
             xhr.done(function (data) {
                 if ("success" in data) {
                     generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());

@@ -298,7 +298,7 @@ def get_dssat_ensemble(db,gid,schema):
         cur = conn.cursor()
 
 
-        sql = """SELECT DISTINCT ensemble FROM {0}.dssat WHERE ccode={1} ORDER BY ensemble;""".format(schema,"'"+gid+"'")
+        sql = """SELECT DISTINCT ensemble FROM {0}.dssat WHERE ccode={1} ORDER BY ensemble""".format(schema,"'"+gid+"'")
 
         cur.execute(sql)
         data = cur.fetchall()
@@ -318,7 +318,7 @@ def get_dssat_gid(db,schema):
         cur = conn.cursor()
 
 
-        sql = """SELECT DISTINCT gid FROM {0}.dssat;""".format(schema)
+        sql = """SELECT DISTINCT gid FROM {0}.dssat""".format(schema)
 
         cur.execute(sql)
         data = cur.fetchall()
@@ -393,7 +393,8 @@ def get_dssat_ens_values(cur,gid,schema,ensemble,startdate,enddate):
 def get_county_name(db,gid,schema):
     conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
     cur = conn.cursor()
-    sql = """SELECT adm1_en FROM {0}.agareas,{0}.dssat WHERE dssat.gid=agareas.gid and ccode={1};""".format(schema, "'"+gid+"'")
+    sql = """SELECT DISTINCT cname FROM {0}.dssat WHERE ccode={1}""".format(schema, "'"+gid+"'")
+    print(sql)
     cur.execute(sql)
     data = cur.fetchall()
     return data
