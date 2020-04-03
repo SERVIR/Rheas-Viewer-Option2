@@ -255,13 +255,15 @@ def get_ens_values(request):
                 # if "avg" in ensemble:
 
 
-                wsgd_series,lai_series,wsgd_cum_series,lai_cum_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble,startdate,enddate)
+                wsgd_series,lai_series,low_lai_series,high_lai_series,wsgd_cum_series,lai_cum_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble,startdate,enddate)
 
                 return_obj["gid"] = gid
                 return_obj["schema"] = schema
                 return_obj["ensemble"] = ensemble
                 return_obj["wsgd_series"] = wsgd_series
                 return_obj["lai_series"] = lai_series
+                return_obj["low_lai_series"] = low_lai_series
+                return_obj["high_lai_series"] = high_lai_series
                 return_obj["wsgd_cum_series"] = wsgd_cum_series
                 return_obj["lai_cum_series"] = lai_cum_series
                 return_obj["gwad_series"] = gwad_series

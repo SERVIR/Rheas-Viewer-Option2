@@ -345,7 +345,7 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
 
         #if len(startdate)>9 and len(enddate)>9:
       #  sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} AND fdate>={2} AND fdate<={3} GROUP BY ensemble) as foo""".format(schema,int(gid),s,e)
-        sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT dssat.ensemble,MAX(dssat.gwad) FROM {0}.dssat dssat,{0}.dssat_all dssat_all WHERE dssat.gid=dssat_all.gid and ccode={1} AND fdate>={2} AND fdate<={3} GROUP BY dssat.ensemble) as foo""".format(
+        sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT dssat_all.ensemble,MAX(dssat_all.gwad) FROM {0}.dssat dssat,{0}.dssat_all dssat_all WHERE dssat.gid=dssat_all.gid and ccode={1} AND fdate>={2} AND fdate<={3} GROUP BY dssat_all.ensemble) as foo""".format(
             schema, "'"+gid+"'", s, e)
         #else:
          #   sql1 = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT ensemble,MAX(gwad) FROM {0}.dssat_all WHERE gid={1} GROUP BY ensemble) as foo""".format(schema,int(gid))
@@ -353,14 +353,14 @@ def get_dssat_values(db,gid,schema,ensemble,startdate,enddate):
         data1 = cur.fetchall()
         medianens = data1[math.ceil(len(data1)/2) - 1]
         lowens = data1[1]
-        highens = data1[18]
+        highens = data1[len(data1)-2]
 
         med_wsgd_series, med_lai_series, med_wsgd_cum_series, med_lai_cum_series,med_gwad_series = get_dssat_ens_values(cur,gid,schema,medianens[1],"'"+startdate+"'","'"+enddate+"'")
         low_wsgd_series, low_lai_series,low_wsgd_cum_series, low_lai_cum_series, low_gwad_series = get_dssat_ens_values(cur, gid, schema, lowens[1],"'"+startdate+"'","'"+enddate+"'")
         high_wsgd_series, high_lai_series,high_wsgd_cum_series, high_lai_cum_series, high_gwad_series = get_dssat_ens_values(cur, gid, schema, highens[1],"'"+startdate+"'","'"+enddate+"'")
         ensemble_info = [lowens[1],medianens[1],highens[1]]
         conn.close()
-        return med_wsgd_series, med_lai_series, med_wsgd_cum_series, med_lai_cum_series,med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
+        return med_wsgd_series, med_lai_series,low_lai_series,high_lai_series, med_wsgd_cum_series, med_lai_cum_series,med_gwad_series,low_gwad_series,high_gwad_series,ensemble_info
 
          #   wsgd_series, lai_series, gwad_series = get_dssat_ens_values(cur,gid,schema,ensemble)
             #conn.close()
@@ -375,10 +375,10 @@ def get_dssat_ens_values(cur,gid,schema,ensemble,startdate,enddate):
 
     try:
         if len(startdate) > 9 and len(enddate) > 9:
-            sql = """SELECT fdate,dssat.wsgd,dssat.lai,dssat.gwad FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat.ensemble={2} AND fdate>={3} AND fdate<={4} ORDER BY fdate;""".format(
+            sql = """SELECT fdate,dssat_all.wsgd,dssat_all.lai,dssat_all.gwad FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat_all.ensemble={2} AND fdate>={3} AND fdate<={4} ORDER BY fdate;""".format(
                 schema, "'"+gid+"'", int(ensemble),str(startdate),str(enddate))
         else:
-            sql = """SELECT fdate,dssat.wsgd,dssat.lai,dssat.gwad FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat.ensemble={2} ORDER BY fdate;""".format(
+            sql = """SELECT fdate,dssat_all.wsgd,dssat_all.lai,dssat_all.gwad FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat_all.ensemble={2} ORDER BY fdate;""".format(
                 schema,"'"+gid+"'", int(ensemble))
         cur.execute(sql)
         data = cur.fetchall()
@@ -394,7 +394,6 @@ def get_county_name(db,gid,schema):
     conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
     cur = conn.cursor()
     sql = """SELECT DISTINCT cname FROM {0}.dssat WHERE ccode={1}""".format(schema, "'"+gid+"'")
-    print(sql)
     cur.execute(sql)
     data = cur.fetchall()
     return data
@@ -402,13 +401,11 @@ def get_county_name(db,gid,schema):
 def calculate_yield(db,schema,startdate,enddate):
 
     try:
-        print(db)
         conn = psycopg2.connect(
             "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
         storename = str(db+'_'+schema+'_agareas')
-        print(storename)
         cat = Catalog(cfg.geoserver['rest_url'], username=cfg.geoserver['user'], password=cfg.geoserver['password'],disable_ssl_certificate_validation=True)
         try:
             print('Check if the layer exists')
@@ -421,7 +418,6 @@ def calculate_yield(db,schema,startdate,enddate):
         except Exception  as e:
             temp_dir = tempfile.mkdtemp()
             pg_sql = """SELECT * FROM {0}.agareas""".format(schema)
-            print(pg_sql)
             export_pg_table(temp_dir,storename,cfg.connection['host'],cfg.connection['user'],cfg.connection['password'],db ,pg_sql)
             target_zip = os.path.join(os.path.join(temp_dir,storename+'.zip'))
 
@@ -444,7 +440,6 @@ def calculate_yield(db,schema,startdate,enddate):
                                                                                      cfg.geoserver['workspace'],
                                                                                      storename)  # Creating the rest url
 
-            print(request_url)
             user = cfg.geoserver['user']
             password = cfg.geoserver['password']
             requests.put(request_url, verify=False, headers=headers, data=open(target_zip,'rb'),
@@ -458,10 +453,10 @@ def calculate_yield(db,schema,startdate,enddate):
        #sql = """SELECT gid,max(gwad) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
         if len(startdate)>9:
             sql="""select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss,(select gid,max(fdate) maxdate from {0}.dssat_all where fdate>={1} and fdate<={2} group by gid) y,{0}.yield z
-                where x.gid=y.gid and z.gid=x.gid and dss.id=x.gid and x.fdate=y.maxdate group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
+                where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
         else:
             sql = """select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,(select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
-                         where x.gid=y.gid and z.gid=x.gid and dss.id=x.gid and x.fdate=y.maxdate group by dss.ccode,x.fdate""".format(
+                         where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate group by dss.ccode,x.fdate""".format(
                 schema, "'" + str(startdate) + "'", "'" + str(enddate) + "'")
        # sql = """SELECT gid,avg_yield FROM {0}.yield""".format(schema)
         cur.execute(sql)
@@ -483,7 +478,7 @@ def calculate_yield_gid(db, schema, gid,startdate,enddate):
             "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
-        sql = """select y.ccode,min(y.gwad),max(y.gwad),percentile_disc(0.5) within group (order by y.gwad) from (select ccode,dssat.ensemble,max(dssat.gwad) gwad from {0}.dssat_all dssat_all,{0}.dssat dssat where dssat.gid=dssat_all.gid and fdate>={1} and fdate<={2} and ccode={3} group by ccode,dssat.ensemble order by dssat.ensemble)  y
+        sql = """select y.ccode,min(y.gwad),max(y.gwad),percentile_disc(0.5) within group (order by y.gwad) from (select ccode,dssat_all.ensemble,max(dssat_all.gwad) gwad from {0}.dssat_all dssat_all,{0}.dssat dssat where dssat.gid=dssat_all.gid and fdate>={1} and fdate<={2} and ccode={3} group by ccode,dssat_all.ensemble order by dssat_all.ensemble)  y
                     group by y.ccode""".format(schema,"'"+startdate+"'","'"+enddate+"'","'"+gid+"'")
 
         cur.execute(sql)

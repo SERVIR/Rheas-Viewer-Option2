@@ -74,14 +74,14 @@ var LIBRARY_OBJECT = (function () {
         }),
         stroke: new ol.style.Stroke({
             color: [220, 220, 220, 1],
-            width: 4
+            width: 1
         })
     });
  var default_sty = new ol.style.Style({
 
         stroke: new ol.style.Stroke({
             color: [97, 97, 97, 1],
-            width: 4
+            width: 1
         })
     });
 
@@ -656,7 +656,7 @@ selected=false;
 
         stroke: new ol.style.Stroke({
             color: [97, 97, 97, 1],
-            width: 4
+            width: 1
         })
     });
 
@@ -700,7 +700,7 @@ return [styleCache[index]];
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 }  else if (avg_val > 905 && avg_val < 1182) {
@@ -710,7 +710,7 @@ return [styleCache[index]];
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 }else if (avg_val > 628 && avg_val < 905) {
@@ -720,7 +720,7 @@ return [styleCache[index]];
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 } else if (avg_val > 350 && avg_val < 628) {
@@ -730,7 +730,7 @@ return [styleCache[index]];
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 } else if (avg_val < 73) {
@@ -740,7 +740,7 @@ return [styleCache[index]];
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 }
@@ -750,7 +750,7 @@ return [styleCache[index]];
                     styleCache[index] = new ol.style.Style({
                         stroke: new ol.style.Stroke({
                             color: 'rgba(0, 0, 255, 0.7)',
-                            width: 6
+                            width: 1
                         }),
                         fill: new ol.style.Fill({
                             color: 'rgba(0,0,255,0.6)'
@@ -802,7 +802,7 @@ var level = feature.getProperties().countyid;
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 } else if (avg_val > 905 && avg_val < 1182) {
@@ -812,7 +812,7 @@ var level = feature.getProperties().countyid;
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 } else if (avg_val > 628 && avg_val < 905) {
@@ -822,7 +822,7 @@ var level = feature.getProperties().countyid;
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 } else if (avg_val > 350 && avg_val < 628) {
@@ -832,7 +832,7 @@ var level = feature.getProperties().countyid;
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 } else if (avg_val < 73) {
@@ -842,7 +842,7 @@ var level = feature.getProperties().countyid;
                         }),
                         stroke: new ol.style.Stroke({
                             color: '#030303',
-                            width: 3
+                            width: 1
                         })
                     });
                 }
@@ -1221,13 +1221,15 @@ var tooltip = document.getElementById('tooltip11');
         var startdate = '';
         var enddate = '';
         if ($("#myonoffswitch").is(':checked')) {
-            startdate = $("#seasonyear option:selected").val() + "-05-01";
+            startdate = $("#seasonyear option:selected").val() + "-03-01";
             enddate = $("#seasonyear option:selected").val() + "-08-31";
         } else {
-            startdate = $("#seasonyear option:selected").val() + "-09-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+            startdate = $("#seasonyear option:selected").val() + "-10-01";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-31";
 
         }
+        console.log(startdate);
+        console.log(enddate);
         var county_name = "";
         var ens = $("#ens_table option:selected").val();
 
@@ -1310,9 +1312,12 @@ var tooltip = document.getElementById('tooltip11');
                 input = $("#typeofchart option:selected").val() == "Daily" ? data.lai_series : data.lai_cum_series;
                 lai_low = data.low_lai_series;
                 lai_high = data.high_lai_series;
+                console.log(lai_high);
+                console.log(lai_low);
                 title = "LAI " + $("#seasonyear option:selected").val() + " :";
                 titletext = "LAI (m2/m2)";
-                series = [{
+                 series = [
+                     {
                     data: input,
                     name: "Median",
                     type: 'line',
@@ -1414,11 +1419,11 @@ hideLoader3();
         var startdate = '';
         var enddate = '';
         if ($("#myonoffswitch").is(':checked')) {
-            startdate = $("#seasonyear option:selected").val() + "-05-01";
+            startdate = $("#seasonyear option:selected").val() + "-03-01";
             enddate = $("#seasonyear option:selected").val() + "-08-31";
         } else {
-            startdate = $("#seasonyear option:selected").val() + "-09-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+            startdate = $("#seasonyear option:selected").val() + "-10-01";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-31";
         }
         var json={
             "db": $("#db_table option:selected").val(),
@@ -1856,11 +1861,11 @@ hideLoader3();
         $("#myonoffswitch").change(function () {
               var startdate="",enddate="";
                 if ($("#myonoffswitch").is(':checked')) {
-                            startdate = $("#seasonyear option:selected").val() + "-05-01";
+                            startdate = $("#seasonyear option:selected").val() + "-03-01";
                             enddate = $("#seasonyear option:selected").val() + "-08-31";
                         } else {
-                            startdate = $("#seasonyear option:selected").val() + "-09-01";
-                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+                            startdate = $("#seasonyear option:selected").val() + "-10-01";
+                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-31";
 
                         }
                 ajax_update_database("get-schema-yield", {
@@ -1902,11 +1907,11 @@ hideLoader3();
         $("#seasonyear").change(function () {
               var startdate="",enddate="";
                 if ($("#myonoffswitch").is(':checked')) {
-                            startdate = $("#seasonyear option:selected").val() + "-05-01";
+                            startdate = $("#seasonyear option:selected").val() + "-03-01";
                             enddate = $("#seasonyear option:selected").val() + "-08-31";
                         } else {
-                            startdate = $("#seasonyear option:selected").val() + "-09-01";
-                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+                            startdate = $("#seasonyear option:selected").val() + "-10-01";
+                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-31";
 
                         }
                ajax_update_database("get-schema-yield", {
