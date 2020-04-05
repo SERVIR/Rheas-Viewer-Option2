@@ -955,13 +955,10 @@ var tooltip = document.getElementById('tooltip11');
 
     function add_dssat(data, scale) {
 
-
         yield_data = data.yield;
         store = data.storename;
-        console.log(yield_data);
         var styling = get_styling("dssat", scale, 'cv_dssat');
         var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
-        console.log(bbox);
         vectorLayer1.setSource(new ol.source.Vector({
             // format: new ol.format.GeoJSON(),
             // url: function (extent) {
@@ -1161,6 +1158,7 @@ var tooltip = document.getElementById('tooltip11');
                 document.getElementById("tooltip11").style.display = 'none';
             }
         });
+        hideLoader();
     }
 
     add_vic = function (data) {
@@ -1225,11 +1223,9 @@ var tooltip = document.getElementById('tooltip11');
             enddate = $("#seasonyear option:selected").val() + "-08-31";
         } else {
             startdate = $("#seasonyear option:selected").val() + "-10-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-31";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
         }
-        console.log(startdate);
-        console.log(enddate);
         var county_name = "";
         var ens = $("#ens_table option:selected").val();
 
@@ -1251,7 +1247,6 @@ var tooltip = document.getElementById('tooltip11');
             "schema": $("#schema_table option:selected").val()
         }).done(function (data) {
             if ("success" in data) {
-                console.log(data);
                 county_name = data["county"][0][0];
             } else {
                 county_name = "Unknown";
@@ -1312,8 +1307,6 @@ var tooltip = document.getElementById('tooltip11');
                 input = $("#typeofchart option:selected").val() == "Daily" ? data.lai_series : data.lai_cum_series;
                 lai_low = data.low_lai_series;
                 lai_high = data.high_lai_series;
-                console.log(lai_high);
-                console.log(lai_low);
                 title = "LAI " + $("#seasonyear option:selected").val() + " :";
                 titletext = "LAI (m2/m2)";
                  series = [
@@ -1348,7 +1341,9 @@ var tooltip = document.getElementById('tooltip11');
                     }
                 ]
             }
-
+hideLoader3();
+                    hideLoader4();
+                     hideLoader();
 
             if ("error" in data) series = [];
 
@@ -1401,9 +1396,7 @@ var tooltip = document.getElementById('tooltip11');
                 });
 
         });
-hideLoader3();
-                    hideLoader4();
-                      hideLoader();
+
     }
 
     function generate_vic_graph(element, variable, point, polygon) {
@@ -1423,7 +1416,7 @@ hideLoader3();
             enddate = $("#seasonyear option:selected").val() + "-08-31";
         } else {
             startdate = $("#seasonyear option:selected").val() + "-10-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-31";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
         }
         var json={
             "db": $("#db_table option:selected").val(),
@@ -1437,27 +1430,27 @@ hideLoader3();
         var xhr = ajax_update_database("get-vic-plot", json);
         xhr.done(function (data) {
             graph_data = data;
+            console.log(data.time_series);
             if (data.time_series != undefined && data.time_series.length > 0)
                 series = [{
                     data: data.time_series,
                     name: display_name,
                     showInLegend: false
                 }];
-            populate_vic_graph(element, display_name, units, point, graph_data, series);
+            populate_vic_graph(element, display_name, units, point, polygon,graph_data, series);
         });
 
     }
 
 
-    function populate_vic_graph(element, display_name,units, point,graph_data,series){
-        console.log(graph_data);
+    function populate_vic_graph(element, display_name,units, point,polygon,graph_data,series){
           $(element).highcharts({
                 chart: {
                     type: display_name == 'Rainfall' ? 'column' : 'line',
                     zoomType: 'x'
                 },
                 title: {
-                    text: "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]",
+                    text:point==""?"Polygon": "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]",
                     style: {
                         fontSize: '10px',
                         fontWeight: 'bold'
@@ -1604,6 +1597,7 @@ hideLoader3();
         }).change();
 
         $("#schema_table").change(function () {
+            showLoader();
             $("#var_table1").html('');
             $("#var_table2").html('');
             ajax_update_database("variables", {
@@ -1865,7 +1859,7 @@ hideLoader3();
                             enddate = $("#seasonyear option:selected").val() + "-08-31";
                         } else {
                             startdate = $("#seasonyear option:selected").val() + "-10-01";
-                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-31";
+                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
                         }
                 ajax_update_database("get-schema-yield", {
@@ -1876,7 +1870,6 @@ hideLoader3();
                 }).done(function (data) {
 
                     if ("success" in data) {
-                        console.log(data);
                         ajax_update_database("scale", {
                             "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
                             "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
@@ -1911,7 +1904,7 @@ hideLoader3();
                             enddate = $("#seasonyear option:selected").val() + "-08-31";
                         } else {
                             startdate = $("#seasonyear option:selected").val() + "-10-01";
-                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-31";
+                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
                         }
                ajax_update_database("get-schema-yield", {
@@ -1942,10 +1935,8 @@ hideLoader3();
             var polygon = $("#poly-lat-lon").val();
             generate_vic_graph("#vic_plotter_1", variable1, point, "", polygon);
             generate_vic_graph("#vic_plotter_2", variable2, point, "", polygon);
-            console.log(gid);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
-            // hideLoader();
 
 
         });
@@ -2074,6 +2065,9 @@ hideLoader3();
 
 
     });
+function showLoader() {
+    $('#loading').show();
+}
 function hideLoader() {
     $('#loading').hide();
 }

@@ -131,7 +131,7 @@ def get_vic_point(db,region,variable,point,sd,ed):
         time_series = []
         for item in ts:
             time_stamp = time.mktime(datetime.strptime(str(item[0]), "%Y-%m-%d").timetuple()) * 1000
-            val = round(item[1], 3)
+            val = round(float(item[1]), 3)
             time_series.append([time_stamp, val])
 
         time_series.sort()
@@ -175,7 +175,7 @@ def get_vic_polygon(db,region,variable,polygon,sd,ed):
         time_series = []
         for item in poly_ts:
             time_stamp = time.mktime(datetime.strptime(str(item[0]), "%Y-%m-%d").timetuple()) * 1000
-            val = round(item[1], 3)
+            val = round(float(item[1]), 3)
             time_series.append([time_stamp, val])
 
         time_series.sort()
