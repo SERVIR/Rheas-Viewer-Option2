@@ -191,7 +191,7 @@ def get_vic_plot(request):
                 return_obj["stddev"] = stddev
                 return_obj["min"] = min
                 return_obj["max"] = max
-                return_obj["point"] = point
+                return_obj["polygon"] = polygon
                 return_obj["time_series"] = time_series
                 return_obj["variable"] = variable
                 return_obj["interaction"] = "polygon"

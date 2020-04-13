@@ -1559,7 +1559,7 @@ hideLoader3();
                             //
                             // }
                         });
-                    if($("#db_table option:selected").val()=="rheas")$("#schema_table").val("kenya_tethys");
+                    if($("#db_table option:selected").val()=="rheas")$("#schema_table").val("ken_tethys2");
                         $("#schema_table").trigger('change');
 
 

@@ -455,7 +455,7 @@ def calculate_yield(db,schema,startdate,enddate):
             sql="""select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss,(select gid,max(fdate) maxdate from {0}.dssat_all where fdate>={1} and fdate<={2} group by gid) y,{0}.yield z
                 where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
         else:
-            sql = """select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,(select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
+            sql = """select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss, (select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
                          where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate group by dss.ccode,x.fdate""".format(
                 schema, "'" + str(startdate) + "'", "'" + str(enddate) + "'")
        # sql = """SELECT gid,avg_yield FROM {0}.yield""".format(schema)

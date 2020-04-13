@@ -59,7 +59,7 @@ var vicmap = new ol.Map({
 
 var xhr = ajax_update_database("dates1", {
 	"variable": "spi3",
-	"region": "kenya_tethys",
+	"region": "ken_tethys2",
 	"db": "rheas"
 });
 xhr.done(function (data) {
@@ -73,7 +73,7 @@ xhr.done(function (data) {
 		ajax_update_database("raster1", {
 				"db": "rheas",
 				"variable": "spi3",
-				"region": "kenya_tethys",
+				"region": "ken_tethys2",
 				"date": date,
 				"min":min,
 				"max":max
@@ -103,26 +103,30 @@ function get_cal(bounds) {
 
 function add_dssat(data, scale) {
 	yield_data = data.yield;
+	console.log(yield_data[yield_data.length-1]);
 	document.getElementById("dssatdate").innerHTML=yield_data[yield_data.length-1][3];
 	store = data.storename;
 	var styling = get_styling("dssat", scale, 'curr_dssat');
 	var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
 
 	vectorLayer1.setSource(new ol.source.Vector({
-		format: new ol.format.GeoJSON(),
-		url: function (extent) {
-			return wfs_url + '?service=WFS&' +
-				'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
-				'outputFormat=application/json&srsname=EPSG:3857&' +
-				'bbox=' + extent.join(',') + ',EPSG:3857';
-		},
-		strategy: ol.loadingstrategy.bbox,
-		wrapX: false
+		// format: new ol.format.GeoJSON(),
+		// url: function (extent) {
+		// 	return wfs_url + '?service=WFS&' +
+		// 		'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
+		// 		'outputFormat=application/json&srsname=EPSG:3857&' +
+		// 		'bbox=' + extent.join(',') + ',EPSG:3857';
+		// },
+		// strategy: ol.loadingstrategy.bbox,
+		// wrapX: false
+		   features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+                featureProjection: 'EPSG:3857'
+            })
 	}));
 }
 var xhr = ajax_update_database("get-schema-yield", {
 	"db": "rheas",
-	"schema": "kenya_tethys",
+	"schema": "ken_tethys2",
 	  "startdate": "",
                     "enddate": "",
 });
@@ -155,13 +159,13 @@ var default_style = new ol.style.Style({
 	}),
 	stroke: new ol.style.Stroke({
 		color: [220, 220, 220, 1],
-		width: 4
+		width: 1
 	})
 });
 
 function styleFunction(feature, resolution) {
 	// get the incomeLevel from the feature properties
-	var level = feature.getId().split(".")[1];
+	var level = feature.getProperties().countyid;
 	if (yield_data != null) {
 		// var index = yield_data.findIndex(function(x) { return x[0]==level });
 		var index = -1;
