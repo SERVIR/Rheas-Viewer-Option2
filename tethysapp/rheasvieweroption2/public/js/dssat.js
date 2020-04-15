@@ -184,44 +184,44 @@ function styleFunction(feature, resolution) {
 		if (index != "-1") {
 			var avg_val = yield_data[index][2];
 
-			if (avg_val > 2.0) {
+			if (avg_val >= 2.0) {
 				styleCache[index] = new ol.style.Style({
 					fill: new ol.style.Fill({
 						color: high
 					}),
 					stroke: new ol.style.Stroke({
 						color: '#030303',
-						width: 3
+						width: 1
 					})
 				});
-			} else if (avg_val > 0.8 && avg_val < 1.9) {
+			} else if (avg_val > 0.8 && avg_val <= 1.9) {
 				styleCache[index] = new ol.style.Style({
 					fill: new ol.style.Fill({
 						color: much
 					}),
 					stroke: new ol.style.Stroke({
 						color: '#030303',
-						width: 3
+						width: 1
 					})
 				});
-			} else if (avg_val > 0.4 && avg_val < 0.8) {
+			} else if (avg_val > 0.4 && avg_val <= 0.8) {
 				styleCache[index] = new ol.style.Style({
 					fill: new ol.style.Fill({
 						color: mid
 					}),
 					stroke: new ol.style.Stroke({
 						color: '#030303',
-						width: 3
+						width: 1
 					})
 				});
-			} else if (avg_val > 0.0 && avg_val < 0.4) {
+			} else if (avg_val > 0.0 && avg_val <= 0.4) {
 				styleCache[index] = new ol.style.Style({
 					fill: new ol.style.Fill({
 						color: low
 					}),
 					stroke: new ol.style.Stroke({
 						color: '#030303',
-						width: 3
+						width: 1
 					})
 				});
 			}
@@ -232,7 +232,7 @@ function styleFunction(feature, resolution) {
 					}),
 					stroke: new ol.style.Stroke({
 						color: '#030303',
-						width: 3
+						width: 1
 					})
 				});
 			}

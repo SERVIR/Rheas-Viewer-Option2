@@ -1136,7 +1136,7 @@ var tooltip = document.getElementById('tooltip11');
                             if ("success" in data1) {
                                 county_name = data1["county"][0][0];
                                 if (data.yield[0]) {
-                                    yield_val = Math.round(data.yield[0][3]);
+                                    yield_val = Math.round(data.yield[0][3]).toFixed(2);
                                 }
                                 document.getElementById("tooltip11").style.display = data.yield[0][3] ? 'block' : 'none';
                                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
