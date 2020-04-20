@@ -102,6 +102,7 @@ function get_cal(bounds) {
 };
 
 function add_dssat(data, scale) {
+	showLoader();
 	yield_data = data.yield;
 	console.log(yield_data[yield_data.length-1]);
 	document.getElementById("dssatdate").innerHTML=yield_data[yield_data.length-1][3];
@@ -123,6 +124,7 @@ function add_dssat(data, scale) {
                 featureProjection: 'EPSG:3857'
             })
 	}));
+	hideLoader();
 }
 var xhr = ajax_update_database("get-schema-yield", {
 	"db": "rheas",
@@ -141,6 +143,7 @@ xhr.done(function (data) {
 			} else {
 				$(".error").html('<h3>Error Retrieving the layer</h3>');
 			}
+
 		});
 	} else {
 		$(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
@@ -162,6 +165,13 @@ var default_style = new ol.style.Style({
 		width: 1
 	})
 });
+ var default_sty = new ol.style.Style({
+
+        stroke: new ol.style.Stroke({
+            color: [97, 97, 97, 1],
+            width: 1
+        })
+    });
 
 function styleFunction(feature, resolution) {
 	// get the incomeLevel from the feature properties
@@ -244,6 +254,53 @@ function styleFunction(feature, resolution) {
 	}
 
 };
+
+  function styleFunctionBoundaries(feature, resolution) {
+        // get the incomeLevel from the feature properties
+        var level =feature.getProperties().countyid;
+
+        if (yield_data != null) {
+            // var index = yield_data.findIndex(function(x) { return x[0]==level });
+            var index = -1;
+            for (var i = 0; i < yield_data.length; ++i) {
+
+                if (yield_data[i][0] == level) {
+                    index = i;
+                    break;
+                }
+
+            }
+
+            if (level == 'KE041' & index != -1) {
+                styleCache[index] = new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 255, 0.7)',
+                        width: 6
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(0,0,255,0.8)'
+                    })
+                });
+            }
+            else{
+
+           styleCache[index] = new ol.style.Style({
+
+        stroke: new ol.style.Stroke({
+            color: [97, 97, 97, 1],
+            width: 1
+        })
+    });
+
+            }
+return [styleCache[index]];
+
+        }
+        return [default_sty];
+
+    };
+
+
 
 get_bounds = function (ws, store, url, callback) {
 	// console.log(ws,store,url);
@@ -410,12 +467,23 @@ add_wms_vic = function (data) {
 		source: wms_source
 	});
 	vicmap.addLayer(wms_layer);
+	var vectorLayerBoundaries= new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: styleFunctionBoundaries
+        });
+	 vectorLayerBoundaries.setSource(new ol.source.Vector({
+   features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+                featureProjection: 'EPSG:3857'
+            })
+        }));
+	vicmap.addLayer(vectorLayerBoundaries);
 };
 
 var vectorLayer1 = new ol.layer.Vector({
 	source: new ol.source.Vector(),
 	style: styleFunction
 });
+
 var baseLayer1 = new ol.layer.Tile({
 			source: new ol.source.XYZ({
                 attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
@@ -441,3 +509,9 @@ vicmap.getView().on('change:resolution', (event) => {
 	dssatmap.setView(vicmap.getView());
 
 });
+function showLoader() {
+    $('#loading').show();
+}
+function hideLoader() {
+    $('#loading').hide();
+}

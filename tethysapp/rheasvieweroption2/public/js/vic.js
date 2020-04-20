@@ -269,7 +269,7 @@ var LIBRARY_OBJECT = (function () {
         function addControls() {
             var element = document.createElement('div');
             element.className = 'ol-control-panel ol-unselectable ol-control';
-            element.appendChild(createControl("Point", "glyphicon glyphicon-record"));
+           // element.appendChild(createControl("Point", "glyphicon glyphicon-record"));
             element.appendChild(createControl("Polygon", "fas fa-draw-polygon"));
             element.appendChild(createControl("Recenter", "fas fa-compass"));
             element.appendChild(createControl("ToggleDistrict", "fas fa-toggle-on"));
@@ -585,7 +585,14 @@ selected=false;
                 k = k + 1;
                 if (k % 4 == 0) {
                     try {
-                        ctx.fillText(Math.round(scale[k - 1].toFixed(2)), j, 33);
+                        if(variable=="net_long" || variable=="net_short" || variable=="rainf" || variable=="rootmoist"||
+                            variable=="rel_humid" ||variable=="tmax"||variable=="tmin" || variable=="soil_temp"
+                            || variable=="dryspells" || variable=="evap" || variable=="grnd_flux" || variable=="latent"
+                            || variable=="pet_short" || variable=="pet_tall" ||  variable=="prec" || variable=="runoff"
+                            || variable=="severity" || variable=="soil_moist" || variable=="surf_temp" || variable=="transp_veg"){
+                          ctx.fillText(Math.round(scale[k - 1]), j, 33);
+                        }else
+                        ctx.fillText(scale[k - 1].toFixed(2), j, 33);
                         j = j + (cv.width / 7);
                     } catch (e) {
                         console.log(e);
@@ -1012,7 +1019,6 @@ var tooltip = document.getElementById('tooltip11');
    //     map1.addLayer(vectorLayer2);
 
         map1.crossOrigin = 'anonymous';
-        console.log(selected);
 
         select_interaction = new ol.interaction.Select({
             layers: [vectorLayer1],//selected==false && vectorLayer2.getSource()!=null?[vectorLayer2]:[vectorLayer1],
@@ -1046,8 +1052,9 @@ var tooltip = document.getElementById('tooltip11');
 
 
         select_interaction.on('select', function (e) {
+            // map1.getView().setZoom(map.getView().getZoom()+1);
             selected=true;
-
+            map1.getView().fit(e.selected[0].getGeometry(),{padding: [170, 50, 30, 150]});
             gid =e.selected[0].getProperties().countyid;// e.selected[0].getId().split(".")[1];
             temp=gid;
             var polygon = $("#poly-lat-lon").val();
@@ -1134,11 +1141,12 @@ var tooltip = document.getElementById('tooltip11');
                         }).done(function (data1) {
 
                             if ("success" in data1) {
-                                county_name = data1["county"][0][0];
+                                county_name =data1["county"].length>0?data1["county"][0][0]:"Unknown";
                                 if (data.yield[0]) {
                                     yield_val = Math.round(data.yield[0][3]).toFixed(2);
+
+                                    document.getElementById("tooltip11").style.display = data.yield[0][3] ? 'block' : 'none';
                                 }
-                                document.getElementById("tooltip11").style.display = data.yield[0][3] ? 'block' : 'none';
                                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
                                 overlayt.setPosition(ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
 
@@ -1247,9 +1255,7 @@ var tooltip = document.getElementById('tooltip11');
             "schema": $("#schema_table option:selected").val()
         }).done(function (data) {
             if ("success" in data) {
-                county_name = data["county"][0][0];
-            } else {
-                county_name = "Unknown";
+                county_name = data["county"].length>0?data["county"][0][0]:"Unknown";
             }
         });
         xhr.done(function (data) {
@@ -1430,7 +1436,6 @@ hideLoader3();
         var xhr = ajax_update_database("get-vic-plot", json);
         xhr.done(function (data) {
             graph_data = data;
-            console.log(data.time_series);
             if (data.time_series != undefined && data.time_series.length > 0)
                 series = [{
                     data: data.time_series,
@@ -1443,51 +1448,66 @@ hideLoader3();
     }
 
 
-    function populate_vic_graph(element, display_name,units, point,polygon,graph_data,series){
-          $(element).highcharts({
-                chart: {
-                    type: display_name == 'Rainfall' ? 'column' : 'line',
-                    zoomType: 'x'
-                },
-                title: {
-                    text:point==""?"Polygon": "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]",
-                    style: {
-                        fontSize: '10px',
-                        fontWeight: 'bold'
-                    }
-                },
-                xAxis: {
-                    type: 'datetime',
-                    labels: {
-                        format: '{value:%d %b %Y}'
-                        // rotation: 90,
-                        // align: 'left'
+    function populate_vic_graph(element, display_name,units, point,polygon,graph_data,series) {
+        var county_name = "Polygon";
+        if (gid == undefined || gid == "") gid = 'KE041';
+        ajax_update_database("get-county", {
+            "db": $("#db_table option:selected").val(),
+            "gid": gid,
+            "schema": $("#schema_table option:selected").val()
+        }).done(function (data) {
+            if ("success" in data && selected==true) {
+                county_name = data["county"][0][0];
+            }
+
+
+            var titletext = point == "" ? "At "+county_name : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
+
+            $(element).highcharts({
+                    chart: {
+                        type: display_name == 'Rainfall' ? 'column' : 'line',
+                        zoomType: 'x'
                     },
                     title: {
-                        text: 'Date'
-                    }
-                },
-                yAxis: {
-                    title: {
-                        text: display_name + ' ' + units
-                    }
+                        text: titletext,
+                        style: {
+                            fontSize: '10px',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        labels: {
+                            format: '{value:%d %b %Y}'
+                            // rotation: 90,
+                            // align: 'left'
+                        },
+                        title: {
+                            text: 'Date'
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: display_name + ' ' + units
+                        }
 
+                    },
+                    exporting: {
+                        enabled: true
+                    },
+                    series: series
                 },
-                exporting: {
-                    enabled: true
-                },
-                series: series
-            },
-            function (chart) {
-                if (chart.series.length < 1 || "error" in graph_data) {
-                    chart.renderer.text("No data", 140, 120).css({
-                        color: "black",
-                        fontSize: "16px"
-                    }).add();
-                }
-            });
-          hideLoader1();
-                    hideLoader2();
+                function (chart) {
+                    if (chart.series.length < 1 || "error" in graph_data) {
+                        chart.renderer.text("No data", 140, 120).css({
+                            color: "black",
+                            fontSize: "16px"
+                        }).add();
+                    }
+                });
+        });
+        hideLoader1();
+        hideLoader2();
 
     }
 
@@ -1564,7 +1584,6 @@ hideLoader3();
 
 
                         if (schemas.length == 0) {
-                            console.log("no schemas available");
                             $("#time_table").html('');
                             $("#var_table1").html('');
                             $("#var_table2").html('');
