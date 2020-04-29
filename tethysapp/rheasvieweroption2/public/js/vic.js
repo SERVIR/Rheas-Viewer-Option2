@@ -1428,12 +1428,17 @@ hideLoader3();
         }
         var startdate = '';
         var enddate = '';
-        if ($("#myonoffswitch").is(':checked')) {
-            startdate = $("#seasonyear option:selected").val() + "-03-01";
+        var dst=$("#time_table option:selected").text();
+        if ($("#myonoffswitch").is(':checked') && parseInt(dst.substr(5,2)<=8)) {
+
+            console.log(dst.substr(0,4));
+            console.log(dst.substr(5,2));
+            console.log(dst.substr(8,2));
+            startdate =dst;
             enddate = $("#seasonyear option:selected").val() + "-08-31";
         } else {
-            startdate = $("#seasonyear option:selected").val() + "-10-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+            startdate = dst;
+            enddate = (parseInt(dst.substr(0,4)) + 1) + "-02-28";
         }
         var json={
             "db": $("#db_table option:selected").val(),
