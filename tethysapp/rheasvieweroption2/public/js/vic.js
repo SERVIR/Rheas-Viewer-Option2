@@ -12,7 +12,7 @@
 var gwms, gmap, feat,testvar,testevt,boundaryLayer;
 var eventt = [];
 var selected=false;
-var temp=0;
+var temp='KE041';
 var LIBRARY_OBJECT = (function () {
     // Wrap the library in a package function
     "use strict"; // And enable strict mode for this library
@@ -63,14 +63,14 @@ var LIBRARY_OBJECT = (function () {
         init_map;
     var styleCache = {};
 
-    var poor = [153, 0, 0, 0.81];
-    var low=[255, 128, 0, 0.81];
-    var mid = [255, 255, 0, 0.81];
-    var much = [128, 192, 0, 0.81];
-    var high = [0, 128, 0, 0.81];
+    var poor = [153, 0, 0, 0.6];
+    var low=[255, 128, 0, 0.6];
+    var mid = [255, 255, 0, 0.6];
+    var much = [128, 192, 0, 0.6];
+    var high = [0, 128, 0, 0.6];
     var default_style = new ol.style.Style({
         fill: new ol.style.Fill({
-            color: [250, 250, 250, 1]
+            color: [250, 250, 250, 0.2]
         }),
         stroke: new ol.style.Stroke({
             color: [220, 220, 220, 1],
@@ -632,7 +632,7 @@ selected=false;
     };
     function styleFunction11(feature, resolution) {
         // get the incomeLevel from the feature properties
-        var level =feature.getProperties().countyid;
+        var level = feature.getProperties().countyid;
 
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
@@ -645,33 +645,31 @@ selected=false;
                 }
 
             }
-      
-            if (level == 'KE041' & index != -1) {
+
+            if (level == temp & index != -1) {
                 styleCache[index] = new ol.style.Style({
                     stroke: new ol.style.Stroke({
-                        color: 'rgba(0, 0, 255, 0.7)',
-                        width: 6
+                        color: 'rgba(0, 0, 255, 1)',
+                        width: 3
                     }),
                     fill: new ol.style.Fill({
-                        color: 'rgba(0,0,255,0.8)'
+                        color: 'rgba(0,0,255,0.3)'
                     })
                 });
-            }
-            else{
+            } else {
 
-           styleCache[index] = new ol.style.Style({
-
-        stroke: new ol.style.Stroke({
-            color: [97, 97, 97, 1],
-            width: 1
-        })
-    });
+                styleCache[index] = new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: [97, 97, 97, 1],
+                        width: 1
+                    })
+                });
 
             }
-return [styleCache[index]];
+            return [styleCache[index]];
 
         }
-                return [default_sty];
+        return [default_sty];
 
     };
 
@@ -751,8 +749,8 @@ return [styleCache[index]];
                         })
                     });
                 }
-                   if(level==3 && selected==false) {
-                       temp=3;
+                   if(level==temp && selected==false) {
+                      // temp=3;
 
                     styleCache[index] = new ol.style.Style({
                         stroke: new ol.style.Stroke({
@@ -853,6 +851,17 @@ var level = feature.getProperties().countyid;
                         })
                     });
                 }
+                 if (level == temp & index != -1) {
+                styleCache[index] = new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 255, 1)',
+                        width: 3
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(0,0,255,0.3)'
+                    })
+                });
+            }
             }
             return [styleCache[index]];
         } else {
@@ -874,7 +883,7 @@ var level = feature.getProperties().countyid;
             //var colors1 = chroma.scale([color1,color1,color1]).mode('lch').correctLightness().colors(15);
             //var colors=[color1,color1,color1];
             gen_color_bar(colors, scale, cv, variable);
-            var color_map_entry = '<ColorMapEntry color="' + colors[0] + '" quantity="' + scale[0] + '" label="label1" opacity="1"/>';
+            var color_map_entry = '<ColorMapEntry color="' + colors[0] + '" quantity="' + scale[0] + '" label="label1" opacity="0.6"/>';
             sld_color_string += color_map_entry;
         } else {
             //   var colors=[color1,color2,color3];
@@ -886,7 +895,7 @@ var level = feature.getProperties().countyid;
             //colors = chroma.scale('Spectral').colors(5);
             gen_color_bar(colors, scale, cv, variable);
             colors.forEach(function (color, i) {
-                var color_map_entry = '<ColorMapEntry color="' + color + '" quantity="' + scale[i] + '" label="label' + i + '" opacity="1"/>';
+                var color_map_entry = '<ColorMapEntry color="' + color + '" quantity="' + scale[i] + '" label="label' + i + '" opacity="0.6"/>';
                 sld_color_string += color_map_entry;
             });
         }
@@ -1023,15 +1032,15 @@ var tooltip = document.getElementById('tooltip11');
         select_interaction = new ol.interaction.Select({
             layers: [vectorLayer1],//selected==false && vectorLayer2.getSource()!=null?[vectorLayer2]:[vectorLayer1],
             style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(0, 0, 255, 0.7)',
-                    width: 6
+               fill: new ol.style.Fill({
+                     color: 'rgba(0,0,255,0.2)'
                 }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(64,224,208,0.7)'
-                })
+                 stroke: new ol.style.Stroke({
+                    color: 'blue',
+                    width: 6,
+                }),
             }),
-            wrapX: false
+           // wrapX: false
         });
         map1.addInteraction(select_interaction);
          hoverInteraction = new ol.interaction.Select({
@@ -1040,7 +1049,7 @@ var tooltip = document.getElementById('tooltip11');
             style: new ol.style.Style({
 
                 fill: new ol.style.Fill({
-                     color: 'rgba(0,0,255,0.5)'
+                     color: 'rgba(0,0,255,0.2)'
                 }),
                  stroke: new ol.style.Stroke({
                     color: 'blue',
@@ -1461,7 +1470,7 @@ hideLoader3();
             }
 
 
-            var titletext = point == "" ? "At "+county_name : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
+            var titletext = point == "" ? county_name : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
 
             $(element).highcharts({
                     chart: {
@@ -1632,6 +1641,7 @@ hideLoader3();
                     $("#var_table1").val("rainf").attr("selected", "selected");
                     $("#var_table2").val("evap").attr("selected", "selected");
                     fillVarTables("#map_var_table", vars);
+                    $("#map_var_table").val("evap").attr("selected", "selected");
                     $("#map_var_table").trigger('change');
                     //     $("#var_table1").trigger('change');
                     //   $("#var_table2").trigger('change');

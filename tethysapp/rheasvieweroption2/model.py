@@ -121,7 +121,8 @@ def get_vic_point(db,region,variable,point,sd,ed):
         lat = round(float(coords[1]),2)
         lon = round(float(coords[0]),2)
        # if len(sd)>0 and len(ed)>0:
-
+        print(lat)
+        print(lon)
         psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1) and fdate between {4} and {5} """.format(lon,lat,region,variable,"'"+sd+"'","'"+ed+"'")
         #else:
          #   psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1)""".format(lon,lat,region,variable)
@@ -131,7 +132,10 @@ def get_vic_point(db,region,variable,point,sd,ed):
         time_series = []
         for item in ts:
             time_stamp = time.mktime(datetime.strptime(str(item[0]), "%Y-%m-%d").timetuple()) * 1000
-            val = round(float(item[1]), 3)
+            if (variable == 'prec' or variable == 'evap') and float(item[1]) < 0:
+                val = 0
+            else:
+                val = round(float(item[1]), 3)
             time_series.append([time_stamp, val])
 
         time_series.sort()
@@ -175,7 +179,10 @@ def get_vic_polygon(db,region,variable,polygon,sd,ed):
         time_series = []
         for item in poly_ts:
             time_stamp = time.mktime(datetime.strptime(str(item[0]), "%Y-%m-%d").timetuple()) * 1000
-            val = round(float(item[1]), 3)
+            if (variable=='prec' or variable=='evap') and float(item[1])<0:
+                val=0
+            else:
+                val = round(float(item[1]), 3)
             time_series.append([time_stamp, val])
 
         time_series.sort()
