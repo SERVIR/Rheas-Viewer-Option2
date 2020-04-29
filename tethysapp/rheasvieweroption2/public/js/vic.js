@@ -1037,7 +1037,7 @@ var tooltip = document.getElementById('tooltip11');
                 }),
                  stroke: new ol.style.Stroke({
                     color: 'blue',
-                    width: 6,
+                    width: 3,
                 }),
             }),
            // wrapX: false
@@ -1053,7 +1053,7 @@ var tooltip = document.getElementById('tooltip11');
                 }),
                  stroke: new ol.style.Stroke({
                     color: 'blue',
-                    width: 6,
+                    width: 3,
                 }),
             }),
         });
