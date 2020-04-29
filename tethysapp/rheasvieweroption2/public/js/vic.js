@@ -412,6 +412,7 @@ var LIBRARY_OBJECT = (function () {
                 });
 
                 draw.on('drawstart', function (e) {
+                    selected=false;
                     vector_source.clear();
                 });
 
@@ -434,6 +435,7 @@ var LIBRARY_OBJECT = (function () {
                 $plotModal.modal('show');
             } else if (feature_type == 'Polygon') {
                 console.log("from polygon");
+                selected=false;
                 $plotModal.find('.info').html('');
                 var coords = parsed_feature["features"][0]["geometry"]["coordinates"][0];
                 proj_coords = [];
@@ -1460,6 +1462,7 @@ hideLoader3();
     function populate_vic_graph(element, display_name,units, point,polygon,graph_data,series) {
         var county_name = "Polygon";
         if (gid == undefined || gid == "") gid = 'KE041';
+
         ajax_update_database("get-county", {
             "db": $("#db_table option:selected").val(),
             "gid": gid,
@@ -1469,8 +1472,8 @@ hideLoader3();
                 county_name = data["county"][0][0];
             }
 
-
-            var titletext = point == "" ? county_name : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
+            console.log(selected);
+            var titletext = point == "" ? ( selected==false?"Polygon":county_name) : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
 
             $(element).highcharts({
                     chart: {
@@ -1517,7 +1520,6 @@ hideLoader3();
         });
         hideLoader1();
         hideLoader2();
-
     }
 
 
