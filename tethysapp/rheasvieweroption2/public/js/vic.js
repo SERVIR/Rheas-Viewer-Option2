@@ -11,7 +11,7 @@
  *****************************************************************************/
 var gwms, gmap, feat,testvar,testevt,boundaryLayer;
 var eventt = [];
-var selected=false;
+var selected=true;
 var temp='KE041';
 var LIBRARY_OBJECT = (function () {
     // Wrap the library in a package function
@@ -63,14 +63,14 @@ var LIBRARY_OBJECT = (function () {
         init_map;
     var styleCache = {};
 
-    var poor = [153, 0, 0, 0.6];
-    var low=[255, 128, 0, 0.6];
-    var mid = [255, 255, 0, 0.6];
-    var much = [128, 192, 0, 0.6];
-    var high = [0, 128, 0, 0.6];
+    var poor = [153, 0, 0, 1];
+    var low=[255, 128, 0, 1];
+    var mid = [255, 255, 0, 1];
+    var much = [128, 192, 0, 1];
+    var high = [0, 128, 0, 1];
     var default_style = new ol.style.Style({
         fill: new ol.style.Fill({
-            color: [250, 250, 250, 0.2]
+            color: [250, 250, 250, 0.5]
         }),
         stroke: new ol.style.Stroke({
             color: [220, 220, 220, 1],
@@ -173,7 +173,7 @@ var LIBRARY_OBJECT = (function () {
             source: vector_source,
             style: new ol.style.Style({
                 fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.2)'
+                    color: 'rgba(255, 255, 255, 0.5)'
                 }),
                 stroke: new ol.style.Stroke({
                     color: '#ffcc33',
@@ -655,7 +655,7 @@ selected=false;
                         width: 3
                     }),
                     fill: new ol.style.Fill({
-                        color: 'rgba(0,0,255,0.3)'
+                        color: 'rgba(0,0,255,0.5)'
                     })
                 });
             } else {
@@ -760,7 +760,7 @@ selected=false;
                             width: 1
                         }),
                         fill: new ol.style.Fill({
-                            color: 'rgba(0,0,255,0.6)'
+                            color: 'rgba(0,0,255,0.5)'
                         })
                     });
 
@@ -860,7 +860,7 @@ var level = feature.getProperties().countyid;
                         width: 3
                     }),
                     fill: new ol.style.Fill({
-                        color: 'rgba(0,0,255,0.3)'
+                        color: 'rgba(0,0,255,0.5)'
                     })
                 });
             }
@@ -885,7 +885,7 @@ var level = feature.getProperties().countyid;
             //var colors1 = chroma.scale([color1,color1,color1]).mode('lch').correctLightness().colors(15);
             //var colors=[color1,color1,color1];
             gen_color_bar(colors, scale, cv, variable);
-            var color_map_entry = '<ColorMapEntry color="' + colors[0] + '" quantity="' + scale[0] + '" label="label1" opacity="0.6"/>';
+            var color_map_entry = '<ColorMapEntry color="' + colors[0] + '" quantity="' + scale[0] + '" label="label1" opacity="1"/>';
             sld_color_string += color_map_entry;
         } else {
             //   var colors=[color1,color2,color3];
@@ -897,7 +897,7 @@ var level = feature.getProperties().countyid;
             //colors = chroma.scale('Spectral').colors(5);
             gen_color_bar(colors, scale, cv, variable);
             colors.forEach(function (color, i) {
-                var color_map_entry = '<ColorMapEntry color="' + color + '" quantity="' + scale[i] + '" label="label' + i + '" opacity="0.6"/>';
+                var color_map_entry = '<ColorMapEntry color="' + color + '" quantity="' + scale[i] + '" label="label' + i + '" opacity="1"/>';
                 sld_color_string += color_map_entry;
             });
         }
@@ -941,10 +941,31 @@ var level = feature.getProperties().countyid;
         var aa = layer_extent;
         centeravg = ol.extent.getCenter(aa);
          $("#point-lat-lon").val(centeravg.toString());
+
         // var variable1 = $("#var_table1 option:selected").val();
         // var variable2 = $("#var_table2 option:selected").val();
-        generate_vic_graph("#vic_plotter_1", variable1, centeravg.toString(), "");
-        generate_vic_graph("#vic_plotter_2", variable2, centeravg.toString(), "");
+       // generate_vic_graph("#vic_plotter_1", variable1, centeravg.toString(), "");
+      //  generate_vic_graph("#vic_plotter_2", variable2, centeravg.toString(), "");
+        var features=vectorLayer1.getSource().getFeatures();
+        var i;
+        var found=false;
+         for (i = 0; i < features.length && !found; i++) {
+             console.log("ggg");
+             if (features[i].getProperties().countyid === 'KE041') {
+                 found=true;
+                 console.log('ke041');
+                 var res = features[i].getGeometry().getCoordinates()[0];
+                 var result = res[0].map(coord => {
+                     return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
+                 });
+                 var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
+                      $("#poly-lat-lon").val(json_object);
+                 generate_vic_graph("#vic_plotter_1", variable1, "", json_object);
+        generate_vic_graph("#vic_plotter_2", variable2, "",json_object );
+             }
+         }
+
+
         map.updateSize();
 
     };
@@ -1035,7 +1056,7 @@ var tooltip = document.getElementById('tooltip11');
             layers: [vectorLayer1],//selected==false && vectorLayer2.getSource()!=null?[vectorLayer2]:[vectorLayer1],
             style: new ol.style.Style({
                fill: new ol.style.Fill({
-                     color: 'rgba(0,0,255,0.2)'
+                     color: 'rgba(0,0,255,0.5)'
                 }),
                  stroke: new ol.style.Stroke({
                     color: 'blue',
@@ -1051,7 +1072,7 @@ var tooltip = document.getElementById('tooltip11');
             style: new ol.style.Style({
 
                 fill: new ol.style.Fill({
-                     color: 'rgba(0,0,255,0.2)'
+                     color: 'rgba(0,0,255,0.5)'
                 }),
                  stroke: new ol.style.Stroke({
                     color: 'blue',
@@ -1429,11 +1450,9 @@ hideLoader3();
         var startdate = '';
         var enddate = '';
         var dst=$("#time_table option:selected").text();
-        if ($("#myonoffswitch").is(':checked') && parseInt(dst.substr(5,2)<=8)) {
+        if ($("#myonoffswitch").is(':checked') ) {
 
-            console.log(dst.substr(0,4));
-            console.log(dst.substr(5,2));
-            console.log(dst.substr(8,2));
+
             startdate =dst;
             enddate = $("#seasonyear option:selected").val() + "-08-31";
         } else {
@@ -1447,7 +1466,7 @@ hideLoader3();
             "point": point,
             "startdate": startdate,
             "enddate": enddate,
-            "polygon": polygon
+            "polygon":  polygon
         };
         var xhr = ajax_update_database("get-vic-plot", json);
         xhr.done(function (data) {
@@ -1478,7 +1497,8 @@ hideLoader3();
             }
 
             console.log(selected);
-            var titletext = point == "" ? ( selected==false?"Polygon":county_name) : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
+         //   var titletext = point == "" ? ( selected==false?"Polygon":county_name) : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
+            var titletext =  selected==false?"Polygon":county_name;
 
             $(element).highcharts({
                     chart: {
@@ -1543,7 +1563,13 @@ hideLoader3();
     // the DOM tree finishes loading
     $(function () {
         init_all();
+        $('#vicslider').change(function (e) {
+             wms_layer.setOpacity(this.value);
 
+        }).change();
+$('#dssatslider').change(function (e) {
+  vectorLayer1.setOpacity(this.value);
+        }).change();
         function fillVarTables(element, variables) {
             variables.forEach(function (variable, i) {
                 var index = find_var_index(variable, variable_data);
@@ -1565,9 +1591,7 @@ hideLoader3();
             });
         }
 
-        $('#dssatslider').change(function (e) {
-            //  alert("dssat moved");
-        });
+
         $("#interaction").on('click', function () {
             $interactionModal.modal('show');
         });
@@ -1607,9 +1631,10 @@ hideLoader3();
 
                             document.getElementsByClassName("cvs")[0].style.display = "none";
                             document.getElementsByClassName("cvs")[1].style.display = "none";
-                            var point = $("#point-lat-lon").val();
-                            generate_vic_graph("#vic_plotter_1", variable1, point, "", "");
-                            generate_vic_graph("#vic_plotter_2", variable2, point, "", "");
+                            var polygon = $("#poly-lat-lon").val();
+                            console.log(polygon);
+                            generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+                            generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
 
                             generate_dssat_graph("#dssat_plotter_1", "", $("#var_table3 option:selected").val());
                             generate_dssat_graph("#dssat_plotter_2", "", $("#var_table4 option:selected").val());
@@ -1712,9 +1737,9 @@ hideLoader3();
                     if (dates.length == 0) {
                         document.getElementsByClassName("cvs")[0].style.display = "none";
                         document.getElementsByClassName("cvs")[1].style.display = "none";
-                         var point = $("#point-lat-lon").val();
-                        generate_vic_graph("#vic_plotter_1", variable1, point, "");
-                        generate_vic_graph("#vic_plotter_2", variable2, point, "");
+                         var polygon = $("#poly-lat-lon").val();
+                        generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+                        generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
                         generate_dssat_graph("#dssat_plotter_1", "", $("#var_table3 option:selected").val());
                         generate_dssat_graph("#dssat_plotter_2", "", $("#var_table4 option:selected").val());
                         map.removeLayer(wms_layer);
@@ -1883,6 +1908,7 @@ hideLoader3();
             var xhr = ajax_update_database("get-ens-values", {"db": $("#db_table option:selected").val(), "gid": gid, "schema": region, "ensemble": ens});
             xhr.done(function (data) {
                 if ("success" in data) {
+
                     generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
                     generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
                 }
@@ -1969,8 +1995,8 @@ hideLoader3();
 
             var point = $("#point-lat-lon").val();
             var polygon = $("#poly-lat-lon").val();
-            generate_vic_graph("#vic_plotter_1", variable1, point, "", polygon);
-            generate_vic_graph("#vic_plotter_2", variable2, point, "", polygon);
+            generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 
@@ -1979,6 +2005,9 @@ hideLoader3();
         $("#typeofchart").change(function () {
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
+              var polygon = $("#poly-lat-lon").val();
+              generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 
