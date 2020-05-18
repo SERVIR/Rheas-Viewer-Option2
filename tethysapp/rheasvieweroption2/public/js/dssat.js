@@ -57,40 +57,33 @@ var vicmap = new ol.Map({
 });
 
 
-var xhr = ajax_update_database("dates1", {
-	"variable": "spi3",
-	"region": "ken_tethys2",
-	"db": "rheas"
-});
-xhr.done(function (data) {
-	if ("success" in data) {
-		var dates = data.dates;
-		date = dates.slice(-1)[0][1];
-		document.getElementById("vicdate").innerHTML =dates.slice(-1)[0][0];
-		var index = find_var_index("spi3", var_data);
-                          var min = var_data[index]["min"];
-                              var max = var_data[index]["max"];
-		ajax_update_database("raster1", {
-				"db": "rheas",
-				"variable": "spi3",
-				"region": "ken_tethys2",
-				"date": date,
-				"min":min,
-				"max":max
-			})
-			.done(function (data) {
-				if ("success" in data) {
-console.log(data);
-					add_wms_vic(data);
-				} else {
-					$(".error").html('<h3>Error Retrieving the layer</h3>');
-				}
-			});
-	} else {
-		console.log("error");
+	var xhr = ajax_update_database("dates", {
+		"variable": "spi3",
+		"region": "ken_tethys2",
+		"db": "rheas"
+	});
 
-	}
-});
+	xhr.done(function (data) {
+		if ("success" in data) {
+			var dates = data.dates;
+			date = dates.slice(-1);
+			document.getElementById("vicdate").innerHTML = dates.slice(-1);
+			var index = find_var_index("spi3", var_data);
+			var min = var_data[index]["min"];
+			var max = var_data[index]["max"];
+
+			add_wms_vic(data, date);
+		} else {
+			console.log("error");
+
+		}
+	}).fail(function(xhr, status, error) {
+            alert(error);
+            hideLoader();
+        });;
+
+
+
 var yield_data;
 var store;
 
@@ -102,9 +95,7 @@ function get_cal(bounds) {
 };
 
 function add_dssat(data, scale) {
-	showLoader();
 	yield_data = data.yield;
-	console.log(yield_data[yield_data.length-1]);
 	document.getElementById("dssatdate").innerHTML=yield_data[yield_data.length-1][3];
 	store = data.storename;
 	var styling = get_styling("dssat", scale, 'curr_dssat');
@@ -124,7 +115,7 @@ function add_dssat(data, scale) {
                 featureProjection: 'EPSG:3857'
             })
 	}));
-	hideLoader();
+
 }
 var xhr = ajax_update_database("get-schema-yield", {
 	"db": "rheas",
@@ -256,49 +247,43 @@ function styleFunction(feature, resolution) {
 };
 
   function styleFunctionBoundaries(feature, resolution) {
-        // get the incomeLevel from the feature properties
-        var level =feature.getProperties().countyid;
+	  // get the incomeLevel from the feature properties
+	  var level = feature.getProperties().countyid;
 
-        if (yield_data != null) {
-            // var index = yield_data.findIndex(function(x) { return x[0]==level });
-            var index = -1;
-            for (var i = 0; i < yield_data.length; ++i) {
+	  if (yield_data != null) {
+		  // var index = yield_data.findIndex(function(x) { return x[0]==level });
+		  var index = -1;
+		  for (var i = 0; i < yield_data.length; ++i) {
+			  if (yield_data[i][0] == level) {
+				  index = i;
+				  break;
+			  }
+		  }
 
-                if (yield_data[i][0] == level) {
-                    index = i;
-                    break;
-                }
+		  if (level == 'KE041' & index != -1) {
+			  styleCache[index] = new ol.style.Style({
+				  stroke: new ol.style.Stroke({
+					  color: 'rgba(0, 0, 255, 0.7)',
+					  width: 6
+				  }),
+				  fill: new ol.style.Fill({
+					  color: 'rgba(0,0,255,0.8)'
+				  })
+			  });
+		  } else {
+			  styleCache[index] = new ol.style.Style({
 
-            }
+				  stroke: new ol.style.Stroke({
+					  color: [97, 97, 97, 1],
+					  width: 1
+				  })
+			  });
 
-            if (level == 'KE041' & index != -1) {
-                styleCache[index] = new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: 'rgba(0, 0, 255, 0.7)',
-                        width: 6
-                    }),
-                    fill: new ol.style.Fill({
-                        color: 'rgba(0,0,255,0.8)'
-                    })
-                });
-            }
-            else{
-
-           styleCache[index] = new ol.style.Style({
-
-        stroke: new ol.style.Stroke({
-            color: [97, 97, 97, 1],
-            width: 1
-        })
-    });
-
-            }
-return [styleCache[index]];
-
-        }
-        return [default_sty];
-
-    };
+		  }
+		  return [styleCache[index]];
+	  }
+	  return [default_sty];
+  };
 
 
 
@@ -374,26 +359,12 @@ gen_color_bar = function (colors, scale, cv, variable) {
             //            my_gradient.addColorStop(0.5, colors[1]);
             //            my_gradient.addColorStop(1, colors[2]);
             //            ctx.fillStyle = my_gradient;
-            if (variable == "dssat") {
-                ctx.fillRect(i * 35, 0, 35, 20);
-                ctx.fillStyle = "black";
-
-                ctx.fillText("poor", 0, 33);
-                ctx.fillText("mid", 75, 33);
-                ctx.fillText("high", 150, 33);
-            } else {
-
-                ctx.fillRect(i * 10, 0, 10, 20);
-                ctx.fillStyle = "black";
-                k = k + 1;
-                if (k % 4 == 0) {
-                    try {
-                        ctx.fillText(Math.round(scale[k - 1]), j, 33);
-                        j = j + (cv.width / 7);
-                    } catch (e) {
-                        console.log(e);
-                    }
-                }
+              if (variable == "dssat") {
+                ctx.fillRect(0, i * 45, 25, 50);
+                 ctx.fillStyle = "white";
+                ctx.fillText("poor", 35, 10);
+                ctx.fillText("mid", 35, 110);
+                ctx.fillText("high", 35, 230);
             }
         });
 
@@ -420,7 +391,6 @@ get_styling = function (variable, scale, cv) {
             var colors = chroma.scale([color1, color2, color3]).mode('rgb').colors(20);
             if (variable == "dssat")
                 colors = (chroma.scale([color1, color2, color3])).colors(5);
-            console.log((colors));
             //colors = chroma.scale('Spectral').colors(5);
             gen_color_bar(colors, scale, cv, variable);
             colors.forEach(function (color, i) {
@@ -431,52 +401,59 @@ get_styling = function (variable, scale, cv) {
 
         return sld_color_string
 };
-add_wms_vic = function (data) {
+add_wms_vic = function (data,date) {
+	try {
+		var variable = "spi3";
+		var index = find_var_index(variable, var_data);
 
-	function get_cal(bounds) {
-		var layer_extent = bounds;
-		var transformed_extent = ol.proj.transformExtent(layer_extent, 'EPSG:4326', 'EPSG:3857');
-		vicmap.getView().fit(transformed_extent, vicmap.getSize());
-		vicmap.updateSize();
-	};
-	//vicmap.removeLayer(wms_layer);
-	var layer_name = wms_workspace + ":" + data.storename;
-	var styling = get_styling(data.variable, data.scale, 'curr_vic');
-	var bbox = get_bounds(wms_workspace, data.storename, rest_url, get_cal);
-	var sld_string = '<StyledLayerDescriptor version="1.0.0"><NamedLayer><Name>' + layer_name + '</Name><UserStyle><FeatureTypeStyle><Rule>\
-        <RasterSymbolizer> \
-        <ColorMap type="ramp"> \
-        <ColorMapEntry color="#f00" quantity="-9999" label="label0" opacity="0"/>' +
-		styling + '</ColorMap>\
-        </RasterSymbolizer>\
-        </Rule>\
-        </FeatureTypeStyle>\
-        </UserStyle>\
-        </NamedLayer>\
-        </StyledLayerDescriptor>';
-	var wms_source = new ol.source.ImageWMS({
-		url: wms_url,
-		params: {
-			'LAYERS': layer_name,
-			'SLD_BODY': sld_string
-		},
-		serverType: 'geoserver',
-		crossOrigin: 'Anonymous'
-	});
-	var wms_layer = new ol.layer.Image({
-		source: wms_source
-	});
-	vicmap.addLayer(wms_layer);
-	var vectorLayerBoundaries= new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: styleFunctionBoundaries
-        });
-	 vectorLayerBoundaries.setSource(new ol.source.Vector({
-   features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
-                featureProjection: 'EPSG:3857'
-            })
-        }));
-	vicmap.addLayer(vectorLayerBoundaries);
+		var style = "cwg";
+		var range = Math.round(var_data[index]["min"]).toFixed(2) + "," + Math.round(var_data[index]["max"]).toFixed(2);
+
+		var time = date + 'T00:00:00.000Z';
+		wms_source = new ol.source.ImageWMS({
+			url: 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc?',
+			params: {
+				'LAYERS': variable,
+				'TIME': time,
+				'STYLES': 'boxfill/' + style,
+				'ABOVEMAXCOLOR': 'extend',
+				'BELOWMINCOLOR': 'extend',
+				'COLORSCALERANGE': 'auto',
+				//'SLD_BODY': sld_string
+			},
+			crossOrigin: 'Anonymous'
+		});
+		wms_layer = new ol.layer.Image({
+			source: wms_source,
+			id: "viclayer",
+		});
+
+		wms_layer.setZIndex(2);
+		vicmap.addLayer(wms_layer);
+		var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
+		//   map.addLayer(boundaryLayer);
+		var div = document.getElementById("vic_legend");
+		div.innerHTML =
+			'<img src="' + link + '" alt="legend">';
+
+
+		var vectorLayerBoundaries = new ol.layer.Vector({
+			source: new ol.source.Vector(),
+			style: styleFunctionBoundaries
+		});
+		vectorLayerBoundaries.setSource(new ol.source.Vector({
+			features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+				featureProjection: 'EPSG:3857'
+			})
+		}));
+		vicmap.addLayer(vectorLayerBoundaries);
+		hideLoader();
+	}
+	catch(err){
+		alert("There is no SPI3 data");
+		hideLoader();
+	}
+
 };
 
 var vectorLayer1 = new ol.layer.Vector({
@@ -496,9 +473,9 @@ var dssatmap = new ol.Map({
 	target: 'dssatmap',
 	layers: [baseLayer1, vectorLayer1],
 	view: new ol.View({
-			center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
-	projection: projection,
-	zoom: 7
+		center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
+		projection: projection,
+		zoom: 7
 	})
 });
 

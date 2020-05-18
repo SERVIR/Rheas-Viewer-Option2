@@ -61,7 +61,7 @@ class Rheasvieweroption2(TethysAppBase):
             ),
             UrlMap(
                 name='dates1',
-                url='rheasvieweroption2/dates1',
+                url='rheasvieweroption2/dates',
                 controller='rheasvieweroption2.ajax_controllers.get_dates'
             ),
             UrlMap(
@@ -74,6 +74,11 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/vicdssat/get-vic-plot',
                 controller='rheasvieweroption2.ajax_controllers.get_vic_plot'
            ),
+            UrlMap(
+                name='get-vic-nc',
+                url='rheasvieweroption2/vicdssat/get-vic-nc',
+                controller='rheasvieweroption2.ajax_controllers.get_vic_nc'
+            ),
            UrlMap(
                 name='raster',
                 url='rheasvieweroption2/vicdssat/raster',

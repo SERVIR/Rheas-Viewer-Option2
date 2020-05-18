@@ -252,6 +252,7 @@ var LIBRARY_OBJECT = (function () {
                 return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
             });
             var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
+
             // var variable1 = $("#var_table1 option:selected").val();
             // var variable2 = $("#var_table2 option:selected").val();
             generate_vic_graph("#vic_plotter_1", variable1, "", json_object);
@@ -445,7 +446,8 @@ var LIBRARY_OBJECT = (function () {
                 });
 
                 var json_object = '{"type":"Polygon","coordinates":[[' + proj_coords + ']]}';
-                $("#poly-lat-lon").val(json_object);
+             //   $("#poly-lat-lon").val(json_object);
+                $("#poly-lat-lon").val(proj_coords);
                 $plotModal.find('.info').html('<b>You have selected the following polygon object ' + proj_coords + '. Click on Show plot to view the Time series.</b>');
                 $plotModal.modal('show');
             }
@@ -574,33 +576,33 @@ selected=false;
             //            my_gradient.addColorStop(1, colors[2]);
             //            ctx.fillStyle = my_gradient;
             if (variable == "dssat") {
-                ctx.fillRect(i * 35, 0, 35, 20);
-                ctx.fillStyle = "black";
-
-                ctx.fillText("poor", 0, 33);
-                ctx.fillText("mid", 75, 33);
-                ctx.fillText("high", 150, 33);
-            } else {
-
-                ctx.fillRect(i * 10, 0, 10, 20);
-                ctx.fillStyle = "black";
-                k = k + 1;
-                if (k % 4 == 0) {
-                    try {
-                        if(variable=="net_long" || variable=="net_short" || variable=="rainf" || variable=="rootmoist"||
-                            variable=="rel_humid" ||variable=="tmax"||variable=="tmin" || variable=="soil_temp"
-                            || variable=="dryspells" || variable=="evap" || variable=="grnd_flux" || variable=="latent"
-                            || variable=="pet_short" || variable=="pet_tall" ||  variable=="prec" || variable=="runoff"
-                            || variable=="severity" || variable=="soil_moist" || variable=="surf_temp" || variable=="transp_veg"){
-                          ctx.fillText(Math.round(scale[k - 1]), j, 33);
-                        }else
-                        ctx.fillText(scale[k - 1].toFixed(2), j, 33);
-                        j = j + (cv.width / 7);
-                    } catch (e) {
-                        console.log(e);
-                    }
-                }
+                ctx.fillRect(0, i * 45, 25, 50);
+                 ctx.fillStyle = "white";
+                ctx.fillText("poor", 35, 10);
+                ctx.fillText("mid", 35, 110);
+                ctx.fillText("high", 35, 230);
             }
+            // } else {
+            //
+            //     ctx.fillRect(i * 10, 0, 10, 20);
+            //     ctx.fillStyle = "black";
+            //     k = k + 1;
+            //     if (k % 4 == 0) {
+            //         try {
+            //             if(variable=="net_long" || variable=="net_short" || variable=="rainf" || variable=="rootmoist"||
+            //                 variable=="rel_humid" ||variable=="tmax"||variable=="tmin" || variable=="soil_temp"
+            //                 || variable=="dryspells" || variable=="evap" || variable=="grnd_flux" || variable=="latent"
+            //                 || variable=="pet_short" || variable=="pet_tall" ||  variable=="prec" || variable=="runoff"
+            //                 || variable=="severity" || variable=="soil_moist" || variable=="surf_temp" || variable=="transp_veg"){
+            //               ctx.fillText(Math.round(scale[k - 1]), j, 33);
+            //             }else
+            //             ctx.fillText(scale[k - 1].toFixed(2), j, 33);
+            //             j = j + (cv.width / 7);
+            //         } catch (e) {
+            //             console.log(e);
+            //         }
+            //     }
+            // }
         });
 
     };
@@ -950,18 +952,23 @@ var level = feature.getProperties().countyid;
         var i;
         var found=false;
          for (i = 0; i < features.length && !found; i++) {
-             console.log("ggg");
              if (features[i].getProperties().countyid === 'KE041') {
-                 found=true;
-                 console.log('ke041');
+                 found = true;
                  var res = features[i].getGeometry().getCoordinates()[0];
                  var result = res[0].map(coord => {
                      return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
                  });
+                 // var xhr = ajax_update_database("get-vic-nc", {"polygon": JSON.stringify(result)});
+                 // xhr.done(function (data) {
+                 //     console.log(data);
+                 //
+                 // });
                  var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
-                      $("#poly-lat-lon").val(json_object);
-                 generate_vic_graph("#vic_plotter_1", variable1, "", json_object);
-        generate_vic_graph("#vic_plotter_2", variable2, "",json_object );
+                // $("#poly-lat-lon").val(json_object);
+                 var jobj=JSON.stringify(result);
+                 $("#poly-lat-lon").val(JSON.stringify(result));
+                 generate_vic_graph("#vic_plotter_1", variable1, "", jobj);
+                 generate_vic_graph("#vic_plotter_2", variable2, "", jobj);
              }
          }
 
@@ -1090,6 +1097,7 @@ var tooltip = document.getElementById('tooltip11');
             gid =e.selected[0].getProperties().countyid;// e.selected[0].getId().split(".")[1];
             temp=gid;
             var polygon = $("#poly-lat-lon").val();
+
             generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
             generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
@@ -1110,8 +1118,8 @@ var tooltip = document.getElementById('tooltip11');
                 return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
             });
                     var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
-                 $("#poly-lat-lon").val(json_object);
-
+                // $("#poly-lat-lon").val(json_object);
+$("#poly-lat-lon").val(JSON.stringify(result) );
 
                 var gid = feature.getProperties().countyid;//feature.getId().split(".")[1];
                 $("#gid").val(gid);
@@ -1198,35 +1206,103 @@ var tooltip = document.getElementById('tooltip11');
                 document.getElementById("tooltip11").style.display = 'none';
             }
         });
-        hideLoader();
+       // hideLoader();
     }
 
-    add_vic = function (data) {
+    add_vic = function () {
+        showLoader();
         map.removeLayer(wms_layer);
-        var layer_name = wms_workspace + ":" + data.storename;
+        //    var layer_name = wms_workspace + ":" + data.storename;
+        var variable = $("#map_var_table option:selected").val();
+        //    var styling = get_styling(data.variable, data.scale, 'cv_vic');
+        //new var styling = get_styling(layer_name, data.scale, 'cv_vic');
+        //new var bbox = get_bounds(wms_workspace, data.storename, rest_url, get_cal);
 
-        var styling = get_styling(data.variable, data.scale, 'cv_vic');
-        var bbox = get_bounds(wms_workspace, data.storename, rest_url, get_cal);
+        // var sld_string = '<StyledLayerDescriptor version="1.0.0"><NamedLayer><Name>' + layer_name + '</Name><UserStyle><FeatureTypeStyle><Rule>\
+        // <RasterSymbolizer> \
+        // <ColorMap type="ramp"> \
+        // <ColorMapEntry color="#f00" quantity="-9999" label="label0" opacity="0"/>' +
+        //     styling + '</ColorMap>\
+        // </RasterSymbolizer>\
+        // </Rule>\
+        // </FeatureTypeStyle>\
+        // </UserStyle>\
+        // </NamedLayer>\
+        // </StyledLayerDescriptor>';
+        var index = find_var_index(variable, variable_data);
 
-        var sld_string = '<StyledLayerDescriptor version="1.0.0"><NamedLayer><Name>' + layer_name + '</Name><UserStyle><FeatureTypeStyle><Rule>\
-        <RasterSymbolizer> \
-        <ColorMap type="ramp"> \
-        <ColorMapEntry color="#f00" quantity="-9999" label="label0" opacity="0"/>' +
-            styling + '</ColorMap>\
-        </RasterSymbolizer>\
-        </Rule>\
-        </FeatureTypeStyle>\
-        </UserStyle>\
-        </NamedLayer>\
-        </StyledLayerDescriptor>';
+        var style = variable_data[index]["color1"] + variable_data[index]["color2"] + variable_data[index]["color3"];
+        var range = variable_data[index]["min"] + "," + variable_data[index]["max"];
+        switch (variable) {
+            case "albedo":
+            case "baseflow":
+            case "cdi":
+            case "dryspells":
+            case "evap":
+            case "par":
+            case "rel_humid":
+                style = variable;
+                break;
+            case "grnd_flux":
+            case "latent":
+            case "sensible":
+            case "net_short":
+            case "net_long":
+                style = "net_short_long";
+                break;
+            case "pet_short":
+            case "pet_tall":
+            case "transp_veg":
+                style = "evap";
+                break;
+            case "prec":
+            case "rainf":
+            case "runoff":
+                style = "prec_rainf";
+                break;
+            case "rootmoist":
+            case "tmax":
+            case "tmin":
+            case "surf_temp":
+                style = "avg_temp";
+                break;
+            case "severity":
+            case "smdi":
+                style = "dryspells";
+                break;
+            case "spi1":
+            case "spi3":
+            case "spi6":
+            case "sri1":
+            case "sri3":
+            case "sri6":
+                style = "cwg";
+                break;
+            default:
+                style = "crimsonyellowblue";
+        }
 
+        if (variable == "net_long" || variable == "net_short" || variable == "rainf" || variable == "rootmoist" ||
+            variable == "rel_humid" || variable == "tmax" || variable == "tmin" || variable == "soil_temp"
+            || variable == "dryspells" || variable == "evap" || variable == "grnd_flux" || variable == "latent"
+            || variable == "pet_short" || variable == "pet_tall" || variable == "prec" || variable == "runoff"
+            || variable == "severity" || variable == "soil_moist" || variable == "surf_temp" || variable == "transp_veg") {
+            range = Math.round(variable_data[index]["min"]) + "," + Math.round(variable_data[index]["max"]);
+        } else {
+            range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
+        }
+        var time = $("#time_table option:selected").text() + 'T00:00:00.000Z';
         wms_source = new ol.source.ImageWMS({
-            url: wms_url,
+            url: 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc?',
             params: {
-                'LAYERS': layer_name,
-                'SLD_BODY': sld_string
+                'LAYERS': variable,
+                'TIME': time,
+                'STYLES': 'boxfill/' + style,
+                'ABOVEMAXCOLOR': 'extend',
+                'BELOWMINCOLOR': 'extend',
+                'COLORSCALERANGE': 'auto',
+                //'SLD_BODY': sld_string
             },
-            serverType: 'geoserver',
             crossOrigin: 'Anonymous'
         });
         wms_layer = new ol.layer.Image({
@@ -1236,8 +1312,12 @@ var tooltip = document.getElementById('tooltip11');
 
         wms_layer.setZIndex(2);
         map.addLayer(wms_layer);
-     //   map.addLayer(boundaryLayer);
-
+        var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
+        //   map.addLayer(boundaryLayer);
+        var div = document.getElementById("vic_leg");
+        div.innerHTML =
+            '<img src="' + link + '" alt="legend">';
+        hideLoader();
 
     };
 
@@ -1381,7 +1461,7 @@ var tooltip = document.getElementById('tooltip11');
             }
 hideLoader3();
                     hideLoader4();
-                     hideLoader();
+                  //   hideLoader();
 
             if ("error" in data) series = [];
 
@@ -1477,9 +1557,9 @@ hideLoader3();
                     name: display_name,
                     showInLegend: false
                 }];
+
             populate_vic_graph(element, display_name, units, point, polygon,graph_data, series);
         });
-
     }
 
 
@@ -1632,7 +1712,6 @@ $('#dssatslider').change(function (e) {
                             document.getElementsByClassName("cvs")[0].style.display = "none";
                             document.getElementsByClassName("cvs")[1].style.display = "none";
                             var polygon = $("#poly-lat-lon").val();
-                            console.log(polygon);
                             generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
                             generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
 
@@ -1645,7 +1724,7 @@ $('#dssatslider').change(function (e) {
 
                         } else {
                             document.getElementsByClassName("cvs")[0].style.display = "block";
-                            document.getElementsByClassName("cvs")[1].style.display = "block";
+                            document.getElementsByClassName("cvs1")[0].style.display = "block";
                         }
 
                     } else {
@@ -1657,7 +1736,6 @@ $('#dssatslider').change(function (e) {
         }).change();
 
         $("#schema_table").change(function () {
-            showLoader();
             $("#var_table1").html('');
             $("#var_table2").html('');
             ajax_update_database("variables", {
@@ -1690,6 +1768,7 @@ $('#dssatslider').change(function (e) {
                         };
 
         $("#map_var_table").change(function () {
+            showLoader();
             var variable = $("#map_var_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
             variable2 = $("#var_table2 option:selected").val();
@@ -1704,16 +1783,16 @@ $('#dssatslider').change(function (e) {
                  var dts = [];
                 if ("success" in data) {
                     var dates = data.dates;
-
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
-                        var new_option = new Option(date[0], date[1]);
+                        var new_option = new Option(date, date);
                         if (i == 0) {
+
                             $("#time_table").append(new_option).trigger('change');
                         } else {
                             $("#time_table").append(new_option);
                         }
-                        var d = new Date(date[0]);
+                        var d = new Date(date);
 
 
                         dts.push(d.getFullYear());
@@ -1748,13 +1827,14 @@ $('#dssatslider').change(function (e) {
                        //  vectorLayer2.setSource(null);
                     } else {
                         document.getElementsByClassName("cvs")[0].style.display = "block";
-                        document.getElementsByClassName("cvs")[1].style.display = "block";
+                        document.getElementsByClassName("cvs1")[0].style.display = "block";
                     }
 
                 } else {
                     console.log("error");
                 }
             });
+//            hideLoader();
 
         });
 
@@ -1771,7 +1851,7 @@ $('#dssatslider').change(function (e) {
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
 
-                        var new_option = new Option(date[0], date[1]);
+                        var new_option = new Option(date, date);
                         if (i == 0) {
 
                             $("#time_table").append(new_option).trigger('change');
@@ -1804,7 +1884,7 @@ $('#dssatslider').change(function (e) {
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
 
-                        var new_option = new Option(date[0], date[1]);
+                        var new_option = new Option(date, date);
                         if (i == 0) {
                             $("#time_table").append(new_option).trigger('change');
                         } else {
@@ -1830,7 +1910,7 @@ $('#dssatslider').change(function (e) {
 
 
         $("#time_table").change(function () {
-
+            showLoader();
             var variable = $("#map_var_table option:selected").val();
             var date = $("#time_table option:selected").val();
 
@@ -1843,25 +1923,26 @@ $('#dssatslider').change(function (e) {
             $("#var_units").html(units);
             $(".error").html('');
             if (region != undefined) {
-                var xhr = ajax_update_database("raster", {
-                    "db": $("#db_table option:selected").val(),
-                    "variable": variable,
-                    "region": $("#schema_table option:selected").val(),
-                    "date": date,
-                    "min": min,
-                    "max": max
-                });
-
-
-                xhr.done(function (data) {
-                    if ("success" in data) {
-                        add_vic(data);
-                    } else {
-                        $(".error").html('<h3>Error Retrieving the layer</h3>');
-                    }
-                }).fail(function () {
-                    map.removeLayer(wms_layer);
-                });
+                add_vic();
+                //new var xhr = ajax_update_database("raster", {
+                //     "db": $("#db_table option:selected").val(),
+                //     "variable": variable,
+                //     "region": $("#schema_table option:selected").val(),
+                //     "date": date,
+                //     "min": min,
+                //     "max": max
+                // });
+                //
+                //
+                // xhr.done(function (data) {
+                //     if ("success" in data) {
+                //         add_vic(data);
+                //     } else {
+                //         $(".error").html('<h3>Error Retrieving the layer</h3>');
+                //     }
+                // }).fail(function () {
+                //     map.removeLayer(wms_layer);
+                // });new
                 // var startdate="",enddate="";
                 // if ($("#myonoffswitch").is(':checked')) {
                 //             startdate = $("#seasonyear option:selected").val() + "-05-01";
@@ -1999,7 +2080,7 @@ $('#dssatslider').change(function (e) {
             generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
-
+hideLoader();
 
         });
         $("#typeofchart").change(function () {
@@ -2111,9 +2192,9 @@ $('#dssatslider').change(function (e) {
                     map.addLayer(shapeFile);
                     var res = JSON.parse(contents).features[0].geometry.coordinates[0];
                     var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(res) + ']}';
-
-                    generate_vic_graph("#vic_plotter_1", variable1, "", json_object);
-                    generate_vic_graph("#vic_plotter_2", variable2, "", json_object);
+                    var jobj=JSON.stringify(res);
+                    generate_vic_graph("#vic_plotter_1", variable1, "", jobj);
+                    generate_vic_graph("#vic_plotter_2", variable2, "", jobj);
                 };
             })(file);
             r.readAsText(file);
@@ -2160,7 +2241,7 @@ function hideLoader3() {
 function hideLoader4() {
     $('#chartloading4').hide();
 }
-$('#loading').hide();
+
 
 
 

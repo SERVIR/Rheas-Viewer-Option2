@@ -19,7 +19,6 @@ baseflow|Baseflow out of the bottom layer|mm|crimson|yellow|blue|0|1.37
 evap|Total Net Evaporation|mm|crimson|yellow|green|0|13.55
 evap_bare|Net Evaporation from Bare Soil|mm|crimson|green|white|0|0
 evap_canop|Net Evaporation from Canopy Interception|mm|crimson|green|white|0|0
-prec|Incoming Precipitation|mm|crimson|yellow|blue|0|54.58
 rainf|Rainfall|mm|crimson|yellow|blue|0|54.58
 refreeze|Refreezing of Water in the Snow|mm|blue|crimson|white|0|0
 runoff|Surface Runoff|mm|crimson|yellow|blue|0|5.66

@@ -247,13 +247,12 @@ margin-right:0px;
 
 	.cvs {
 		position: absolute;
-		background: white;
+			background: #272424ba;
 		bottom: 5%;
 		border: 1px solid #337ab7;
 		display: inline-block;
 		margin: 10 10 10 10;
 		right: 20px;
-		width: 220px;
 	}
 
 	.vic_params {
@@ -269,13 +268,14 @@ margin-right:0px;
 
 	.cvs1 {
 		position: absolute;
-		background: white;
+		background: #272424ba;
 		bottom: 5%;
 		border: 1px solid #337ab7;
 		display: inline-block;
 		margin: 10 10 10 10;
 		right: 20px;
-		width: 220px;
+		height: 250px;
+		width:100px;
 
 	}
 

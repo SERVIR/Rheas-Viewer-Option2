@@ -5,13 +5,19 @@ import math
 import tethysapp.rheasvieweroption2.config as cfg
 from geoserver.catalog import Catalog
 import geoserver
+import shapely
+import shapely.geometry
+from shapely.geometry import Polygon
 import requests
 import logging
 import tempfile, shutil,os,sys, zipfile
 from os.path import basename
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
-
+import netCDF4
+import calendar
+import json
+import numpy as np
 default_schemas = ['basin','crops','dssat','ken_test','information_schema','lai','precip','public','soilmoist','test','test_ke','test_tza','tmax','tmin','topology','vic','wind','pg_toast','pg_temp_1','pg_toast_temp_1','pg_catalog','ken_vic','tza_vic','eth_vic','tza_nrt']
 
 # logging.basicConfig(filename='darwin.log',level=logging.INFO)
@@ -121,8 +127,6 @@ def get_vic_point(db,region,variable,point,sd,ed):
         lat = round(float(coords[1]),2)
         lon = round(float(coords[0]),2)
        # if len(sd)>0 and len(ed)>0:
-        print(lat)
-        print(lon)
         psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1) and fdate between {4} and {5} """.format(lon,lat,region,variable,"'"+sd+"'","'"+ed+"'")
         #else:
          #   psql = """SELECT  fdate,ST_Value(rast, 1, ST_SetSRID(ST_Point({0},{1}), 4326)) as b1 FROM {2}.{3} WHERE ST_Intersects(rast, ST_SetSRID(ST_Point({0},{1}), 4326)::geometry, 1)""".format(lon,lat,region,variable)
@@ -148,8 +152,10 @@ def get_vic_point(db,region,variable,point,sd,ed):
         print( e)
         return e
 @csrf_exempt
-def get_vic_polygon(db,region,variable,polygon,sd,ed):
+def get_vic_polygon1(db,region,variable,polygon,sd,ed):
     try:
+        #print("in vicpoly")
+        #get_pt_values("evap_final.nc",polygon)
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
         cur = conn.cursor()
 
@@ -162,7 +168,6 @@ def get_vic_polygon(db,region,variable,polygon,sd,ed):
         stddev = round(float(summary[3]), 3)
         min = round(float(summary[4]), 3)
         max = round(float(summary[5]), 3)
-
         polygon = json.loads(polygon)
 
         polygon_str = ''
@@ -243,23 +248,23 @@ def get_variables(db,region):
         print(e)
         return e
 @csrf_exempt
-def get_times(db,region,variable):
-
-    try:
-        conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
-        cur = conn.cursor()
-        sql = """SELECT fdate,id FROM {0}.{1}""".format(region,variable)
-
-        cur.execute(sql)
-        data = cur.fetchall()
-
-        dates = [[datetime.strftime(date, "%Y-%m-%d"),id] for date,id in data]
-        dates.sort()
-        conn.close()
-        return dates
-    except Exception as e:
-        print(e)
-        return e
+# def get_times(db,region,variable):
+#
+#     try:
+#         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'],cfg.connection['host'], cfg.connection['password']))
+#         cur = conn.cursor()
+#         sql = """SELECT fdate,id FROM {0}.{1}""".format(region,variable)
+#
+#         cur.execute(sql)
+#         data = cur.fetchall()
+#
+#         dates = [[datetime.strftime(date, "%Y-%m-%d"),id] for date,id in data]
+#         dates.sort()
+#         conn.close()
+#         return dates
+#     except Exception as e:
+#         print(e)
+#         return e
 
 def export_pg_table(export_path, pgtable_name, host, username, password, db, pg_sql_select):
 
@@ -499,3 +504,67 @@ def calculate_yield_gid(db, schema, gid,startdate,enddate):
     except Exception as e:
         print(e)
         return e
+
+@csrf_exempt
+def get_vic_polygon(s_var,geom_data,sd,ed):
+    ts_plot = []
+    json_obj = {}
+    # Defining the lat and lon from the coords string
+    poly_geojson = Polygon(json.loads(geom_data))
+    shape_obj = shapely.geometry.asShape(poly_geojson)
+    bounds = poly_geojson.bounds
+    miny = float(bounds[0])
+    minx = float(bounds[1])
+    maxy = float(bounds[2])
+    maxx = float(bounds[3])
+    """Make sure you have this path for all the run_types(/home/tethys/rheas/varname.nc)"""
+    infile = os.path.join(cfg.data['path'], s_var+"_final.nc")
+    nc_fid = netCDF4.Dataset(infile, 'r',)  # Reading the netCDF file
+    lis_var = nc_fid.variables
+    field = nc_fid.variables[s_var][:]
+    lats = nc_fid.variables['lat'][:]
+    lons = nc_fid.variables['lon'][:]  # Defining the longitude array
+    time = nc_fid.variables['time'][:]
+    latli = np.argmin(np.abs(lats - minx))
+    latui = np.argmin(np.abs(lats - maxx))
+
+    lonli = np.argmin(np.abs(lons - miny))
+    lonui = np.argmin(np.abs(lons - maxy))
+    for timestep, v in enumerate(time):
+        val =  field[timestep][latli:latui,lonli:lonui]
+        val = np.mean(val)
+        if np.isnan(val) == False:
+            dt_str = netCDF4.num2date(lis_var['time'][timestep], units=lis_var['time'].units,
+                                      calendar=lis_var['time'].calendar)
+            startdate=datetime.strptime(sd + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
+            enddate = datetime.strptime(ed + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
+            if dt_str>=startdate and dt_str<=enddate:
+                time_stamp = calendar.timegm(dt_str.utctimetuple()) * 1000
+                if (s_var == 'prec' or s_var == 'evap') and float(val) < 0:
+                    val = 0
+                else:
+                    val = round(float(val), 3)
+                ts_plot.append([time_stamp, float(val)])
+    ts_plot.sort()
+    # geom = [round(minx, 2), round(miny, 2), round(maxx, 2), round(maxy, 2)]
+    # json_obj["plot"] = ts_plot
+    # json_obj["geom"] = geom
+    return ts_plot
+@csrf_exempt
+def get_times(variable):
+    times = []
+    infile = os.path.join(cfg.data['path'], variable+"_final.nc")
+
+    nc_fid = netCDF4.Dataset(infile, 'r',)  # Reading the netCDF file
+    time = nc_fid.variables['time'][:]
+    lis_var = nc_fid.variables
+    for timestep, v in enumerate(time):
+        try:
+            dt_str = netCDF4.num2date(lis_var['time'][timestep], units=lis_var['time'].units,
+                                          calendar=lis_var['time'].calendar)
+            # times.append(datetime.strptime(dt_str, '%Y-%m-%d'))
+            times.append(str(dt_str)[0:10])
+
+        except:
+            pass
+    return times

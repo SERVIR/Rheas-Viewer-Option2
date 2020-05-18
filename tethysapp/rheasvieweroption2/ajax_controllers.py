@@ -45,15 +45,15 @@ def get_dates(request):
     if request.is_ajax() and request.method == 'POST':
 
         info = request.POST
-        db = info.get("db")
+        #db = info.get("db")
         variable = info.get("variable")
-        region = info.get("region")
+        #region = info.get("region")
 
         try:
-            dates = get_times(db,region, variable)
+            dates = get_times(variable)
 
             return_obj["variable"] = variable
-            return_obj["region"] = region
+            #return_obj["region"] = region
             return_obj["dates"] = dates
             return_obj["success"] = "success"
 
@@ -143,7 +143,15 @@ def get_vector(request):
         except Exception as e:
             return_obj["error"] = str(e)+ " From ajax"
             return JsonResponse(return_obj)
-
+@csrf_exempt
+def get_vic_nc(request):
+    return_obj = {}
+    context = {}
+    if request.is_ajax() and request.method == 'POST':
+        info = request.POST
+        polygon = info.get("polygon")
+        #return_obj["result"] = get_pt_values(polygon)
+        return JsonResponse(return_obj)
 @csrf_exempt
 def get_vic_plot(request):
     return_obj = {}
@@ -186,12 +194,13 @@ def get_vic_plot(request):
             try:
                 startdate = request.POST["startdate"]
                 enddate = request.POST["enddate"]
-                mean, stddev, min, max, time_series = get_vic_polygon(db,region,variable,polygon,startdate,enddate)
-                return_obj["mean"] = mean
-                return_obj["stddev"] = stddev
-                return_obj["min"] = min
-                return_obj["max"] = max
-                return_obj["polygon"] = polygon
+                time_series = get_vic_polygon(variable,polygon,startdate,enddate)
+                # mean, stddev, min, max, time_series = get_vic_polygon(db,region,variable,polygon,startdate,enddate)
+                # return_obj["mean"] = mean
+                # return_obj["stddev"] = stddev
+                # return_obj["min"] = min
+                # return_obj["max"] = max
+                # return_obj["polygon"] = polygon
                 return_obj["time_series"] = time_series
                 return_obj["variable"] = variable
                 return_obj["interaction"] = "polygon"
