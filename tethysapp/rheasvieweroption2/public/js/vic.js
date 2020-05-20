@@ -1859,7 +1859,7 @@ $('#dssatslider').change(function (e) {
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
                         var new_option = new Option(date, date);
-                        if (i == 0) {
+                        if (i == dates.length-1) {
 
                             $("#time_table").append(new_option).trigger('change');
                         } else {
@@ -1879,7 +1879,7 @@ $('#dssatslider').change(function (e) {
                         uniquedts.forEach(function (date, i) {
 
                             var new_option = new Option(date, date);
-                            if (i == 0) {
+                            if (i == 2) {
                             $("#seasonyear").append(new_option).trigger('change');
                         } else {
                            $("#seasonyear").append(new_option);
