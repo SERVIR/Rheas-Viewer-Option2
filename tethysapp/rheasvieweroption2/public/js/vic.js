@@ -1373,7 +1373,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 'STYLES': 'boxfill/' + style,
                 'ABOVEMAXCOLOR': 'extend',
                 'BELOWMINCOLOR': 'extend',
-                'COLORSCALERANGE': 'auto',
+                'COLORSCALERANGE': range,
                 //'SLD_BODY': sld_string
             },
             crossOrigin: 'Anonymous'
