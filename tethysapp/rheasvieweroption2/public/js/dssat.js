@@ -260,17 +260,7 @@ function styleFunction(feature, resolution) {
 			  }
 		  }
 
-		  if (level == 'KE041' & index != -1) {
-			  styleCache[index] = new ol.style.Style({
-				  stroke: new ol.style.Stroke({
-					  color: 'rgba(0, 0, 255, 0.7)',
-					  width: 6
-				  }),
-				  fill: new ol.style.Fill({
-					  color: 'rgba(0,0,255,0.8)'
-				  })
-			  });
-		  } else {
+
 			  styleCache[index] = new ol.style.Style({
 
 				  stroke: new ol.style.Stroke({
@@ -279,7 +269,7 @@ function styleFunction(feature, resolution) {
 				  })
 			  });
 
-		  }
+
 		  return [styleCache[index]];
 	  }
 	  return [default_sty];

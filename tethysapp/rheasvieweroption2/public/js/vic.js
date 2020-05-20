@@ -576,11 +576,16 @@ selected=false;
             //            my_gradient.addColorStop(1, colors[2]);
             //            ctx.fillStyle = my_gradient;
             if (variable == "dssat") {
-                ctx.fillRect(0, i * 45, 25, 50);
-                 ctx.fillStyle = "white";
-                ctx.fillText("poor", 35, 10);
-                ctx.fillText("mid", 35, 110);
-                ctx.fillText("high", 35, 230);
+                ctx.beginPath();
+                ctx.fillStyle = color;
+                if (variable == "dssat") {
+                    ctx.fillRect(0, i * 45, 25, 50);
+                    ctx.fillStyle = "white";
+
+                    ctx.fillText("high", 35, 10);
+                    ctx.fillText("mid", 35, 110);
+                    ctx.fillText("poor", 35, 230);
+                }
             }
             // } else {
             //
@@ -895,7 +900,7 @@ var level = feature.getProperties().countyid;
             //	var colors = chroma.scale([color1, color2, color3]).mode('lch').correctLightness().colors(20);
             var colors = chroma.scale([color1, color2, color3]).mode('rgb').colors(20);
             if (variable == "dssat")
-                colors = (chroma.scale([color1, color2, color3])).colors(5);
+                colors = (chroma.scale([color3, color2, color1])).colors(5);
             //colors = chroma.scale('Spectral').colors(5);
             gen_color_bar(colors, scale, cv, variable);
             colors.forEach(function (color, i) {
@@ -1087,7 +1092,7 @@ var tooltip = document.getElementById('tooltip11');
                 }),
             }),
         });
-        map1.addInteraction(hoverInteraction);
+      //  map1.addInteraction(hoverInteraction);
 
 
         select_interaction.on('select', function (e) {
@@ -1147,6 +1152,59 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
 
 
             } catch (e) {
+            }
+             if (event.selected.length > 0) {
+                var gid = event.target.item(0).getProperties().countyid;//evt.selected[0].getId().split(".")[1];
+                var county_name = "Unknown";
+                var yield_val = "unavailable";
+                  var startdate = '';
+        var enddate = '';
+        if ($("#myonoffswitch").is(':checked')) {
+            startdate = $("#seasonyear option:selected").val() + "-05-01";
+            enddate = $("#seasonyear option:selected").val() + "-08-31";
+        } else {
+            startdate = $("#seasonyear option:selected").val() + "-09-01";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+
+        }
+                ajax_update_database("get-schema-yield-gid", {
+                    "db": $("#db_table option:selected").val(),
+                    "schema":$("#schema_table option:selected").val(),
+                    "gid": gid,
+                    "startdate":startdate,
+                    "enddate":enddate
+                }).done(function (data) {
+                    if ("success" in data) {
+                        ajax_update_database("get-county", {
+                            "db": $("#db_table option:selected").val(),
+                            "gid": gid,
+                            "schema": $("#schema_table option:selected").val(),
+                        }).done(function (data1) {
+
+                            if ("success" in data1) {
+                                county_name =data1["county"].length>0?data1["county"][0][0]:"Unknown";
+                                if (data.yield[0]) {
+                                    yield_val = Math.round(data.yield[0][3]).toFixed(2);
+
+                                    document.getElementById("tooltip11").style.display = data.yield[0][3] ? 'block' : 'none';
+                                }
+                                document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
+                              //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+                                map1.addOverlay(overlayt);
+
+
+                            }
+                        });
+
+
+                    } else {
+                        console.log("error");
+                    }
+                });
+
+            } else {
+                document.getElementById("tooltip11").style.display = 'none';
             }
         });
 
@@ -1267,9 +1325,9 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 style = "avg_temp";
                 break;
             case "severity":
-            case "smdi":
                 style = "dryspells";
                 break;
+            case "smdi":
             case "spi1":
             case "spi3":
             case "spi6":
@@ -1530,15 +1588,15 @@ hideLoader3();
         var startdate = '';
         var enddate = '';
         var dst=$("#time_table option:selected").text();
-        if ($("#myonoffswitch").is(':checked') ) {
+      //  if ($("#myonoffswitch").is(':checked') ) {
 
 
             startdate =dst;
-            enddate = $("#seasonyear option:selected").val() + "-08-31";
-        } else {
-            startdate = dst;
-            enddate = (parseInt(dst.substr(0,4)) + 1) + "-02-28";
-        }
+            enddate = (parseInt(dst.substr(0,4))) + "-12-31";
+        // } else {
+        //     startdate = dst;
+        //     enddate = (parseInt(dst.substr(0,4)) + 1) + "-02-28";
+        // }
         var json={
             "db": $("#db_table option:selected").val(),
             "region": $("#schema_table option:selected").val(),
