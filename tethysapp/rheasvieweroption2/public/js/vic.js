@@ -1305,7 +1305,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
         var index = find_var_index(variable, variable_data);
 
         var style = variable_data[index]["color1"] + variable_data[index]["color2"] + variable_data[index]["color3"];
-        var range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
+        var range = (variable_data[index]["min"]).toFixed(2) + "," + (variable_data[index]["max"]).toFixed(2);
         switch (variable) {
             case "albedo":
             case "baseflow":
