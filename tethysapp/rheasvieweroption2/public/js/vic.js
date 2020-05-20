@@ -1372,7 +1372,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 'TIME': time,
                 'STYLES': 'boxfill/' + style,
                 'ABOVEMAXCOLOR': 'extend',
-                'BELOWMINCOLOR': 'extend',
+                'BELOWMINCOLOR': 'transparent',
                 'COLORSCALERANGE': range,
                 //'SLD_BODY': sld_string
             },
