@@ -372,7 +372,7 @@ var LIBRARY_OBJECT = (function () {
                 console.log("Process as Polygon");
                 var coords = feature.getGeometry().getCoordinates();
                 var proj_coords = ol.proj.transform(coords, 'EPSG:3857', 'EPSG:4326');
-                $("#poly-lat-lon").val(proj_coords);
+                $("#poly-lat-lon").val('{"type":"Polygon","coordinates":[' + JSON.stringify(proj_coords) + ']}');
                 $("#point-lat-lon").val("");
             }
 
@@ -442,12 +442,13 @@ var LIBRARY_OBJECT = (function () {
                 proj_coords = [];
                 coords.forEach(function (coord) {
                     var transformed = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
-                    proj_coords.push('[' + transformed + ']');
+                    proj_coords.push('['+ transformed+']');
                 });
 
-                var json_object = '{"type":"Polygon","coordinates":[[' + proj_coords + ']]}';
-             //   $("#poly-lat-lon").val(json_object);
-                $("#poly-lat-lon").val(proj_coords);
+                var json_object = '{"type":"Polygon","coordinates":' + JSON.stringify(proj_coords) + '}';
+                $("#poly-lat-lon").val('['+proj_coords+']');
+                console.log(proj_coords);
+         //       $("#poly-lat-lon").val(proj_coords);
                 $plotModal.find('.info').html('<b>You have selected the following polygon object ' + proj_coords + '. Click on Show plot to view the Time series.</b>');
                 $plotModal.modal('show');
             }
@@ -1145,9 +1146,15 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 $("#gid").val(gid);
                 var schema = $("#schema_table option:selected").val();
 
-                $("#gid").val(gid);
+               if(gid==undefined)gid="KE041";
                 $("#schema").val(schema);
-                var xhr = ajax_update_database("get-ensemble", {"db": $("#db_table option:selected").val(), "gid": gid, "schema": $("#schema_table option:selected").val()});
+                console.log(gid);
+                var json_obj= {
+                    "db": $("#db_table option:selected").val(),
+                    "gid": gid,
+                    "schema": $("#schema_table option:selected").val()
+                };
+                var xhr = ajax_update_database("get-ensemble", json_obj);
                 xhr.done(function (data) {
                     if ("success" in data) {
                         $(".ensemble").removeClass('hidden');
@@ -1184,6 +1191,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
 
         }
+        if(gid==undefined) gid='KE041';
                 ajax_update_database("get-schema-yield-gid", {
                     "db": $("#db_table option:selected").val(),
                     "schema":$("#schema_table option:selected").val(),
