@@ -437,6 +437,7 @@ add_wms_vic = function (data,date) {
 				featureProjection: 'EPSG:3857'
 			})
 		}));
+		vectorLayerBoundaries.setZIndex(Infinity);
 		vicmap.addLayer(vectorLayerBoundaries);
 		hideLoader();
 	}
