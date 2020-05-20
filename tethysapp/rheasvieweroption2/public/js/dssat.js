@@ -350,11 +350,12 @@ gen_color_bar = function (colors, scale, cv, variable) {
             //            my_gradient.addColorStop(1, colors[2]);
             //            ctx.fillStyle = my_gradient;
               if (variable == "dssat") {
-                ctx.fillRect(0, i * 45, 25, 50);
-                 ctx.fillStyle = "white";
-                ctx.fillText("poor", 35, 10);
-                ctx.fillText("mid", 35, 110);
-                ctx.fillText("high", 35, 230);
+            ctx.fillRect(0, i * 45, 25, 50);
+                    ctx.fillStyle = "white";
+
+                    ctx.fillText("high", 35, 10);
+                    ctx.fillText("mid", 35, 110);
+                    ctx.fillText("poor", 35, 230);
             }
         });
 
@@ -380,7 +381,7 @@ get_styling = function (variable, scale, cv) {
             //	var colors = chroma.scale([color1, color2, color3]).mode('lch').correctLightness().colors(20);
             var colors = chroma.scale([color1, color2, color3]).mode('rgb').colors(20);
             if (variable == "dssat")
-                colors = (chroma.scale([color1, color2, color3])).colors(5);
+                colors = (chroma.scale([color3, color2, color1])).colors(5);
             //colors = chroma.scale('Spectral').colors(5);
             gen_color_bar(colors, scale, cv, variable);
             colors.forEach(function (color, i) {
