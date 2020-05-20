@@ -662,7 +662,7 @@ selected=false;
                         width: 3
                     }),
                     fill: new ol.style.Fill({
-                        color: 'rgba(0,0,255,0.5)'
+                        color: 'rgba(0,0,255,0.2)'
                     })
                 });
             } else {
@@ -860,17 +860,29 @@ var level = feature.getProperties().countyid;
                         })
                     });
                 }
+                else{
+
+                      styleCache[index] = new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: poor
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#030303',
+                            width: 1
+                        })
+                    });
+                }
                  if (level == temp & index != -1) {
-                styleCache[index] = new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: 'rgba(0, 0, 255, 1)',
-                        width: 3
-                    }),
-                    fill: new ol.style.Fill({
-                        color: 'rgba(0,0,255,0.5)'
-                    })
-                });
-            }
+                     styleCache[index] = new ol.style.Style({
+                         stroke: new ol.style.Stroke({
+                             color: 'rgba(0, 0, 255, 1)',
+                             width: 3
+                         }),
+                         fill: new ol.style.Fill({
+                             color: 'rgba(0,0,255,0.5)'
+                         })
+                     });
+                 }
             }
             return [styleCache[index]];
         } else {
@@ -1114,10 +1126,12 @@ var tooltip = document.getElementById('tooltip11');
         });
         selectedFeatures = select_interaction.getFeatures();
         selectedFeatures.on('add', function (event) {
+            showLoader();
+             var feature = event.target.item(0);
             try {
 
                 $(".error").html('');
-                var feature = event.target.item(0);
+
                 var res = feature.getGeometry().getCoordinates()[0];
                  var result = res[0].map(coord => {
                 return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
@@ -1153,8 +1167,8 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
 
             } catch (e) {
             }
-             if (event.selected.length > 0) {
-                var gid = event.target.item(0).getProperties().countyid;//evt.selected[0].getId().split(".")[1];
+             if (feature!=undefined) {
+                var gid = feature.getProperties().countyid;//evt.selected[0].getId().split(".")[1];
                 var county_name = "Unknown";
                 var yield_val = "unavailable";
                   var startdate = '';
@@ -1180,13 +1194,12 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                             "gid": gid,
                             "schema": $("#schema_table option:selected").val(),
                         }).done(function (data1) {
-
                             if ("success" in data1) {
                                 county_name =data1["county"].length>0?data1["county"][0][0]:"Unknown";
                                 if (data.yield[0]) {
-                                    yield_val = Math.round(data.yield[0][3]).toFixed(2);
+                                    yield_val = Math.round(data.yield[0][2]).toFixed(2);
 
-                                    document.getElementById("tooltip11").style.display = data.yield[0][3] ? 'block' : 'none';
+                                    document.getElementById("tooltip11").style.display = data.yield[0][2] ? 'block' : 'none';
                                 }
                                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
                               //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
@@ -1206,6 +1219,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
             } else {
                 document.getElementById("tooltip11").style.display = 'none';
             }
+              hideLoader();
         });
 
         var hoverFeatures = hoverInteraction.getFeatures();
@@ -1240,6 +1254,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
 
                             if ("success" in data1) {
                                 county_name =data1["county"].length>0?data1["county"][0][0]:"Unknown";
+
                                 if (data.yield[0]) {
                                     yield_val = Math.round(data.yield[0][3]).toFixed(2);
 
@@ -1264,7 +1279,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 document.getElementById("tooltip11").style.display = 'none';
             }
         });
-       // hideLoader();
+
     }
 
     add_vic = function () {
@@ -2063,29 +2078,31 @@ $('#dssatslider').change(function (e) {
                             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
                         }
-                ajax_update_database("get-schema-yield", {
-                    "db": $("#db_table option:selected").val(),
-                    "schema": $("#schema_table option:selected").val(),
-                    "startdate": startdate,
-                    "enddate": enddate,
-                }).done(function (data) {
+                if($("#seasonyear option:selected").val()!=undefined) {
+                    ajax_update_database("get-schema-yield", {
+                        "db": $("#db_table option:selected").val(),
+                        "schema": $("#schema_table option:selected").val(),
+                        "startdate": startdate,
+                        "enddate": enddate,
+                    }).done(function (data) {
 
-                    if ("success" in data) {
-                        ajax_update_database("scale", {
-                            "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
-                            "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
-                        }).done(function (data1) {
-                            if ("success" in data1) {
-                                 vectorLayer1.setSource(null);
-                                //    vectorLayer2.setSource(null);
-                                add_dssat(data, data1.scale);
+                        if ("success" in data) {
+                            ajax_update_database("scale", {
+                                "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                                "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                            }).done(function (data1) {
+                                if ("success" in data1) {
+                                    vectorLayer1.setSource(null);
+                                    //    vectorLayer2.setSource(null);
+                                    add_dssat(data, data1.scale);
 
-                            } else {
-                                $(".error").html('<h3>Error Retrieving the layer</h3>');
-                            }
-                        });
-                    }
-                });
+                                } else {
+                                    $(".error").html('<h3>Error Retrieving the layer</h3>');
+                                }
+                            });
+                        }
+                    });
+                }
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
 
@@ -2108,27 +2125,32 @@ $('#dssatslider').change(function (e) {
                             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
                         }
-               ajax_update_database("get-schema-yield", {
-                    "db": $("#db_table option:selected").val(),
-                    "schema": $("#schema_table option:selected").val(),
-                    "startdate": startdate,
-                    "enddate": enddate,
-                }).done(function (data) {
-                    if ("success" in data) {
-                        ajax_update_database("scale", {
-                            "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
-                            "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
-                        }).done(function (data1) {
-                            if ("success" in data1) {
-                                 vectorLayer1.setSource(null);
-                                // vectorLayer2.setSource(null);
-                                add_dssat(data, data1.scale);
-                            } else {
-                                $(".error").html('<h3>Error Retrieving the layer</h3>');
-                            }
-                        });
-                    }
-                });
+                                if($("#seasonyear option:selected").val()!=undefined) {
+
+
+                                    ajax_update_database("get-schema-yield", {
+                                        "db": $("#db_table option:selected").val(),
+                                        "schema": $("#schema_table option:selected").val(),
+                                        "startdate": startdate,
+                                        "enddate": enddate,
+                                    }).done(function (data) {
+                                        if ("success" in data) {
+                                            ajax_update_database("scale", {
+                                                "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                                                "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                                            }).done(function (data1) {
+                                                if ("success" in data1) {
+                                                    vectorLayer1.setSource(null);
+                                                    // vectorLayer2.setSource(null);
+                                                    add_dssat(data, data1.scale);
+                                                } else {
+                                                    $(".error").html('<h3>Error Retrieving the layer</h3>');
+                                                }
+                                            });
+                                        }
+
+                                    });
+                                }
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
 
