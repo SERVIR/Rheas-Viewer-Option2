@@ -1305,7 +1305,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
         var index = find_var_index(variable, variable_data);
 
         var style = variable_data[index]["color1"] + variable_data[index]["color2"] + variable_data[index]["color3"];
-        var range = variable_data[index]["min"] + "," + variable_data[index]["max"];
+        var range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
         switch (variable) {
             case "albedo":
             case "baseflow":
@@ -1355,15 +1355,15 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 style = "crimsonyellowblue";
         }
 
-        if (variable == "net_long" || variable == "net_short" || variable == "rainf" || variable == "rootmoist" ||
-            variable == "rel_humid" || variable == "tmax" || variable == "tmin" || variable == "soil_temp"
-            || variable == "dryspells" || variable == "evap" || variable == "grnd_flux" || variable == "latent"
-            || variable == "pet_short" || variable == "pet_tall" || variable == "prec" || variable == "runoff"
-            || variable == "severity" || variable == "soil_moist" || variable == "surf_temp" || variable == "transp_veg") {
-            range = Math.round(variable_data[index]["min"]) + "," + Math.round(variable_data[index]["max"]);
-        } else {
-            range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
-        }
+        // if (variable == "net_long" || variable == "net_short" || variable == "rainf" || variable == "rootmoist" ||
+        //     variable == "rel_humid" || variable == "tmax" || variable == "tmin" || variable == "soil_temp"
+        //     || variable == "dryspells" || variable == "evap" || variable == "grnd_flux" || variable == "latent"
+        //     || variable == "pet_short" || variable == "pet_tall" || variable == "prec" || variable == "runoff"
+        //     || variable == "severity" || variable == "soil_moist" || variable == "surf_temp" || variable == "transp_veg") {
+        //     range = Math.round(variable_data[index]["min"]) + "," + Math.round(variable_data[index]["max"]);
+        // } else {
+        //     range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
+        // }
         var time = $("#time_table option:selected").text() + 'T00:00:00.000Z';
         wms_source = new ol.source.ImageWMS({
             url: 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc?',
