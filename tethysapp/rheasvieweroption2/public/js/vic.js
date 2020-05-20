@@ -2108,8 +2108,8 @@ $('#dssatslider').change(function (e) {
 
                var point = $("#point-lat-lon").val();
         var polygon = $("#poly-lat-lon").val();
-          generate_vic_graph("#vic_plotter_1", variable1, point, polygon);
-            generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
+     //     generate_vic_graph("#vic_plotter_1", variable1, point, polygon);
+       //     generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
 
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
