@@ -882,6 +882,7 @@ var level = feature.getProperties().countyid;
                              color: 'rgba(0,0,255,0.5)'
                          })
                      });
+                     document.getElementById("tooltip11").innerHTML = "County: Siaya<br>Yield: " + avg_val + " kg/ha";
                  }
             }
             return [styleCache[index]];
@@ -1168,6 +1169,8 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
             } catch (e) {
             }
              if (feature!=undefined) {
+                 document.getElementById("tooltip11").style.display =  'block';
+                 document.getElementById("tooltip11").innerHTML="County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
                 var gid = feature.getProperties().countyid;//evt.selected[0].getId().split(".")[1];
                 var county_name = "Unknown";
                 var yield_val = "unavailable";
@@ -1195,11 +1198,12 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                             "schema": $("#schema_table option:selected").val(),
                         }).done(function (data1) {
                             if ("success" in data1) {
+
                                 county_name =data1["county"].length>0?data1["county"][0][0]:"Unknown";
                                 if (data.yield[0]) {
                                     yield_val = Math.round(data.yield[0][2]).toFixed(2);
 
-                                    document.getElementById("tooltip11").style.display = data.yield[0][2] ? 'block' : 'none';
+
                                 }
                                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
                               //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
