@@ -1864,13 +1864,13 @@ $('#dssatslider').change(function (e) {
 
 
 
-                           if(date=='2014-05-28') {
+                           if(date=='2014-11-05') {
                                new_option.selected = true;
                                $("#time_table").append(new_option).trigger('change');
                            }
                         } else {
                             $("#time_table").append(new_option);
-                             if(date=='2014-05-28') {
+                             if(date=='2014-11-05') {
                                  new_option.selected = true;
                                    $("#time_table").append(new_option).trigger('change');
                              }
