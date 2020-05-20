@@ -1364,7 +1364,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
         // } else {
         //     range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
         // }
-        var time = $("#time_table option:selected").text() + 'T00:00:00.000Z';
+        var time = $("#time_table option:selected").val() + 'T00:00:00.000Z';
         wms_source = new ol.source.ImageWMS({
             url: 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc?',
             params: {
@@ -1859,11 +1859,21 @@ $('#dssatslider').change(function (e) {
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
                         var new_option = new Option(date, date);
-                        if (i == dates.length-1) {
+                        if (i == 0) {
 
-                            $("#time_table").append(new_option).trigger('change');
+
+
+
+                           if(date=='2014-05-28') {
+                               new_option.selected = true;
+                               $("#time_table").append(new_option).trigger('change');
+                           }
                         } else {
                             $("#time_table").append(new_option);
+                             if(date=='2014-05-28') {
+                                 new_option.selected = true;
+                                   $("#time_table").append(new_option).trigger('change');
+                             }
                         }
                         var d = new Date(date);
 
@@ -1879,10 +1889,18 @@ $('#dssatslider').change(function (e) {
                         uniquedts.forEach(function (date, i) {
 
                             var new_option = new Option(date, date);
-                            if (i == 2) {
-                            $("#seasonyear").append(new_option).trigger('change');
+                            if (i == 0) {
+
+                              if(date=='2014') {
+                                  new_option.selected = true;
+                                  $("#seasonyear").append(new_option).trigger('change');
+                              }
                         } else {
                            $("#seasonyear").append(new_option);
+                            if(date=='2014') {
+                                new_option.selected = true;
+                                $("#seasonyear").append(new_option).trigger('change');
+                            }
                         }
 
                         });
@@ -1995,7 +2013,7 @@ $('#dssatslider').change(function (e) {
             $("#var_name").html(display_name);
             $("#var_units").html(units);
             $(".error").html('');
-            if (region != undefined) {
+            if (date != undefined) {
                 add_vic();
                 //new var xhr = ajax_update_database("raster", {
                 //     "db": $("#db_table option:selected").val(),
