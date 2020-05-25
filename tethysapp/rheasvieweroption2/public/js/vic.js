@@ -121,8 +121,8 @@ var LIBRARY_OBJECT = (function () {
     init_dropdown = function () {
            $("#analysis").css("background-color","#ddd");
   $("#analysis").css("color","black");
-         $(".db_table").select2();
-        $(".schema_table").select2();
+       //  $(".db_table").select2()
+        //$(".schema_table").select2();
 
         $(".var_table").select2();
         $(".time_table").select2();

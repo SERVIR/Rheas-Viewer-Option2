@@ -61,23 +61,23 @@
                <div class="panel panel-primary" id="paramspanel"  style="height:100%;">
                   <div class="panel-heading">Parameters</div>
                   <div class="panel-body"  id="params">
-                     <label>
+                     <label style="display: none">
                      Select a database of interest
                      </label>
-                     <select class="db_table" name="db_table" id="db_table" style="width: 100%">
+                     <select class="db_table" name="db_table" id="db_table" style="width: 100%;display: none;">
                         {% for db in rheas_dbs %}
                         <option value="{{db}}">{{db}}</option>
                         {% endfor %}
                      </select>
-                     <label>
+                     <label style="display: none">
                      Select a schema of interest
                      </label>
-                     <select class="schema_table" name="schema_table" id="schema_table" style="width: 100%">
+                     <select class="schema_table" name="schema_table" id="schema_table" style="width: 100%;display: none;">
                         {% for schema in db_schemas %}
                         <option value="{{schema}}">{{schema}}</option>
                         {% endfor %}
                      </select>
-                     <br>
+<!--                     <br>-->
                                                      <div>
                                                            <label>
                                                      Opacity Sliders
