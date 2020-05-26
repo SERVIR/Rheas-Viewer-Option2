@@ -50,7 +50,7 @@
          <div class="topnav">
             <a id="home" href="{% url 'rheasvieweroption2:home' %}">Current</a>
             <a id="analysis" href="{% url 'rheasvieweroption2:vicdssat' %}">Analysis</a>
-            <a id="outlook" href="#outlook">Outlook</a>
+                 <a id="outlook" href="{% url 'rheasvieweroption2:outlook' %}">Outlook</a>
             <div class="topnav-right">
                <a data-toggle="modal" data-target="#myModal">About</a>
                <a href="#help">Help</a>
@@ -77,18 +77,26 @@
                         <option value="{{schema}}">{{schema}}</option>
                         {% endfor %}
                      </select>
-<!--                     <br>-->
-                                                     <div>
-                                                           <label>
-                                                     Opacity Sliders
-                                                 </label><br>
-                                                 VIC: <input id="vicslider" type="range" min="0" max="1" step="0.1" value="0.7"/><br>
-                                                 DSSAT: <input id="dssatslider" type="range" min="0" max="1" step="0.1" value="0.7"/>
-                                                 </div>
+<!--&lt;!&ndash;                     <br>&ndash;&gt;-->
+<!--                                                     <div>-->
+<!--&lt;!&ndash;                                                           <label>&ndash;&gt;-->
+<!--&lt;!&ndash;                                                     Opacity Sliders&ndash;&gt;-->
+<!--&lt;!&ndash;                                                 </label>&ndash;&gt;-->
+<!--                                                         <br>-->
+<!--                                                         -->
+<!--                                                         -->
+<!--                                                         -->
+<!--                                                 -->
+<!--                                                 </div>-->
+               <div style="background:#bbb7b7;
+    padding: 10px;
+    border: 2px #0000000a solid;
+    border-radius: 15px;">
                      <label>
                         <h4>VIC Model</h4>
                      </label>
                      <br>
+                      Opacity: <input id="vicslider" type="range" min="0" max="1" step="0.1" value="0.7"/><br>
                      <label>
                      Select a date
                      </label>
@@ -108,10 +116,19 @@
                      Chart 2
                      </label>
                      <select class="var_table" name="var_table2" id="var_table2" style="width: 100%">
-                     </select><br>
+                     </select>
+                   </div>
+<br>
+                   <div style="background: #bbb7b7;
+    padding: 10px;
+    border: 2px #0000000a solid;
+    border-radius: 15px;">
                      <label>
                         <h4>DSSAT Model</h4>
                      </label>
+                      <br>
+                                                                       Opacity: <input id="dssatslider" type="range" min="0" max="1" step="0.1" value="0.7"/>
+
                      <br>
                      <label>
                      Chart 1
@@ -158,7 +175,9 @@
                         <option>Daily</option>
                         <option>Cumulative</option>
                      </select>
-                     <br>
+                       <br>
+                   </div>
+
 
  </div>
 

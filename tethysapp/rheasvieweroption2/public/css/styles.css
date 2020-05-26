@@ -45,7 +45,7 @@ body {
 .onoffswitch-inner:after {
     content: "SHORT";
     padding-right: 10px;
-    background-color: #947c7c; color: #FFFFFF;
+    background-color: #ce4242; color: #FFFFFF;
     text-align: right;
 }
 

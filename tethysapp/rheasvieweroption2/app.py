@@ -35,6 +35,12 @@ class Rheasvieweroption2(TethysAppBase):
                 controller='rheasvieweroption2.controllers.home'
             ),
             UrlMap(
+                name='outlook',
+                url='rheasvieweroption2/outlook',
+                controller='rheasvieweroption2.controllers.outlook'
+            ),
+
+            UrlMap(
                 name='schemas',
                 url='rheasvieweroption2/vicdssat/schemas',
                 controller='rheasvieweroption2.ajax_controllers.get_db_schemas'
