@@ -1716,10 +1716,10 @@ hideLoader3();
                 });
 
         });
-        if(series.length>0){
+
                                        hideLoader1();
         hideLoader2();
-        }
+        
 
     }
 
