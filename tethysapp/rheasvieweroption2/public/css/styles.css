@@ -199,7 +199,7 @@ margin-right:0px;
 	#mappanelbody1 {
 		height: 100%;
 		position: relative;
-		padding: 0;
+		padding: 0 0 15 0;
 	}
 
 	.panel-heading {

@@ -145,8 +145,8 @@ var LIBRARY_OBJECT = (function () {
             //			})
 
             source: new ol.source.XYZ({
-                attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
-                    'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+                // attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                //     'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
             })
 
@@ -1298,6 +1298,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
         showLoader();
         map.removeLayer(wms_layer);
         //    var layer_name = wms_workspace + ":" + data.storename;
+
         var variable = $("#map_var_table option:selected").val();
         //    var styling = get_styling(data.variable, data.scale, 'cv_vic');
         //new var styling = get_styling(layer_name, data.scale, 'cv_vic');
@@ -1377,6 +1378,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
         //     range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
         // }
         var time = $("#time_table option:selected").val() + 'T00:00:00.000Z';
+        console.log(time);
         wms_source = new ol.source.ImageWMS({
             url: 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc?',
             params: {
@@ -1603,7 +1605,7 @@ hideLoader3();
     }
 
     function generate_vic_graph(element, variable, point, polygon) {
-         showLoader1();
+ showLoader1();
                     showLoader2();
         var series = [];
         var graph_data, display_name, units;
@@ -1644,11 +1646,13 @@ hideLoader3();
                 }];
 
             populate_vic_graph(element, display_name, units, point, polygon,graph_data, series);
+
         });
     }
 
 
     function populate_vic_graph(element, display_name,units, point,polygon,graph_data,series) {
+
         var county_name = "Polygon";
         if (gid == undefined || gid == "") gid = 'KE041';
 
@@ -1700,16 +1704,23 @@ hideLoader3();
                     series: series
                 },
                 function (chart) {
+
                     if (chart.series.length < 1 || "error" in graph_data) {
                         chart.renderer.text("No data", 140, 120).css({
                             color: "black",
                             fontSize: "16px"
                         }).add();
+
                     }
+
                 });
+
         });
-        hideLoader1();
+        if(series.length>0){
+                                       hideLoader1();
         hideLoader2();
+        }
+
     }
 
 
@@ -1876,23 +1887,23 @@ $('#dssatslider').change(function (e) {
 
 
 
-                           if(date=='2014-11-05') {
+                      //     if(date=='2014-11-05') {
                                new_option.selected = true;
                                $("#time_table").append(new_option).trigger('change');
-                           }
+                          // }
                         } else {
                             $("#time_table").append(new_option);
-                             if(date=='2014-11-05') {
-                                 new_option.selected = true;
-                                   $("#time_table").append(new_option).trigger('change');
-                             }
+                             //if(date=='2014-11-05') {
+                                // new_option.selected = true;
+                                 //  $("#time_table").append(new_option).trigger('change');
+                           //  }
                         }
                         var d = new Date(date);
 
 
                         dts.push(d.getFullYear());
 
-
+console.log('done with dates');
 
 
                     });
@@ -2026,6 +2037,7 @@ $('#dssatslider').change(function (e) {
             $("#var_units").html(units);
             $(".error").html('');
             if (date != undefined) {
+                console.log("before add vic");
                 add_vic();
                 //new var xhr = ajax_update_database("raster", {
                 //     "db": $("#db_table option:selected").val(),

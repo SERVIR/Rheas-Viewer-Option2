@@ -468,7 +468,6 @@ def calculate_yield(db,schema,startdate,enddate):
             #    where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate and y.gwad<>0 group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
             sql = """select y.ccode,max(y.gwad),max(y.lai),max(y.fdate) from (select ccode,max(dssat_all.gwad) gwad,max(dssat_all.lai) lai,dssat_all.fdate from {0}.dssat_all dssat_all,{0}.dssat dssat where dssat.gid=dssat_all.gid and fdate>={1} and fdate<={2} group by ccode,dssat_all.fdate)  y
                         group by y.ccode""".format(schema, "'" + startdate + "'", "'" + enddate + "'")
-            print(sql)
 
         else:
             sql = """select dss.ccode,max(avg_yield) yield,max(x.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss, (select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
@@ -521,6 +520,7 @@ def get_vic_polygon(s_var,geom_data,sd,ed):
     minx = float(bounds[1])
     maxy = float(bounds[2])
     maxx = float(bounds[3])
+    print("get vic poly")
     """Make sure you have this path for all the run_types(/home/tethys/rheas/varname.nc)"""
     infile = os.path.join(cfg.data['path'], s_var+"_final.nc")
     nc_fid = netCDF4.Dataset(infile, 'r',)  # Reading the netCDF file
