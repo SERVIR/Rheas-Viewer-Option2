@@ -18,6 +18,8 @@ import netCDF4
 import calendar
 import json
 import numpy as np
+import logging
+log = logging.getLogger(__name__)
 default_schemas = ['basin','crops','dssat','ken_test','information_schema','lai','precip','public','soilmoist','test','test_ke','test_tza','tmax','tmin','topology','vic','wind','pg_toast','pg_temp_1','pg_toast_temp_1','pg_catalog','ken_vic','tza_vic','eth_vic','tza_nrt']
 
 # logging.basicConfig(filename='darwin.log',level=logging.INFO)
@@ -542,9 +544,9 @@ def get_vic_polygon(s_var,geom_data,sd,ed):
                                       calendar=lis_var['time'].calendar)
             startdate=datetime.strptime(sd + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
             enddate = datetime.strptime(ed + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
-            print(startdate)
-            print(enddate)
-            print(dt_str)
+            log.info(startdate)
+            log.info(enddate)
+            log.info(dt_str)
             if dt_str>=startdate and dt_str<=enddate:
                 print(dt_str.utctimetuple())
                 time_stamp = calendar.timegm(dt_str.utctimetuple()) * 1000
