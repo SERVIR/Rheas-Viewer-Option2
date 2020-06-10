@@ -208,9 +208,6 @@ def get_vic_plot(request):
                 return JsonResponse(return_obj)
 
             except Exception as e:
-                return_obj["time_series"] = time_series
-                return_obj["variable"] = variable
-                return_obj["interaction"] = "polygon"
                 return_obj["error"] = "Error Retrieving Data"
                 return JsonResponse(return_obj)
         else:

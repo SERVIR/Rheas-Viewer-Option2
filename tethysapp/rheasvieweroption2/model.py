@@ -542,7 +542,11 @@ def get_vic_polygon(s_var,geom_data,sd,ed):
                                       calendar=lis_var['time'].calendar)
             startdate=datetime.strptime(sd + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
             enddate = datetime.strptime(ed + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
+            print(startdate)
+            print(enddate)
+            print(dt_str)
             if dt_str>=startdate and dt_str<=enddate:
+                print(dt_str.utctimetuple())
                 time_stamp = calendar.timegm(dt_str.utctimetuple()) * 1000
                 if (s_var == 'prec' or s_var == 'evap') and float(val) < 0:
                     val = 0
