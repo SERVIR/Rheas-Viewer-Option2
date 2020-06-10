@@ -131,7 +131,8 @@ function ajax_update_database(ajax_url, ajax_data) {
         dataType: "json",
         data: ajax_data
     });
-
+console.log(ajax_url);
+console.log(ajax_data);
     xhr.done(function(data) {
         if("success" in data) {
             // console.log("success");
