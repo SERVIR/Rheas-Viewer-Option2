@@ -549,10 +549,8 @@ def get_vic_polygon(s_var,geom_data,sd,ed):
             log.info(dt_str)
             if dt_str>=startdate and dt_str<=enddate:
                 log.info("from inside if")
-                dtt = datetime.strptime(str(dt_str) + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
-                print(dtt)
                 log.info(dt_str)
-                time_stamp = calendar.timegm(dtt.utctimetuple()) * 1000
+                time_stamp = calendar.timegm(dt_str.utctimetuple()) * 1000
                 if (s_var == 'prec' or s_var == 'evap') and float(val) < 0:
                     val = 0
                 else:
