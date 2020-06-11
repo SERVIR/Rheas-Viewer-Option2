@@ -13,6 +13,7 @@ var gwms, gmap, feat,testvar,testevt,boundaryLayer;
 var eventt = [];
 var selected=true;
 var temp='KE041';
+var flagg=true;
 var LIBRARY_OBJECT = (function () {
     // Wrap the library in a package function
     "use strict"; // And enable strict mode for this library
@@ -1927,6 +1928,9 @@ $('#dssatslider').change(function (e) {
                         //      else
                         //           $("#time_table").append(new_option);
                         // }
+                        //      if(date=='2014-11-05') {
+                        //        new_option.selected = true;
+                        //   }
                          $("#time_table").append(new_option);
                         var d = new Date(date);
 
@@ -1943,22 +1947,71 @@ $('#dssatslider').change(function (e) {
                             var new_option = new Option(date, date);
                             if (i == 0) {
 
-                              if(date=='2014') {
-                                  new_option.selected = true;
-                              }
-                              $("#seasonyear").append(new_option);
-                        } else {
+                                if (date == '2014') {
+                                    new_option.selected = true;
+                                    flagg = false;
+                                }
+                                $("#seasonyear").append(new_option);
+                            } else {
 
-                            if(date=='2014') {
-                                new_option.selected = true;
-
+                                if (date == '2014') {
+                                    new_option.selected = true;
+                                    flagg = false;
+                                }
+                                $("#seasonyear").append(new_option);
                             }
-                            $("#seasonyear").append(new_option);
-                        }
 
 
                         });
-                        $("#seasonyear").trigger('change');
+                     //   $("#seasonyear").trigger('change');
+     var startdate="",enddate="";
+                if ($("#myonoffswitch").is(':checked')) {
+                            startdate = $("#seasonyear option:selected").val() + "-03-01";
+                            enddate = $("#seasonyear option:selected").val() + "-08-31";
+                        } else {
+                            startdate = $("#seasonyear option:selected").val() + "-10-01";
+                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+
+                        }
+
+                    $("#time_table").val("2014-11-05").change();
+                                if($("#seasonyear option:selected").val()!=undefined) {
+
+
+                                    ajax_update_database("get-schema-yield", {
+                                        "db": $("#db_table option:selected").val(),
+                                        "schema": $("#schema_table option:selected").val(),
+                                        "startdate": startdate,
+                                        "enddate": enddate,
+                                    }).done(function (data) {
+                                        if ("success" in data) {
+                                            ajax_update_database("scale", {
+                                                "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                                                "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                                            }).done(function (data1) {
+                                                if ("success" in data1) {
+                                                    vectorLayer1.setSource(null);
+                                                    // vectorLayer2.setSource(null);
+                                                    add_dssat(data, data1.scale);
+                                                } else {
+                                                    $(".error").html('<h3>Error Retrieving the layer</h3>');
+                                                }
+                                            });
+                                        }
+
+                                    });
+                                }
+            var gid = $("#gid").val();
+            if (gid == undefined || gid == "") gid = 'KE041';
+
+            var point = $("#point-lat-lon").val();
+            var polygon = $("#poly-lat-lon").val();
+            generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
+            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
+hideLoader();
+
 
                     if (dates.length == 0) {
                         document.getElementsByClassName("cvs")[0].style.display = "none";
@@ -2144,10 +2197,7 @@ $('#dssatslider').change(function (e) {
                             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
                         }
-                // if($("#seasonyear option:selected").val()=='2014'){
-                //                         $("#time_table").val("2014-11-05").change();
-                //
-                // }else
+
                     $("#time_table").val($("#seasonyear option:selected").val() +"-01-01").change();
                                 if($("#seasonyear option:selected").val()!=undefined) {
 
