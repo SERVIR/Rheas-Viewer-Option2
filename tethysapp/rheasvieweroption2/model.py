@@ -502,10 +502,12 @@ def calculate_yield_gid(db, schema, gid,startdate,enddate):
         data = cur.fetchall()
 
         data.sort()
-
+        sql1 = """SELECT DISTINCT cname FROM {0}.dssat WHERE ccode={1}""".format(schema, "'" + gid + "'")
+        cur.execute(sql1)
+        data1 = cur.fetchall()
         conn.close()
 
-        return data
+        return data,data1
     except Exception as e:
         print(e)
         return e
@@ -544,17 +546,11 @@ def get_vic_polygon(s_var,geom_data,sd,ed):
                                       calendar=lis_var['time'].calendar)
             startdate=datetime.strptime(sd + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
             enddate = datetime.strptime(ed + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
-            log.info(startdate)
-            log.info(enddate)
-            log.info(dt_str)
             if dt_str>=startdate and dt_str<=enddate:
-                log.info("from inside if")
-                log.info(dt_str)
                 st = dt_str.strftime('%Y-%m-%d %H:%M:%S')
                 stt = datetime.strptime(st, '%Y-%m-%d %H:%M:%S')
 
                 time_stamp = calendar.timegm(stt.utctimetuple()) * 1000
-                log.info(time_stamp)
                 if (s_var == 'prec' or s_var == 'evap') and float(val) < 0:
                     val = 0
                 else:

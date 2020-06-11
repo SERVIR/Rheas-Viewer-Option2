@@ -351,8 +351,9 @@ def get_schema_yield_gid(request):
         startdate = info.get("startdate")
         enddate = info.get("enddate")
         gid = info.get("gid")
-        yield_data = calculate_yield_gid(db,schema,gid,startdate,enddate)
+        yield_data,county = calculate_yield_gid(db,schema,gid,startdate,enddate)
         return_obj["yield"] = yield_data
+        return_obj["county"]=county
         return_obj["success"] = "success"
 
         return JsonResponse(return_obj)

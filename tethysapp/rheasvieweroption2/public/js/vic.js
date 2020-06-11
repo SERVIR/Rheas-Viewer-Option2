@@ -273,7 +273,7 @@ var LIBRARY_OBJECT = (function () {
            // element.appendChild(createControl("Point", "glyphicon glyphicon-record"));
             element.appendChild(createControl("Polygon", "fas fa-draw-polygon"));
             element.appendChild(createControl("Recenter", "fas fa-compass"));
-            element.appendChild(createControl("ToggleDistrict", "fas fa-toggle-on"));
+            // element.appendChild(createControl("ToggleDistrict", "fas fa-toggle-on"));
             element.appendChild(createControl("UploadShapeFile", "fas fa-upload"));
             element.appendChild(createControl("ClearAll", "far fa-trash-alt"));
             /*A custom control which has container holding input elements etc*/
@@ -883,7 +883,30 @@ var level = feature.getProperties().countyid;
                              color: 'rgba(0,0,255,0.5)'
                          })
                      });
-                     document.getElementById("tooltip11").innerHTML = "County: Siaya<br>Yield: " + avg_val + " kg/ha";
+                     //document.getElementById("tooltip11").innerHTML = "County: Siaya<br>Yield: " + avg_val + " kg/ha";
+
+
+                     ajax_update_database("get-county", {
+                         "db": $("#db_table option:selected").val(),
+                         "gid": level,
+                         "schema": $("#schema_table option:selected").val(),
+                     }).done(function (data1) {
+                         if ("success" in data1) {
+
+                             var county_name = data1["county"].length > 0 ? data1["county"][0][0] : "Unknown";
+                             if (avg_val) {
+                                 var yield_val = Math.round(avg_val).toFixed(2);
+
+
+                                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
+                             }
+                             //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+                             map1.addOverlay(overlayt);
+
+
+                         }
+                     });
                  }
             }
             return [styleCache[index]];
@@ -1129,6 +1152,7 @@ var tooltip = document.getElementById('tooltip11');
         selectedFeatures = select_interaction.getFeatures();
         selectedFeatures.on('add', function (event) {
             showLoader();
+
              var feature = event.target.item(0);
             try {
 
@@ -1148,7 +1172,66 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
 
                if(gid==undefined)gid="KE041";
                 $("#schema").val(schema);
-                console.log(gid);
+
+             if (feature!=undefined) {
+                 document.getElementById("tooltip11").style.display =  'block';
+                 document.getElementById("tooltip11").innerHTML="County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
+                var gid = feature.getProperties().countyid;//evt.selected[0].getId().split(".")[1];
+                var county_name = "Unknown";
+                var yield_val = "unavailable";
+                  var startdate = '';
+        var enddate = '';
+        if ($("#myonoffswitch").is(':checked')) {
+            startdate = $("#seasonyear option:selected").val() + "-05-01";
+            enddate = $("#seasonyear option:selected").val() + "-08-31";
+        } else {
+            startdate = $("#seasonyear option:selected").val() + "-09-01";
+            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+
+        }
+        if(gid==undefined) gid='KE041';
+                         document.getElementById("tooltip11").innerHTML="County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
+
+                ajax_update_database("get-schema-yield-gid", {
+                    "db": $("#db_table option:selected").val(),
+                    "schema":$("#schema_table option:selected").val(),
+                    "gid": gid,
+                    "startdate":startdate,
+                    "enddate":enddate
+                }).done(function (data) {
+                    if ("success" in data) {
+
+                        // ajax_update_database("get-county", {
+                        //     "db": $("#db_table option:selected").val(),
+                        //     "gid": gid,
+                        //     "schema": $("#schema_table option:selected").val(),
+                        // }).done(function (data1) {
+                        //     if ("success" in data1) {
+
+                                county_name =data["county"].length>0?data["county"][0][0]:"Unknown";
+                                if (data.yield[0]) {
+                                    yield_val = Math.round(data.yield[0][2]).toFixed(2);
+
+
+                                }
+                                document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
+                              //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+                                map1.addOverlay(overlayt);
+
+
+                    //         }
+                    //     });
+                    //
+                    //
+                    } else {
+                        console.log("error");
+                    }
+                });
+
+            } else {
+                document.getElementById("tooltip11").style.display = 'none';
+            }
                 var json_obj= {
                     "db": $("#db_table option:selected").val(),
                     "gid": gid,
@@ -1175,62 +1258,6 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
 
             } catch (e) {
             }
-             if (feature!=undefined) {
-                 document.getElementById("tooltip11").style.display =  'block';
-                 document.getElementById("tooltip11").innerHTML="County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
-                var gid = feature.getProperties().countyid;//evt.selected[0].getId().split(".")[1];
-                var county_name = "Unknown";
-                var yield_val = "unavailable";
-                  var startdate = '';
-        var enddate = '';
-        if ($("#myonoffswitch").is(':checked')) {
-            startdate = $("#seasonyear option:selected").val() + "-05-01";
-            enddate = $("#seasonyear option:selected").val() + "-08-31";
-        } else {
-            startdate = $("#seasonyear option:selected").val() + "-09-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
-
-        }
-        if(gid==undefined) gid='KE041';
-                ajax_update_database("get-schema-yield-gid", {
-                    "db": $("#db_table option:selected").val(),
-                    "schema":$("#schema_table option:selected").val(),
-                    "gid": gid,
-                    "startdate":startdate,
-                    "enddate":enddate
-                }).done(function (data) {
-                    if ("success" in data) {
-                        ajax_update_database("get-county", {
-                            "db": $("#db_table option:selected").val(),
-                            "gid": gid,
-                            "schema": $("#schema_table option:selected").val(),
-                        }).done(function (data1) {
-                            if ("success" in data1) {
-
-                                county_name =data1["county"].length>0?data1["county"][0][0]:"Unknown";
-                                if (data.yield[0]) {
-                                    yield_val = Math.round(data.yield[0][2]).toFixed(2);
-
-
-                                }
-                                document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
-                              //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
-
-                                map1.addOverlay(overlayt);
-
-
-                            }
-                        });
-
-
-                    } else {
-                        console.log("error");
-                    }
-                });
-
-            } else {
-                document.getElementById("tooltip11").style.display = 'none';
-            }
               hideLoader();
         });
 
@@ -1250,42 +1277,42 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
 
         }
-                ajax_update_database("get-schema-yield-gid", {
-                    "db": $("#db_table option:selected").val(),
-                    "schema":$("#schema_table option:selected").val(),
-                    "gid": gid,
-                    "startdate":startdate,
-                    "enddate":enddate
-                }).done(function (data) {
-                    if ("success" in data) {
-                        ajax_update_database("get-county", {
-                            "db": $("#db_table option:selected").val(),
-                            "gid": gid,
-                            "schema": $("#schema_table option:selected").val(),
-                        }).done(function (data1) {
-
-                            if ("success" in data1) {
-                                county_name =data1["county"].length>0?data1["county"][0][0]:"Unknown";
-
-                                if (data.yield[0]) {
-                                    yield_val = Math.round(data.yield[0][3]).toFixed(2);
-
-                                    document.getElementById("tooltip11").style.display = data.yield[0][3] ? 'block' : 'none';
-                                }
-                                document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
-                                overlayt.setPosition(ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
-
-                                map1.addOverlay(overlayt);
-
-
-                            }
-                        });
-
-
-                    } else {
-                        console.log("error");
-                    }
-                });
+                // ajax_update_database("get-schema-yield-gid", {
+                //     "db": $("#db_table option:selected").val(),
+                //     "schema":$("#schema_table option:selected").val(),
+                //     "gid": gid,
+                //     "startdate":startdate,
+                //     "enddate":enddate
+                // }).done(function (data) {
+                //     if ("success" in data) {
+                //         ajax_update_database("get-county", {
+                //             "db": $("#db_table option:selected").val(),
+                //             "gid": gid,
+                //             "schema": $("#schema_table option:selected").val(),
+                //         }).done(function (data1) {
+                //
+                //             if ("success" in data1) {
+                //                 county_name =data1["county"].length>0?data1["county"][0][0]:"Unknown";
+                //
+                //                 if (data.yield[0]) {
+                //                     yield_val = Math.round(data.yield[0][3]).toFixed(2);
+                //
+                //                     document.getElementById("tooltip11").style.display = data.yield[0][3] ? 'block' : 'none';
+                //                 }
+                //                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
+                //                 overlayt.setPosition(ol.proj.transform(evt.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+                //
+                //                 map1.addOverlay(overlayt);
+                //
+                //
+                //             }
+                //         });
+                //
+                //
+                //     } else {
+                //         console.log("error");
+                //     }
+                // });
 
             } else {
                 document.getElementById("tooltip11").style.display = 'none';
@@ -1378,7 +1405,6 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
         //     range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
         // }
         var time = $("#time_table option:selected").val() + 'T00:00:00.000Z';
-        console.log(time);
         wms_source = new ol.source.ImageWMS({
             url: 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc?',
             params: {
@@ -1882,33 +1908,36 @@ $('#dssatslider').change(function (e) {
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
                         var new_option = new Option(date, date);
-                        if (i == 0) {
+                        //if (i == 0) {
 
-
-
-
-                      //     if(date=='2014-11-05') {
-                               new_option.selected = true;
-                               $("#time_table").append(new_option).trigger('change');
-                          // }
-                        } else {
-                            $("#time_table").append(new_option);
-                             //if(date=='2014-11-05') {
-                                // new_option.selected = true;
-                                 //  $("#time_table").append(new_option).trigger('change');
-                           //  }
-                        }
+                        //
+                        //
+                        //
+                        //    if(date=='2014-11-05') {
+                        //        new_option.selected = true;
+                        //       // $("#time_table").append(new_option).trigger('change');
+                        //   }
+                        //    else  $("#time_table").append(new_option);
+                        // } else {
+                        //
+                        //      if(date=='2014-11-05') {
+                        //         new_option.selected = true;
+                        //        //   $("#time_table").append(new_option).trigger('change');
+                        //     }
+                        //      else
+                        //           $("#time_table").append(new_option);
+                        // }
+                         $("#time_table").append(new_option);
                         var d = new Date(date);
 
 
                         dts.push(d.getFullYear());
 
-console.log('done with dates');
-
 
                     });
                        const uniquedts = dts.filter(unique);
                          $("#seasonyear").html('');
+                         console.log(uniquedts);
                         uniquedts.forEach(function (date, i) {
 
                             var new_option = new Option(date, date);
@@ -1916,17 +1945,21 @@ console.log('done with dates');
 
                               if(date=='2014') {
                                   new_option.selected = true;
-                                  $("#seasonyear").append(new_option).trigger('change');
                               }
+                              $("#seasonyear").append(new_option);
                         } else {
-                           $("#seasonyear").append(new_option);
+
                             if(date=='2014') {
                                 new_option.selected = true;
-                                $("#seasonyear").append(new_option).trigger('change');
+
                             }
+                            $("#seasonyear").append(new_option);
                         }
 
+
                         });
+                        $("#seasonyear").trigger('change');
+
                     if (dates.length == 0) {
                         document.getElementsByClassName("cvs")[0].style.display = "none";
                         document.getElementsByClassName("cvs")[1].style.display = "none";
@@ -1954,63 +1987,81 @@ console.log('done with dates');
 
         $("#var_table1").change(function () {
             variable1 = $("#var_table1 option:selected").val();
-            var xhr = ajax_update_database("dates", {
-                "variable": variable1,
-                "region": $("#schema_table option:selected").val(),
-                "db": $("#db_table option:selected").val(),
-            });
-            xhr.done(function (data) {
-                if ("success" in data) {
-                    var dates = data.dates;
-                    $("#time_table").html('');
-                    dates.forEach(function (date, i) {
-
-                        var new_option = new Option(date, date);
-                        if (i == 0) {
-
-                            $("#time_table").append(new_option).trigger('change');
-
-                        } else {
-                            $("#time_table").append(new_option);
-
-                        }
-
-                    });
-
-                } else {
-                    console.log("error");
-
-                }
-            });
+              var polygon = $("#poly-lat-lon").val();
+            generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
+            // var xhr = ajax_update_database("dates", {
+            //     "variable": variable1,
+            //     "region": $("#schema_table option:selected").val(),
+            //     "db": $("#db_table option:selected").val(),
+            // });
+            // xhr.done(function (data) {
+            //     if ("success" in data) {
+            //         var dates = data.dates;
+            //         $("#time_table").html('');
+            //         dates.forEach(function (date, i) {
+            //
+            //             var new_option = new Option(date, date);
+            //              if (i == 0) {
+            //
+            //                   if(date=='2014') {
+            //                       new_option.selected = true;
+            //                       $("#seasonyear").append(new_option).trigger('change');
+            //                   }else  $("#time_table").append(new_option);
+            //             } else {
+            //                $("#seasonyear").append(new_option);
+            //                 if(date=='2014') {
+            //                     new_option.selected = true;
+            //                     $("#seasonyear").append(new_option).trigger('change');
+            //                 }else  $("#time_table").append(new_option);
+            //             }
+            //
+            //         });
+            //
+            //     } else {
+            //         console.log("error");
+            //
+            //     }
+            // });
 
         });
         $("#var_table2").change(function () {
            variable2 = $("#var_table2 option:selected").val();
-            var xhr = ajax_update_database("dates", {
-                "variable": variable2,
-                "region": $("#schema_table option:selected").val(),
-                "db": $("#db_table option:selected").val(),
-            });
+            // var xhr = ajax_update_database("dates", {
+            //     "variable": variable2,
+            //     "region": $("#schema_table option:selected").val(),
+            //     "db": $("#db_table option:selected").val(),
+            // });
+            //
+            // xhr.done(function (data) {
+            //     if ("success" in data) {
+            //         var dates = data.dates;
+            //         $("#time_table").html('');
+            //         dates.forEach(function (date, i) {
+            //
+            //             var new_option = new Option(date, date);
+            //             if (i == 0) {
+            //
+            //                   if(date=='2014') {
+            //                       new_option.selected = true;
+            //                       $("#seasonyear").append(new_option).trigger('change');
+            //                   }else  $("#time_table").append(new_option);
+            //             } else {
+            //                $("#seasonyear").append(new_option);
+            //                 if(date=='2014') {
+            //                     new_option.selected = true;
+            //                     $("#seasonyear").append(new_option).trigger('change');
+            //                 }else  $("#time_table").append(new_option);
+            //             }
+            //         });
+            //
+            //     } else {
+            //         console.log("error");
+            //
+            //     }
+            // });
 
-            xhr.done(function (data) {
-                if ("success" in data) {
-                    var dates = data.dates;
-                    $("#time_table").html('');
-                    dates.forEach(function (date, i) {
-
-                        var new_option = new Option(date, date);
-                        if (i == 0) {
-                            $("#time_table").append(new_option).trigger('change');
-                        } else {
-                            $("#time_table").append(new_option);
-                        }
-                    });
-
-                } else {
-                    console.log("error");
-
-                }
-            });
+            var polygon = $("#poly-lat-lon").val();
+            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
 
         });
         $("#var_table3").change(function () {
@@ -2037,55 +2088,9 @@ console.log('done with dates');
             $("#var_units").html(units);
             $(".error").html('');
             if (date != undefined) {
-                console.log("before add vic");
                 add_vic();
-                //new var xhr = ajax_update_database("raster", {
-                //     "db": $("#db_table option:selected").val(),
-                //     "variable": variable,
-                //     "region": $("#schema_table option:selected").val(),
-                //     "date": date,
-                //     "min": min,
-                //     "max": max
-                // });
-                //
-                //
-                // xhr.done(function (data) {
-                //     if ("success" in data) {
-                //         add_vic(data);
-                //     } else {
-                //         $(".error").html('<h3>Error Retrieving the layer</h3>');
-                //     }
-                // }).fail(function () {
-                //     map.removeLayer(wms_layer);
-                // });new
-                // var startdate="",enddate="";
-                // if ($("#myonoffswitch").is(':checked')) {
-                //             startdate = $("#seasonyear option:selected").val() + "-05-01";
-                //             enddate = $("#seasonyear option:selected").val() + "-08-31";
-                //         } else {
-                //             startdate = $("#seasonyear option:selected").val() + "-09-01";
-                //             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
-                //
-                //         }
-                // ajax_update_database("get-schema-yield", {
-                //     "db": db,
-                //     "schema": region,
-                //     "startdate": startdate,
-                //     "enddate": enddate,
-                // }).done(function (data) {
-                //     if ("success" in data) {
-                //         ajax_update_database("scale", {
-                //             "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
-                //             "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
-                //         }).done(function (data1) {
-                //             if ("success" in data1) {
-                //                 add_dssat(data, data1.scale);
-                //             } else {
-                //                 $(".error").html('<h3>Error Retrieving the layer</h3>');
-                //             }
-                //         });
 
-                        $("#seasonyear").trigger('change');
+                    //    $("#seasonyear").trigger('change');
 
                     // } else {
                     //     $(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
@@ -2167,6 +2172,11 @@ console.log('done with dates');
                             enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
                         }
+                // if($("#seasonyear option:selected").val()=='2014'){
+                //                         $("#time_table").val("2014-11-05").change();
+                //
+                // }else
+                    $("#time_table").val($("#seasonyear option:selected").val() +"-01-01").change();
                                 if($("#seasonyear option:selected").val()!=undefined) {
 
 
