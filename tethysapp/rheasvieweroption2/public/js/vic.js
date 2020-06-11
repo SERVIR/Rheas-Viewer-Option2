@@ -2026,40 +2026,6 @@ $('#dssatslider').change(function (e) {
         });
         $("#var_table2").change(function () {
            variable2 = $("#var_table2 option:selected").val();
-            // var xhr = ajax_update_database("dates", {
-            //     "variable": variable2,
-            //     "region": $("#schema_table option:selected").val(),
-            //     "db": $("#db_table option:selected").val(),
-            // });
-            //
-            // xhr.done(function (data) {
-            //     if ("success" in data) {
-            //         var dates = data.dates;
-            //         $("#time_table").html('');
-            //         dates.forEach(function (date, i) {
-            //
-            //             var new_option = new Option(date, date);
-            //             if (i == 0) {
-            //
-            //                   if(date=='2014') {
-            //                       new_option.selected = true;
-            //                       $("#seasonyear").append(new_option).trigger('change');
-            //                   }else  $("#time_table").append(new_option);
-            //             } else {
-            //                $("#seasonyear").append(new_option);
-            //                 if(date=='2014') {
-            //                     new_option.selected = true;
-            //                     $("#seasonyear").append(new_option).trigger('change');
-            //                 }else  $("#time_table").append(new_option);
-            //             }
-            //         });
-            //
-            //     } else {
-            //         console.log("error");
-            //
-            //     }
-            // });
-
             var polygon = $("#poly-lat-lon").val();
             generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
 
@@ -2089,7 +2055,13 @@ $('#dssatslider').change(function (e) {
             $(".error").html('');
             if (date != undefined) {
                 add_vic();
+      var polygon = $("#poly-lat-lon").val();
+                 variable1 = $("#var_table1 option:selected").val();
 
+                            variable2 = $("#var_table2 option:selected").val();
+
+            generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
                     //    $("#seasonyear").trigger('change');
 
                     // } else {
