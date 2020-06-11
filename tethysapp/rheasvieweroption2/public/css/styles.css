@@ -175,7 +175,7 @@ margin-right:0px;
 		height: 100%;
 		position: relative;
 		overflow: hidden;
-		margin: 5px;
+		margin: 5px 5px 5px 0;
 	}
 
 	h2 {
