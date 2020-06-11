@@ -2033,7 +2033,11 @@ $('#dssatslider').change(function (e) {
                 } else {
                     console.log("error");
                 }
-            });
+            }).fail(function(xhr, status, error) {
+
+           alert("There was a problem with the selected variable, please try selecting another map variable");
+ hideLoader();
+        });
 //            hideLoader();
 
         });
