@@ -1426,6 +1426,8 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 style = "prec_rainf";
                 break;
             case "rootmoist":
+		style="avg_temp_rev";
+                break;
             case "tmax":
             case "tmin":
             case "surf_temp":
