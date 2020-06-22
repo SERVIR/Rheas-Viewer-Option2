@@ -270,18 +270,26 @@ var LIBRARY_OBJECT = (function () {
 
         function addControls() {
             var element = document.createElement('div');
+             var element1 = document.createElement('div');
             element.className = 'ol-control-panel ol-unselectable ol-control';
+            element1.className = 'ol-control-panel ol-unselectable ol-control';
            // element.appendChild(createControl("Point", "glyphicon glyphicon-record"));
             element.appendChild(createControl("Polygon", "fas fa-draw-polygon"));
             element.appendChild(createControl("Recenter", "fas fa-compass"));
             // element.appendChild(createControl("ToggleDistrict", "fas fa-toggle-on"));
             element.appendChild(createControl("UploadShapeFile", "fas fa-upload"));
             element.appendChild(createControl("ClearAll", "far fa-trash-alt"));
+            element.appendChild(createControl("FullScreen", "fas fa-expand"));
+            element1.appendChild(createControl("FullScreen1", "fas fa-expand"));
             /*A custom control which has container holding input elements etc*/
             var controlPanel = new ol.control.Control({
                 element: element
             });
+             var controlPanel1 = new ol.control.Control({
+                element: element1
+            });
             map.addControl(controlPanel);
+                 map1.addControl(controlPanel1);
         }
 
         function createControl(which, icon) {
@@ -324,7 +332,48 @@ var LIBRARY_OBJECT = (function () {
                 map.removeLayer(shapeFile);
 
 
-            } else {
+            }
+            else if (which =="FullScreen"){
+                   if (document.getElementById("mapcontainer").classList.contains("mapcontainerfull")) {
+                    document.getElementById("mapcontainer").classList.remove("mapcontainerfull");
+                     document.getElementById("mapcontainer").style.height="63vh";
+                    document.getElementById("crow").style.display='block';
+             setTimeout( function() { map.updateSize();}, 200);
+                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fas fa-expand" + "' aria-hidden='true'></span>";
+
+                } else {
+
+                   document.getElementById("mapcontainer").classList.add("mapcontainerfull");
+                   document.getElementById("mapcontainer").style.height="90%";
+                   document.getElementById("crow").style.display='none';
+setTimeout( function() { map.updateSize();}, 200);
+                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fa fa-window-minimize" + "' aria-hidden='true'></span>";
+                }
+            }
+              else if (which =="FullScreen1"){
+                   if (document.getElementById("mapcontainer1").classList.contains("mapcontainerfull")) {
+                    document.getElementById("mapcontainer1").classList.remove("mapcontainerfull");
+                     document.getElementById("mapcontainer1").style.height="63vh";
+                    document.getElementById("crow").style.display='block';
+                 // //  map1.getView().setZoom(map1.getView().getZoom() - 1);
+                 //    map1.getView().setZoom(map1.getView().getZoom() + 1);
+                       setTimeout( function() { map1.updateSize();}, 200);
+                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fas fa-expand" + "' aria-hidden='true'></span>";
+
+                } else {
+
+                   document.getElementById("mapcontainer1").classList.add("mapcontainerfull");
+                   document.getElementById("mapcontainer1").style.height="90%";
+                   document.getElementById("crow").style.display='none';
+ //
+ // //map1.getView().setZoom(map1.getView().getZoom() + 1);
+ //  map1.getView().setZoom(map1.getView().getZoom() -1);
+                       setTimeout( function() { map1.updateSize();}, 200);
+                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fa fa-window-minimize" + "' aria-hidden='true'></span>";
+                }
+            }
+            if (which =="Polygon")
+            {
                 try {
                     map.removeInteraction(draw);
                 } catch (e) {
@@ -358,6 +407,7 @@ var LIBRARY_OBJECT = (function () {
                     feat = evt.feature;
                     processFeature(evt.feature, which);
                     map.removeInteraction(draw);
+
                 });
             }
         }
@@ -1148,6 +1198,7 @@ var tooltip = document.getElementById('tooltip11');
             // vectorLayer2.setSource(null);
             // console.log(vectorLayer2.getSource());
             //  vectorLayer2.setZIndex(3);
+
                 vectorLayer1.setZIndex(4);
         });
         selectedFeatures = select_interaction.getFeatures();
@@ -1445,7 +1496,23 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
 
     };
 
-
+Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
+    var path = [
+        // Arrow stem
+        'M', x + w * 0.5, y,
+        'L', x + w * 0.5, y + h * 0.7,
+        // Arrow head
+        'M', x + w * 0.3, y + h * 0.5,
+        'L', x + w * 0.5, y + h * 0.7,
+        'L', x + w * 0.7, y + h * 0.5,
+        // Box
+        'M', x, y + h * 0.9,
+        'L', x, y + h,
+        'L', x + w, y + h,
+        'L', x + w, y + h * 0.9
+    ];
+    return path;
+};
 
     function generate_dssat_graph(element, gid, variable) {
         showLoader3();
@@ -1612,9 +1679,28 @@ hideLoader3();
                         }
 
                     },
-                    exporting: {
-                        enabled: true
-                    },
+                       // exporting: {
+                    //     enabled: true
+                    // },
+                exporting: {
+                    filename: 'event-id-metadata-graph',
+                    buttons: {
+                        contextButton: {
+                            menuItems: ["viewFullscreen", "printChart", "viewData"]
+                        },
+                        'downloadButton': {
+                            symbol: 'download',
+                            symbolFill: '#B5C9DF',
+                            hoverSymbolFill: '#779ABF',
+                            theme: {
+                                class: "downloadButton highcharts-button highcharts-button-normal",
+                                id: "downloadButton"
+                            },
+                            menuItems: ["downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "downloadCSV", "downloadXLS"]
+
+                        }
+                    }
+                },
                     series: series,
 
                 },
@@ -1699,8 +1785,10 @@ hideLoader3();
             $(element).highcharts({
                     chart: {
                         type: display_name == 'Rainfall' ? 'column' : 'line',
-                        zoomType: 'x'
+                        zoomType: 'x',
+
                     },
+
                     title: {
                         text: titletext,
                         style: {
@@ -1725,9 +1813,28 @@ hideLoader3();
                         }
 
                     },
-                    exporting: {
-                        enabled: true
-                    },
+                    // exporting: {
+                    //     enabled: true
+                    // },
+                   exporting: {
+                    filename: 'event-id-metadata-graph',
+                    buttons: {
+                        contextButton: {
+                            menuItems: ["viewFullscreen", "printChart", "viewData"]
+                        },
+                        'downloadButton': {
+                            symbol: 'download',
+                            symbolFill: '#B5C9DF',
+                            hoverSymbolFill: '#779ABF',
+                            theme: {
+                                  class: "downloadButton highcharts-button highcharts-button-normal",
+                                id: "downloadButton"
+                            },
+                            menuItems: ["downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "downloadCSV", "downloadXLS"]
+
+                        }
+                    }
+                },
                     series: series
                 },
                 function (chart) {
@@ -2233,7 +2340,7 @@ $('#dssatslider').change(function (e) {
             if (gid == undefined || gid == "") gid = 'KE041';
 
             var point = $("#point-lat-lon").val();
-            var polygon = $("#poly-lat-lon").val();
+            var polygon = $("#poly-laft-lon").val();
             generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
             generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());

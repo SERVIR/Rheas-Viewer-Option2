@@ -525,6 +525,10 @@ def get_vic_polygon(s_var,geom_data,sd,ed):
     maxy = float(bounds[2])
     maxx = float(bounds[3])
     print("get vic poly")
+    print(minx)
+    print(maxx)
+    print(miny)
+    print(maxy)
     """Make sure you have this path for all the run_types(/home/tethys/rheas/varname.nc)"""
     infile = os.path.join(cfg.data['path'], s_var+"_final.nc")
     nc_fid = netCDF4.Dataset(infile, 'r',)  # Reading the netCDF file

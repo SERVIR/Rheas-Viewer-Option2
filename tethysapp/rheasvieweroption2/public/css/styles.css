@@ -170,6 +170,16 @@ margin-right:0px;
 
 	}
 
+	.mapcontainerfull
+{
+    height: 90%;
+    margin-bottom: 0px;
+    padding: 0;
+    position: absolute;
+    z-index: 2;
+    width: 84%;
+}
+
 	#mappanel,
 	#mappanel1 {
 		height: 100%;
