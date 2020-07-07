@@ -351,26 +351,30 @@ setTimeout( function() { map.updateSize();}, 200);
                 }
             }
               else if (which =="FullScreen1"){
-                   if (document.getElementById("mapcontainer1").classList.contains("mapcontainerfull")) {
-                    document.getElementById("mapcontainer1").classList.remove("mapcontainerfull");
-                     document.getElementById("mapcontainer1").style.height="63vh";
-                    document.getElementById("crow").style.display='block';
-                 // //  map1.getView().setZoom(map1.getView().getZoom() - 1);
-                 //    map1.getView().setZoom(map1.getView().getZoom() + 1);
-                       setTimeout( function() { map1.updateSize();}, 200);
-                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fas fa-expand" + "' aria-hidden='true'></span>";
-
-                } else {
-
-                   document.getElementById("mapcontainer1").classList.add("mapcontainerfull");
-                   document.getElementById("mapcontainer1").style.height="90%";
-                   document.getElementById("crow").style.display='none';
+ //                   if (document.getElementById("mapcontainer1").classList.contains("mapcontainerfull")) {
+ //                    document.getElementById("mapcontainer1").classList.remove("mapcontainerfull");
+ //                     document.getElementById("mapcontainer1").style.height="63vh";
+ //                    document.getElementById("crow").style.display='block';
+ //                 // //  map1.getView().setZoom(map1.getView().getZoom() - 1);
+ //                 //    map1.getView().setZoom(map1.getView().getZoom() + 1);
+ //                       setTimeout( function() { map1.updateSize();}, 200);
+ //                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fas fa-expand" + "' aria-hidden='true'></span>";
  //
- // //map1.getView().setZoom(map1.getView().getZoom() + 1);
- //  map1.getView().setZoom(map1.getView().getZoom() -1);
-                       setTimeout( function() { map1.updateSize();}, 200);
-                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fa fa-window-minimize" + "' aria-hidden='true'></span>";
-                }
+ //                } else {
+ //
+ //                   document.getElementById("mapcontainer1").classList.add("mapcontainerfull");
+ //                   document.getElementById("mapcontainer1").style.height="90%";
+ //                   document.getElementById("crow").style.display='none';
+ // //
+ // // //map1.getView().setZoom(map1.getView().getZoom() + 1);
+ // //  map1.getView().setZoom(map1.getView().getZoom() -1);
+ //                       setTimeout( function() { map1.updateSize();}, 200);
+ //                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fa fa-window-minimize" + "' aria-hidden='true'></span>";
+ //                }
+                window.open(
+  '/templates/rheasvieweroption2/dssatfullscreen.html',
+  '_blank' // <- This is what makes it open in a new window.
+);
             }
             if (which =="Polygon")
             {

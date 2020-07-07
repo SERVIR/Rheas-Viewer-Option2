@@ -18,7 +18,11 @@ import netCDF4
 import calendar
 import json
 import numpy as np
+import geopandas as gpd
 import logging
+import xarray
+import regionmask
+import rioxarray
 log = logging.getLogger(__name__)
 default_schemas = ['basin','crops','dssat','ken_test','information_schema','lai','precip','public','soilmoist','test','test_ke','test_tza','tmax','tmin','topology','vic','wind','pg_toast','pg_temp_1','pg_toast_temp_1','pg_catalog','ken_vic','tza_vic','eth_vic','tza_nrt']
 
@@ -420,49 +424,49 @@ def calculate_yield(db,schema,startdate,enddate):
                                                                cfg.connection['password']))
         cur = conn.cursor()
         storename = str(db+'_'+schema+'_agareas')
-        cat = Catalog(cfg.geoserver['rest_url'], username=cfg.geoserver['user'], password=cfg.geoserver['password'],disable_ssl_certificate_validation=True)
-        try:
-            print('Check if the layer exists')
-            something = cat.get_store(storename, cfg.geoserver['workspace'])
-            if not something:
-                print("No store")
-                raise Exception
-            else:
-                print("Store exists")
-        except Exception  as e:
-            temp_dir = tempfile.mkdtemp()
-            pg_sql = """SELECT * FROM {0}.agareas""".format(schema)
-            export_pg_table(temp_dir,storename,cfg.connection['host'],cfg.connection['user'],cfg.connection['password'],db ,pg_sql)
-            target_zip = os.path.join(os.path.join(temp_dir,storename+'.zip'))
-
-            with zipfile.ZipFile(target_zip, 'w') as pg_zip:
-                for f in os.listdir(os.path.join(temp_dir)):
-                    if '.zip' not in f:
-                        f = os.path.join(temp_dir,f)
-                        pg_zip.write(f,basename(f))
-
-            rest_url = cfg.geoserver['rest_url']
-
-            if rest_url[-1] != "/":
-                rest_url = rest_url + '/'
-
-            headers = {
-                'Content-type': 'application/zip',
-            }
-
-            request_url = '{0}workspaces/{1}/datastores/{2}/file.shp'.format(rest_url,
-                                                                                     cfg.geoserver['workspace'],
-                                                                                     storename)  # Creating the rest url
-
-            user = cfg.geoserver['user']
-            password = cfg.geoserver['password']
-            requests.put(request_url, verify=False, headers=headers, data=open(target_zip,'rb'),
-                         auth=(user, password))  # Creating the resource on the geoserver
-
-            if temp_dir is not None:
-                if os.path.exists(temp_dir):
-                    print('whooo')
-                    #shutil.rmtree(temp_dir)
+        # cat = Catalog(cfg.geoserver['rest_url'], username=cfg.geoserver['user'], password=cfg.geoserver['password'],disable_ssl_certificate_validation=True)
+        # try:
+        #     print('Check if the layer exists')
+        #     something = cat.get_store(storename, cfg.geoserver['workspace'])
+        #     if not something:
+        #         print("No store")
+        #         raise Exception
+        #     else:
+        #         print("Store exists")
+        # except Exception  as e:
+        #     temp_dir = tempfile.mkdtemp()
+        #     pg_sql = """SELECT * FROM {0}.agareas""".format(schema)
+        #     export_pg_table(temp_dir,storename,cfg.connection['host'],cfg.connection['user'],cfg.connection['password'],db ,pg_sql)
+        #     target_zip = os.path.join(os.path.join(temp_dir,storename+'.zip'))
+        #
+        #     with zipfile.ZipFile(target_zip, 'w') as pg_zip:
+        #         for f in os.listdir(os.path.join(temp_dir)):
+        #             if '.zip' not in f:
+        #                 f = os.path.join(temp_dir,f)
+        #                 pg_zip.write(f,basename(f))
+        #
+        #     rest_url = cfg.geoserver['rest_url']
+        #
+        #     if rest_url[-1] != "/":
+        #         rest_url = rest_url + '/'
+        #
+        #     headers = {
+        #         'Content-type': 'application/zip',
+        #     }
+        #
+        #     request_url = '{0}workspaces/{1}/datastores/{2}/file.shp'.format(rest_url,
+        #                                                                              cfg.geoserver['workspace'],
+        #                                                                              storename)  # Creating the rest url
+        #
+        #     user = cfg.geoserver['user']
+        #     password = cfg.geoserver['password']
+        #     requests.put(request_url, verify=False, headers=headers, data=open(target_zip,'rb'),
+        #                  auth=(user, password))  # Creating the resource on the geoserver
+        #
+        #     if temp_dir is not None:
+        #         if os.path.exists(temp_dir):
+        #             print('whooo')
+        #             #shutil.rmtree(temp_dir)
 
        #sql = """SELECT gid,max(gwad) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
         if len(startdate)>9:
@@ -513,6 +517,33 @@ def calculate_yield_gid(db, schema, gid,startdate,enddate):
         return e
 
 @csrf_exempt
+def get_vic_polygon_working(s_var,geom_data,sd,ed):
+    poly_geojson = Polygon(json.loads(geom_data))
+    shape_obj = shapely.geometry.asShape(poly_geojson)
+    try:
+        nuts = gpd.GeoDataFrame({'geometry':json.loads(geom_data)})
+
+        nuts.head()
+
+        d = xarray.open_mfdataset(os.path.join(cfg.data['path'], s_var+"_final.nc"), chunks={'time': 10})
+        # d = d.assign_coords(longitude=(((d.lon + 180) % 360) - 180)).sortby('lon')
+        # nuts_mask_poly = regionmask.Regions_cls(name='nuts_mask', numbers=list(range(0, 37)), names=list(nuts.id),
+        #                                         abbrevs=list(nuts.ccode),
+        #                                         outlines=list(nuts.geometry.values[i] for i in range(0, 37)))
+
+        ds = rioxarray.open_rasterio(
+            os.path.join(cfg.data['path'], s_var+"_final.nc"),
+            masked=True,
+            chunks=True,
+        )
+        clipped = ds.rio.clip(geometries=poly_geojson,crs=4326)
+        print('.............................')
+    except Exception as e:
+        print(e)
+    print(clipped)
+
+
+@csrf_exempt
 def get_vic_polygon(s_var,geom_data,sd,ed):
     ts_plot = []
     json_obj = {}
@@ -524,11 +555,11 @@ def get_vic_polygon(s_var,geom_data,sd,ed):
     minx = float(bounds[1])
     maxy = float(bounds[2])
     maxx = float(bounds[3])
-    print("get vic poly")
-    print(minx)
-    print(maxx)
-    print(miny)
-    print(maxy)
+    # print("get vic poly")
+    # print(minx)
+    # print(maxx)
+    # print(miny)
+    # print(maxy)
     """Make sure you have this path for all the run_types(/home/tethys/rheas/varname.nc)"""
     infile = os.path.join(cfg.data['path'], s_var+"_final.nc")
     nc_fid = netCDF4.Dataset(infile, 'r',)  # Reading the netCDF file
@@ -565,6 +596,8 @@ def get_vic_polygon(s_var,geom_data,sd,ed):
     # json_obj["plot"] = ts_plot
     # json_obj["geom"] = geom
     return ts_plot
+
+
 @csrf_exempt
 def get_times(variable):
     times = []
