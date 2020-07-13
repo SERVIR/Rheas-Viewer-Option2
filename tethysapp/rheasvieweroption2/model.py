@@ -36,58 +36,58 @@ def get_selected_raster(db,region,variable,date):
         cur = conn.cursor()
 
         storename = db+'_'+region+'_'+variable+'_'+date
-
-        cat = Catalog(cfg.geoserver['rest_url'], username=cfg.geoserver['user'], password=cfg.geoserver['password'],disable_ssl_certificate_validation=True)
-
-        try:
-            # logging.info('Check if the layer exists')
-            something = cat.get_store(storename,cfg.geoserver['workspace'])
-            if not something:
-		# logging.info('Layer doesnt exist')
-                print( "No store")
-                raise Exception
-            else:
-                mean, stddev = get_vic_summary(db,region, variable, date)
-                # logging.info(str(mean)+str(stddev)+str(min)+str(max))
-                return storename, mean, stddev
-        except Exception  as e:
-            # logging.info('Entering geoserver code')
-	    # logging.error('Error at failed request ' + str(e))
-            try:
-                # logging.info('Starting the geoserver stuff')
-                sql = """SELECT ST_AsGDALRaster(rast, 'GTiff') as tiff FROM {0}.{1} WHERE id={2}""".format(region, variable, date)
-                cur.execute(sql)
-                data = cur.fetchall()
-                # logging.info(str(data))
-
-                mean, stddev= get_vic_summary(db,region, variable, date)
-                # logging.info('Work you piece ...')
-                rest_url = cfg.geoserver['rest_url']
-                # logging.info(str(rest_url))
-
-                if rest_url[-1] != "/":
-                    rest_url = rest_url + '/'
-
-                headers = {
-                    'Content-type': 'image/tiff',
-                }
-
-                request_url = '{0}workspaces/{1}/coveragestores/{2}/file.geotiff'.format(rest_url,
-                                                                                         cfg.geoserver['workspace'],
-                                                                                         storename)  # Creating the rest url
-                # logging.info('Get the username and password')
-                user = cfg.geoserver['user']
-                password = cfg.geoserver['password']
-                # logging.info('Right before the put command')
-                requests.put(request_url,verify=False,headers=headers, data=data[0][0],
-                                 auth=(user, password))  # Creating the resource on the geoserver
-
-                # logging.info(request_url)
-                return storename, mean, stddev
-
-            except Exception as er:
-		# logging.info('Error at uplaoding tiff '+ str(e))
-                return str(er)+' This is while adding the raster layer.'
+        #
+        # cat = Catalog(cfg.geoserver['rest_url'], username=cfg.geoserver['user'], password=cfg.geoserver['password'],disable_ssl_certificate_validation=True)
+        #
+        # try:
+        #     # logging.info('Check if the layer exists')
+        #     something = cat.get_store(storename,cfg.geoserver['workspace'])
+        #     if not something:
+		# # logging.info('Layer doesnt exist')
+        #         print( "No store")
+        #         raise Exception
+        #     else:
+        #         mean, stddev = get_vic_summary(db,region, variable, date)
+        #         # logging.info(str(mean)+str(stddev)+str(min)+str(max))
+        #         return storename, mean, stddev
+        # except Exception  as e:
+        #     # logging.info('Entering geoserver code')
+	    # # logging.error('Error at failed request ' + str(e))
+        #     try:
+        #         # logging.info('Starting the geoserver stuff')
+        #         sql = """SELECT ST_AsGDALRaster(rast, 'GTiff') as tiff FROM {0}.{1} WHERE id={2}""".format(region, variable, date)
+        #         cur.execute(sql)
+        #         data = cur.fetchall()
+        #         # logging.info(str(data))
+        #
+        #         mean, stddev= get_vic_summary(db,region, variable, date)
+        #         # logging.info('Work you piece ...')
+        #         rest_url = cfg.geoserver['rest_url']
+        #         # logging.info(str(rest_url))
+        #
+        #         if rest_url[-1] != "/":
+        #             rest_url = rest_url + '/'
+        #
+        #         headers = {
+        #             'Content-type': 'image/tiff',
+        #         }
+        #
+        #         request_url = '{0}workspaces/{1}/coveragestores/{2}/file.geotiff'.format(rest_url,
+        #                                                                                  cfg.geoserver['workspace'],
+        #                                                                                  storename)  # Creating the rest url
+        #         # logging.info('Get the username and password')
+        #         user = cfg.geoserver['user']
+        #         password = cfg.geoserver['password']
+        #         # logging.info('Right before the put command')
+        #         requests.put(request_url,verify=False,headers=headers, data=data[0][0],
+        #                          auth=(user, password))  # Creating the resource on the geoserver
+        #
+        #         # logging.info(request_url)
+        #         return storename, mean, stddev
+        #
+        #     except Exception as er:
+		# # logging.info('Error at uplaoding tiff '+ str(e))
+        #         return str(er)+' This is while adding the raster layer.'
 
     except Exception as err:
         # logging.info(str(err) + ' This is generic catch all')
@@ -542,9 +542,32 @@ def get_vic_polygon_working(s_var,geom_data,sd,ed):
         print(e)
     print(clipped)
 
-
 @csrf_exempt
 def get_vic_polygon(s_var,geom_data,sd,ed):
+    json_obj = {}
+    # Defining the lat and lon from the coords string
+    poly_geojson = Polygon(json.loads(geom_data))
+    shape_obj = shapely.geometry.asShape(poly_geojson)
+    bounds = poly_geojson.bounds
+    miny = float(bounds[0])
+    minx = float(bounds[1])
+    maxy = float(bounds[2])
+    maxx = float(bounds[3])
+    ks_sat3=xarray.open_dataset(os.path.join(cfg.data['path'], s_var+"_final.nc"))
+    arr=ks_sat3[s_var].sel(time=slice(sd,ed)).sel(lon=slice(miny,maxy),lat=slice(minx,maxx)).mean(dim=['lat','lon'])
+    # print(arr.time.values)
+    # print(arr.values)
+    vals=arr.values.tolist()
+    values=[0 if ((s_var == 'prec' or s_var == 'evap') and float(val) < 0) else round(float(val), 3) for val in vals]
+    times2=arr['time'].dt.strftime('%Y-%m-%d %H:%M:%S').values.tolist()
+    times1=[datetime.strptime(t, '%Y-%m-%d %H:%M:%S') for t in times2]
+    times=[(calendar.timegm(st.utctimetuple()) * 1000) for st in times1]
+    ts_plot = [ [i , j] for i,j in zip(times,values) ]
+    return ts_plot
+
+
+@csrf_exempt
+def get_vic_polygon_old(s_var,geom_data,sd,ed):
     ts_plot = []
     json_obj = {}
     # Defining the lat and lon from the coords string

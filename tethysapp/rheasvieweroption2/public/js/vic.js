@@ -14,6 +14,7 @@ var eventt = [];
 var selected=true;
 var temp='KE041';
 var flagg=true;
+var gpolygon;
 var LIBRARY_OBJECT = (function () {
     // Wrap the library in a package function
     "use strict"; // And enable strict mode for this library
@@ -44,7 +45,7 @@ var LIBRARY_OBJECT = (function () {
         wms_workspace,
         wms_url,
         wms_layer,
-        wms_source, gid,variable1,variable2,centeravg;
+        wms_source, gid, variable1, variable2, centeravg;
 
 
     /************************************************************************
@@ -65,7 +66,7 @@ var LIBRARY_OBJECT = (function () {
     var styleCache = {};
 
     var poor = [153, 0, 0, 1];
-    var low=[255, 128, 0, 1];
+    var low = [255, 128, 0, 1];
     var mid = [255, 255, 0, 1];
     var much = [128, 192, 0, 1];
     var high = [0, 128, 0, 1];
@@ -78,7 +79,7 @@ var LIBRARY_OBJECT = (function () {
             width: 1
         })
     });
- var default_sty = new ol.style.Style({
+    var default_sty = new ol.style.Style({
 
         stroke: new ol.style.Stroke({
             color: [97, 97, 97, 1],
@@ -96,8 +97,6 @@ var LIBRARY_OBJECT = (function () {
     };
 
 
-
-
     init_jquery_vars = function () {
         $interactionModal = $("#interaction-modal");
         $plotModal = $("#plot-modal");
@@ -109,20 +108,20 @@ var LIBRARY_OBJECT = (function () {
         var $var_element = $("#variable");
         variable_data = $var_element.attr('data-variable-info');
         variable_data = JSON.parse(variable_data);
-        wms_url = $var_element.attr('data-geoserver-url');
-        rest_url = $var_element.attr('data-rest-url');
-        db_enabled=$var_element.attr('data-db-enabled');
+        //     wms_url = $var_element.attr('data-geoserver-url');
+        //  rest_url = $var_element.attr('data-rest-url');
+        //    db_enabled=$var_element.attr('data-db-enabled');
         // wms_url = JSON.parse(wms_url);
-        wms_workspace = $var_element.attr('data-geoserver-workspace');
+        //  wms_workspace = $var_element.attr('data-geoserver-workspace');
         // wms_workspace = JSON.parse(wms_workspace);
 
     };
 
 
     init_dropdown = function () {
-           $("#analysis").css("background-color","#ddd");
-  $("#analysis").css("color","black");
-       //  $(".db_table").select2()
+        $("#analysis").css("background-color", "#ddd");
+        $("#analysis").css("color", "black");
+        //  $(".db_table").select2()
         //$(".schema_table").select2();
 
         $(".var_table").select2();
@@ -226,8 +225,10 @@ var LIBRARY_OBJECT = (function () {
         map = new ol.Map({
             target: document.getElementById("map"),
             layers: layers,
-            view: view
+            view: view,
         });
+
+        // $('#mapfull').data('map', map);
         map1 = new ol.Map({
             target: document.getElementById("map1"),
             layers: [baseLayer],
@@ -237,14 +238,14 @@ var LIBRARY_OBJECT = (function () {
         vector_layer.setZIndex(Infinity);
         map.addLayer(vector_layer);
         vectorLayerDistrict.setZIndex(77777);
-       // map.addLayer(vectorLayerDistrict);
+        // map.addLayer(vectorLayerDistrict);
         boundaryLayer = vectorLayerDistrict;
 
         var sel = new ol.interaction.Select({
             source: vectorLayerDistrict
         });
 
-       // map.addInteraction(sel);
+        // map.addInteraction(sel);
 
         sel.on('select', function (e) {
 
@@ -265,15 +266,15 @@ var LIBRARY_OBJECT = (function () {
         var modify = new ol.interaction.Modify({
             source: vector_source
         });
-       // map.addInteraction(modify);
+        // map.addInteraction(modify);
         addControls();
 
         function addControls() {
             var element = document.createElement('div');
-             var element1 = document.createElement('div');
+            var element1 = document.createElement('div');
             element.className = 'ol-control-panel ol-unselectable ol-control';
             element1.className = 'ol-control-panel ol-unselectable ol-control';
-           // element.appendChild(createControl("Point", "glyphicon glyphicon-record"));
+            // element.appendChild(createControl("Point", "glyphicon glyphicon-record"));
             element.appendChild(createControl("Polygon", "fas fa-draw-polygon"));
             element.appendChild(createControl("Recenter", "fas fa-compass"));
             // element.appendChild(createControl("ToggleDistrict", "fas fa-toggle-on"));
@@ -285,11 +286,11 @@ var LIBRARY_OBJECT = (function () {
             var controlPanel = new ol.control.Control({
                 element: element
             });
-             var controlPanel1 = new ol.control.Control({
+            var controlPanel1 = new ol.control.Control({
                 element: element1
             });
             map.addControl(controlPanel);
-                 map1.addControl(controlPanel1);
+            map1.addControl(controlPanel1);
         }
 
         function createControl(which, icon) {
@@ -332,52 +333,50 @@ var LIBRARY_OBJECT = (function () {
                 map.removeLayer(shapeFile);
 
 
+            } else if (which == "FullScreen") {
+//                    if (document.getElementById("mapcontainer").classList.contains("mapcontainerfull")) {
+//                     document.getElementById("mapcontainer").classList.remove("mapcontainerfull");
+//                      document.getElementById("mapcontainer").style.height="63vh";
+//                     document.getElementById("crow").style.display='block';
+//              setTimeout( function() { map.updateSize();}, 200);
+//                     document.getElementById("draw" + which).innerHTML = "<span class='" + "fas fa-expand" + "' aria-hidden='true'></span>";
+//
+//                 } else {
+//
+//                    document.getElementById("mapcontainer").classList.add("mapcontainerfull");
+//                    document.getElementById("mapcontainer").style.height="90%";
+//                    document.getElementById("crow").style.display='none';
+// setTimeout( function() { map.updateSize();}, 200);
+//                     document.getElementById("draw" + which).innerHTML = "<span class='" + "fa fa-window-minimize" + "' aria-hidden='true'></span>";
+//                 }
+                var elem = document.getElementById("mappanelbody");
+                elem.requestFullscreen();
+            } else if (which == "FullScreen1") {
+                //                   if (document.getElementById("mapcontainer1").classList.contains("mapcontainerfull")) {
+                //                    document.getElementById("mapcontainer1").classList.remove("mapcontainerfull");
+                //                     document.getElementById("mapcontainer1").style.height="63vh";
+                //                    document.getElementById("crow").style.display='block';
+                //                 // //  map1.getView().setZoom(map1.getView().getZoom() - 1);
+                //                 //    map1.getView().setZoom(map1.getView().getZoom() + 1);
+                //                       setTimeout( function() { map1.updateSize();}, 200);
+                //                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fas fa-expand" + "' aria-hidden='true'></span>";
+                //
+                //                } else {
+                //
+                //                   document.getElementById("mapcontainer1").classList.add("mapcontainerfull");
+                //                   document.getElementById("mapcontainer1").style.height="90%";
+                //                   document.getElementById("crow").style.display='none';
+                // //
+                // // //map1.getView().setZoom(map1.getView().getZoom() + 1);
+                // //  map1.getView().setZoom(map1.getView().getZoom() -1);
+                //                       setTimeout( function() { map1.updateSize();}, 200);
+                //                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fa fa-window-minimize" + "' aria-hidden='true'></span>";
+                //                }
+                var elem = document.getElementById("mappanelbody1");
+                elem.requestFullscreen();
+                // window.open($('#etr').attr('href'));
             }
-            else if (which =="FullScreen"){
-                   if (document.getElementById("mapcontainer").classList.contains("mapcontainerfull")) {
-                    document.getElementById("mapcontainer").classList.remove("mapcontainerfull");
-                     document.getElementById("mapcontainer").style.height="63vh";
-                    document.getElementById("crow").style.display='block';
-             setTimeout( function() { map.updateSize();}, 200);
-                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fas fa-expand" + "' aria-hidden='true'></span>";
-
-                } else {
-
-                   document.getElementById("mapcontainer").classList.add("mapcontainerfull");
-                   document.getElementById("mapcontainer").style.height="90%";
-                   document.getElementById("crow").style.display='none';
-setTimeout( function() { map.updateSize();}, 200);
-                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fa fa-window-minimize" + "' aria-hidden='true'></span>";
-                }
-            }
-              else if (which =="FullScreen1"){
- //                   if (document.getElementById("mapcontainer1").classList.contains("mapcontainerfull")) {
- //                    document.getElementById("mapcontainer1").classList.remove("mapcontainerfull");
- //                     document.getElementById("mapcontainer1").style.height="63vh";
- //                    document.getElementById("crow").style.display='block';
- //                 // //  map1.getView().setZoom(map1.getView().getZoom() - 1);
- //                 //    map1.getView().setZoom(map1.getView().getZoom() + 1);
- //                       setTimeout( function() { map1.updateSize();}, 200);
- //                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fas fa-expand" + "' aria-hidden='true'></span>";
- //
- //                } else {
- //
- //                   document.getElementById("mapcontainer1").classList.add("mapcontainerfull");
- //                   document.getElementById("mapcontainer1").style.height="90%";
- //                   document.getElementById("crow").style.display='none';
- // //
- // // //map1.getView().setZoom(map1.getView().getZoom() + 1);
- // //  map1.getView().setZoom(map1.getView().getZoom() -1);
- //                       setTimeout( function() { map1.updateSize();}, 200);
- //                    document.getElementById("draw" + which).innerHTML = "<span class='" + "fa fa-window-minimize" + "' aria-hidden='true'></span>";
- //                }
-                window.open(
-  '/templates/rheasvieweroption2/dssatfullscreen.html',
-  '_blank' // <- This is what makes it open in a new window.
-);
-            }
-            if (which =="Polygon")
-            {
+            if (which == "Polygon") {
                 try {
                     map.removeInteraction(draw);
                 } catch (e) {
@@ -428,6 +427,7 @@ setTimeout( function() { map.updateSize();}, 200);
                 var coords = feature.getGeometry().getCoordinates();
                 var proj_coords = ol.proj.transform(coords, 'EPSG:3857', 'EPSG:4326');
                 $("#poly-lat-lon").val('{"type":"Polygon","coordinates":[' + JSON.stringify(proj_coords) + ']}');
+                console.log($("#poly-lat-lon").val());
                 $("#point-lat-lon").val("");
             }
 
@@ -468,7 +468,7 @@ setTimeout( function() { map.updateSize();}, 200);
                 });
 
                 draw.on('drawstart', function (e) {
-                    selected=false;
+                    selected = false;
                     vector_source.clear();
                 });
 
@@ -491,19 +491,19 @@ setTimeout( function() { map.updateSize();}, 200);
                 $plotModal.modal('show');
             } else if (feature_type == 'Polygon') {
                 console.log("from polygon");
-                selected=false;
+                selected = false;
                 $plotModal.find('.info').html('');
                 var coords = parsed_feature["features"][0]["geometry"]["coordinates"][0];
                 proj_coords = [];
                 coords.forEach(function (coord) {
                     var transformed = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
-                    proj_coords.push('['+ transformed+']');
+                    proj_coords.push('[' + transformed + ']');
                 });
 
                 var json_object = '{"type":"Polygon","coordinates":' + JSON.stringify(proj_coords) + '}';
-                $("#poly-lat-lon").val('['+proj_coords+']');
-                console.log(proj_coords);
-         //       $("#poly-lat-lon").val(proj_coords);
+                $("#poly-lat-lon").val('[' + proj_coords + ']');
+                console.log($("#poly-lat-lon").val());
+                //       $("#poly-lat-lon").val(proj_coords);
                 $plotModal.find('.info').html('<b>You have selected the following polygon object ' + proj_coords + '. Click on Show plot to view the Time series.</b>');
                 $plotModal.modal('show');
             }
@@ -590,7 +590,7 @@ setTimeout( function() { map.updateSize();}, 200);
         });
 
         map1.on("singleclick", function (evt) {
-selected=false;
+            selected = false;
         });
 
         // map.on('pointermove', function (evt) {
@@ -695,9 +695,10 @@ selected=false;
         return bbox;
 
     };
+
     function styleFunction11(feature, resolution) {
         // get the incomeLevel from the feature properties
-        var level = feature.getProperties().countyid;
+                var level = feature.getProperties().countyid;
 
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
@@ -712,6 +713,16 @@ selected=false;
             }
 
             if (level == temp & index != -1) {
+                var t = feature.getGeometry().getCoordinates()[0];
+                var result = t[0].map(coord => {
+                    return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
+                });
+                var js=JSON.stringify( '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}');
+                // console.log(js);
+                $("#poly-lat-lon").val(JSON.stringify(result));
+                   generate_vic_graph("#vic_plotter_1", $("#var_table1 option:selected").val(), "", JSON.stringify(result) );
+                generate_vic_graph("#vic_plotter_2", $("#var_table2 option:selected").val(), "", JSON.stringify(result));
+            //    console.log(gpolygon);
                 styleCache[index] = new ol.style.Style({
                     stroke: new ol.style.Stroke({
                         color: 'rgba(0, 0, 255, 1)',
@@ -773,7 +784,7 @@ selected=false;
                             width: 1
                         })
                     });
-                }  else if (avg_val > 905 && avg_val < 1182) {
+                } else if (avg_val > 905 && avg_val < 1182) {
                     styleCache[index] = new ol.style.Style({
                         fill: new ol.style.Fill({
                             color: much
@@ -783,7 +794,7 @@ selected=false;
                             width: 1
                         })
                     });
-                }else if (avg_val > 628 && avg_val < 905) {
+                } else if (avg_val > 628 && avg_val < 905) {
                     styleCache[index] = new ol.style.Style({
                         fill: new ol.style.Fill({
                             color: mid
@@ -814,8 +825,8 @@ selected=false;
                         })
                     });
                 }
-                   if(level==temp && selected==false) {
-                      // temp=3;
+                if (level == temp && selected == false) {
+                    // temp=3;
 
                     styleCache[index] = new ol.style.Style({
                         stroke: new ol.style.Stroke({
@@ -830,7 +841,6 @@ selected=false;
                 }
 
 
-
             }
             return [styleCache[index]];
         } else {
@@ -843,8 +853,8 @@ selected=false;
 
     function styleFunction(feature, resolution) {
         // get the incomeLevel from the feature properties
-       // var level = feature.getId().split(".")[1];
-var level = feature.getProperties().countyid;
+        // var level = feature.getId().split(".")[1];
+        var level = feature.getProperties().countyid;
 
         if (yield_data != null) {
             // var index = yield_data.findIndex(function(x) { return x[0]==level });
@@ -915,10 +925,9 @@ var level = feature.getProperties().countyid;
                             width: 1
                         })
                     });
-                }
-                else{
+                } else {
 
-                      styleCache[index] = new ol.style.Style({
+                    styleCache[index] = new ol.style.Style({
                         fill: new ol.style.Fill({
                             color: poor
                         }),
@@ -928,41 +937,41 @@ var level = feature.getProperties().countyid;
                         })
                     });
                 }
-                 if (level == temp & index != -1) {
-                     styleCache[index] = new ol.style.Style({
-                         stroke: new ol.style.Stroke({
-                             color: 'rgba(0, 0, 255, 1)',
-                             width: 3
-                         }),
-                         fill: new ol.style.Fill({
-                             color: 'rgba(0,0,255,0.5)'
-                         })
-                     });
-                     //document.getElementById("tooltip11").innerHTML = "County: Siaya<br>Yield: " + avg_val + " kg/ha";
+                if (level == temp & index != -1) {
+                    styleCache[index] = new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(0, 0, 255, 1)',
+                            width: 3
+                        }),
+                        fill: new ol.style.Fill({
+                            color: 'rgba(0,0,255,0.5)'
+                        })
+                    });
+                    //document.getElementById("tooltip11").innerHTML = "County: Siaya<br>Yield: " + avg_val + " kg/ha";
 
 
-                     ajax_update_database("get-county", {
-                         "db": $("#db_table option:selected").val(),
-                         "gid": level,
-                         "schema": $("#schema_table option:selected").val(),
-                     }).done(function (data1) {
-                         if ("success" in data1) {
+                    ajax_update_database("get-county", {
+                        "db": $("#db_table option:selected").val(),
+                        "gid": level,
+                        "schema": $("#schema_table option:selected").val(),
+                    }).done(function (data1) {
+                        if ("success" in data1) {
 
-                             var county_name = data1["county"].length > 0 ? data1["county"][0][0] : "Unknown";
-                             if (avg_val) {
-                                 var yield_val = Math.round(avg_val).toFixed(2);
-
-
-                                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
-                             }
-                             //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
-
-                             map1.addOverlay(overlayt);
+                            var county_name = data1["county"].length > 0 ? data1["county"][0][0] : "Unknown";
+                            if (avg_val) {
+                                var yield_val = Math.round(avg_val).toFixed(2);
 
 
-                         }
-                     });
-                 }
+                                document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
+                            }
+                            //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+                            map1.addOverlay(overlayt);
+
+
+                        }
+                    });
+                }
             }
             return [styleCache[index]];
         } else {
@@ -1036,72 +1045,74 @@ var level = feature.getProperties().countyid;
     function get_cal(bounds) {
         var layer_extent = bounds;
         var transformed_extent = ol.proj.transformExtent(layer_extent, 'EPSG:4326', 'EPSG:3857');
-       // map.getView().fit(transformed_extent, map.getSize());
+        // map.getView().fit(transformed_extent, map.getSize());
         var aa = layer_extent;
         centeravg = ol.extent.getCenter(aa);
-         $("#point-lat-lon").val(centeravg.toString());
+        $("#point-lat-lon").val(centeravg.toString());
 
         // var variable1 = $("#var_table1 option:selected").val();
         // var variable2 = $("#var_table2 option:selected").val();
-       // generate_vic_graph("#vic_plotter_1", variable1, centeravg.toString(), "");
-      //  generate_vic_graph("#vic_plotter_2", variable2, centeravg.toString(), "");
-        var features=vectorLayer1.getSource().getFeatures();
+        // generate_vic_graph("#vic_plotter_1", variable1, centeravg.toString(), "");
+        //  generate_vic_graph("#vic_plotter_2", variable2, centeravg.toString(), "");
+        var features = vectorLayer1.getSource().getFeatures();
         var i;
-        var found=false;
-         for (i = 0; i < features.length && !found; i++) {
-             if (features[i].getProperties().countyid === 'KE041') {
-                 found = true;
-                 var res = features[i].getGeometry().getCoordinates()[0];
-                 var result = res[0].map(coord => {
-                     return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
-                 });
-                 // var xhr = ajax_update_database("get-vic-nc", {"polygon": JSON.stringify(result)});
-                 // xhr.done(function (data) {
-                 //     console.log(data);
-                 //
-                 // });
-                 var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
+        var found = false;
+        for (i = 0; i < features.length && !found; i++) {
+            if (features[i].getProperties().countyid === 'KE041') {
+                found = true;
+                var res = features[i].getGeometry().getCoordinates()[0];
+                var result = res[0].map(coord => {
+                    return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
+                });
+                // var xhr = ajax_update_database("get-vic-nc", {"polygon": JSON.stringify(result)});
+                // xhr.done(function (data) {
+                //     console.log(data);
+                //
+                // });
+                var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
                 // $("#poly-lat-lon").val(json_object);
-                 var jobj=JSON.stringify(result);
-                 $("#poly-lat-lon").val(JSON.stringify(result));
-                 generate_vic_graph("#vic_plotter_1", variable1, "", jobj);
-                 generate_vic_graph("#vic_plotter_2", variable2, "", jobj);
-             }
-         }
+                var jobj = JSON.stringify(result);
+                $("#poly-lat-lon").val(JSON.stringify(result));
+                console.log($("#poly-lat-lon").val());
+               // gpolygon = jobj;
+                generate_vic_graph("#vic_plotter_1", variable1, "", jobj);
+                generate_vic_graph("#vic_plotter_2", variable2, "", jobj);
+            }
+        }
 
 
         map.updateSize();
 
     };
-    var  vectorLayer1 = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: styleFunction
-        });
-var  vectorLayer11= new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: styleFunction11
-        });
-       var vectorLayer2 = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: styleFunction1
-        });
+    var vectorLayer1 = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        style: styleFunction
+    });
+    var vectorLayer11 = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        style: styleFunction11
+    });
+    var vectorLayer2 = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        style: styleFunction1
+    });
 
-    var select_interaction,hoverInteraction;
-var tooltip = document.getElementById('tooltip11');
+    var select_interaction, hoverInteraction;
+    var tooltip = document.getElementById('tooltip11');
 
- var overlayt = new ol.Overlay({
-                    element: tooltip,
-                    offset: [0, 0],
-                    positioning: 'bottom-left'
+    var overlayt = new ol.Overlay({
+        element: tooltip,
+        offset: [0, 0],
+        positioning: 'bottom-left'
 
-                });
+    });
 
     function add_dssat(data, scale) {
 
         yield_data = data.yield;
         store = data.storename;
         var styling = get_styling("dssat", scale, 'cv_dssat');
-        var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
+        //  var bbox = get_bounds1(wms_workspace, store, rest_url, get_cal);
         vectorLayer1.setSource(new ol.source.Vector({
             // format: new ol.format.GeoJSON(),
             // url: function (extent) {
@@ -1113,12 +1124,12 @@ var tooltip = document.getElementById('tooltip11');
             // strategy: ol.loadingstrategy.bbox,
             // wrapX: false,
 
-             features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+            features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
                 featureProjection: 'EPSG:3857'
             })
 
         }));
-          vectorLayer11.setSource(new ol.source.Vector({
+        vectorLayer11.setSource(new ol.source.Vector({
             // format: new ol.format.GeoJSON(),
             // url: function (extent) {
             //     return wms_url + '?service=WFS&' +
@@ -1128,73 +1139,72 @@ var tooltip = document.getElementById('tooltip11');
             // },
             // strategy: ol.loadingstrategy.bbox,
             // wrapX: false,
-   features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+            features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
                 featureProjection: 'EPSG:3857'
             })
         }));
         vectorLayer1.setZIndex(3);
         map1.addLayer(vectorLayer1);
-         vectorLayer11.setZIndex(Infinity);
+        vectorLayer11.setZIndex(Infinity);
         map.addLayer(vectorLayer11);
-          //  vectorLayer2.setSource(new ol.source.Vector({
-            // format: new ol.format.GeoJSON(),
-            // url: function (extent) {
-            //     return wms_url + '?service=WFS&' +
-            //         'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
-            //         'outputFormat=application/json&srsname=EPSG:3857&' +
-            //         'bbox=' + extent.join(',') + ',EPSG:3857';
-            // },
-            // strategy: ol.loadingstrategy.bbox,
-            // wrapX: false,
-            //      features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
-              //  featureProjection: 'EPSG:3857'
-            //})
+        //  vectorLayer2.setSource(new ol.source.Vector({
+        // format: new ol.format.GeoJSON(),
+        // url: function (extent) {
+        //     return wms_url + '?service=WFS&' +
+        //         'version=1.1.0&request=GetFeature&typename=' + wms_workspace + ':' + store + '&' +
+        //         'outputFormat=application/json&srsname=EPSG:3857&' +
+        //         'bbox=' + extent.join(',') + ',EPSG:3857';
+        // },
+        // strategy: ol.loadingstrategy.bbox,
+        // wrapX: false,
+        //      features: (new ol.format.GeoJSON()).readFeatures(boundaries, {
+        //  featureProjection: 'EPSG:3857'
+        //})
 
-       // }));
-     //   vectorLayer2.setZIndex(4);
-   //     map1.addLayer(vectorLayer2);
+        // }));
+        //   vectorLayer2.setZIndex(4);
+        //     map1.addLayer(vectorLayer2);
 
         map1.crossOrigin = 'anonymous';
 
         select_interaction = new ol.interaction.Select({
             layers: [vectorLayer1],//selected==false && vectorLayer2.getSource()!=null?[vectorLayer2]:[vectorLayer1],
             style: new ol.style.Style({
-               fill: new ol.style.Fill({
-                     color: 'rgba(0,0,255,0.5)'
+                fill: new ol.style.Fill({
+                    color: 'rgba(0,0,255,0.5)'
                 }),
-                 stroke: new ol.style.Stroke({
+                stroke: new ol.style.Stroke({
                     color: 'blue',
                     width: 3,
                 }),
             }),
-           // wrapX: false
+            // wrapX: false
         });
         map1.addInteraction(select_interaction);
-         hoverInteraction = new ol.interaction.Select({
+        hoverInteraction = new ol.interaction.Select({
             condition: ol.events.condition.pointerMove,
             layers: [vectorLayer1],//vectorLayer2.getSource()==null?[vectorLayer1]:[vectorLayer2],  //Setting layers to be hovered
             style: new ol.style.Style({
 
                 fill: new ol.style.Fill({
-                     color: 'rgba(0,0,255,0.5)'
+                    color: 'rgba(0,0,255,0.5)'
                 }),
-                 stroke: new ol.style.Stroke({
+                stroke: new ol.style.Stroke({
                     color: 'blue',
                     width: 3,
                 }),
             }),
         });
-      //  map1.addInteraction(hoverInteraction);
+        //  map1.addInteraction(hoverInteraction);
 
 
         select_interaction.on('select', function (e) {
             // map1.getView().setZoom(map.getView().getZoom()+1);
-            selected=true;
-            map1.getView().fit(e.selected[0].getGeometry(),{padding: [170, 50, 30, 150]});
-            gid =e.selected[0].getProperties().countyid;// e.selected[0].getId().split(".")[1];
-            temp=gid;
+            selected = true;
+            map1.getView().fit(e.selected[0].getGeometry(), {padding: [170, 50, 30, 150]});
+            gid = e.selected[0].getProperties().countyid;// e.selected[0].getId().split(".")[1];
+            temp = gid;
             var polygon = $("#poly-lat-lon").val();
-
             generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
             generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
@@ -1203,92 +1213,92 @@ var tooltip = document.getElementById('tooltip11');
             // console.log(vectorLayer2.getSource());
             //  vectorLayer2.setZIndex(3);
 
-                vectorLayer1.setZIndex(4);
+            vectorLayer1.setZIndex(4);
         });
         selectedFeatures = select_interaction.getFeatures();
         selectedFeatures.on('add', function (event) {
             showLoader();
 
-             var feature = event.target.item(0);
+            var feature = event.target.item(0);
             try {
 
                 $(".error").html('');
 
                 var res = feature.getGeometry().getCoordinates()[0];
-                 var result = res[0].map(coord => {
-                return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
-            });
-                    var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
+                var result = res[0].map(coord => {
+                    return ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
+                });
+                var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
                 // $("#poly-lat-lon").val(json_object);
-$("#poly-lat-lon").val(JSON.stringify(result) );
-
+                $("#poly-lat-lon").val(JSON.stringify(result));
+                console.log($("#poly-lat-lon").val());
                 var gid = feature.getProperties().countyid;//feature.getId().split(".")[1];
                 $("#gid").val(gid);
                 var schema = $("#schema_table option:selected").val();
 
-               if(gid==undefined)gid="KE041";
+                if (gid == undefined) gid = "KE041";
                 $("#schema").val(schema);
 
-             if (feature!=undefined) {
-                 document.getElementById("tooltip11").style.display =  'block';
-                 document.getElementById("tooltip11").innerHTML="County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
-                var gid = feature.getProperties().countyid;//evt.selected[0].getId().split(".")[1];
-                var county_name = "Unknown";
-                var yield_val = "unavailable";
-                  var startdate = '';
-        var enddate = '';
-        if ($("#myonoffswitch").is(':checked')) {
-            startdate = $("#seasonyear option:selected").val() + "-05-01";
-            enddate = $("#seasonyear option:selected").val() + "-08-31";
-        } else {
-            startdate = $("#seasonyear option:selected").val() + "-09-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
-
-        }
-        if(gid==undefined) gid='KE041';
-                         document.getElementById("tooltip11").innerHTML="County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
-
-                ajax_update_database("get-schema-yield-gid", {
-                    "db": $("#db_table option:selected").val(),
-                    "schema":$("#schema_table option:selected").val(),
-                    "gid": gid,
-                    "startdate":startdate,
-                    "enddate":enddate
-                }).done(function (data) {
-                    if ("success" in data) {
-
-                        // ajax_update_database("get-county", {
-                        //     "db": $("#db_table option:selected").val(),
-                        //     "gid": gid,
-                        //     "schema": $("#schema_table option:selected").val(),
-                        // }).done(function (data1) {
-                        //     if ("success" in data1) {
-
-                                county_name =data["county"].length>0?data["county"][0][0]:"Unknown";
-                                if (data.yield[0]) {
-                                    yield_val = Math.round(data.yield[0][2]).toFixed(2);
-
-
-                                }
-                                document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
-                              //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
-
-                                map1.addOverlay(overlayt);
-
-
-                    //         }
-                    //     });
-                    //
-                    //
+                if (feature != undefined) {
+                    document.getElementById("tooltip11").style.display = 'block';
+                    document.getElementById("tooltip11").innerHTML = "County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
+                    var gid = feature.getProperties().countyid;//evt.selected[0].getId().split(".")[1];
+                    var county_name = "Unknown";
+                    var yield_val = "unavailable";
+                    var startdate = '';
+                    var enddate = '';
+                    if ($("#myonoffswitch").is(':checked')) {
+                        startdate = $("#seasonyear option:selected").val() + "-05-01";
+                        enddate = $("#seasonyear option:selected").val() + "-08-31";
                     } else {
-                        console.log("error");
-                    }
-                });
+                        startdate = $("#seasonyear option:selected").val() + "-09-01";
+                        enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
 
-            } else {
-                document.getElementById("tooltip11").style.display = 'none';
-            }
-                var json_obj= {
+                    }
+                    if (gid == undefined) gid = 'KE041';
+                    document.getElementById("tooltip11").innerHTML = "County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
+
+                    ajax_update_database("get-schema-yield-gid", {
+                        "db": $("#db_table option:selected").val(),
+                        "schema": $("#schema_table option:selected").val(),
+                        "gid": gid,
+                        "startdate": startdate,
+                        "enddate": enddate
+                    }).done(function (data) {
+                        if ("success" in data) {
+
+                            // ajax_update_database("get-county", {
+                            //     "db": $("#db_table option:selected").val(),
+                            //     "gid": gid,
+                            //     "schema": $("#schema_table option:selected").val(),
+                            // }).done(function (data1) {
+                            //     if ("success" in data1) {
+
+                            county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
+                            if (data.yield[0]) {
+                                yield_val = Math.round(data.yield[0][2]).toFixed(2);
+
+
+                            }
+                            document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
+                            //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+                            map1.addOverlay(overlayt);
+
+
+                            //         }
+                            //     });
+                            //
+                            //
+                        } else {
+                            console.log("error");
+                        }
+                    });
+
+                } else {
+                    document.getElementById("tooltip11").style.display = 'none';
+                }
+                var json_obj = {
                     "db": $("#db_table option:selected").val(),
                     "gid": gid,
                     "schema": $("#schema_table option:selected").val()
@@ -1314,7 +1324,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
 
             } catch (e) {
             }
-              hideLoader();
+            hideLoader();
         });
 
         var hoverFeatures = hoverInteraction.getFeatures();
@@ -1323,16 +1333,16 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 var gid = evt.selected[0].getProperties().countyid;//evt.selected[0].getId().split(".")[1];
                 var county_name = "Unknown";
                 var yield_val = "unavailable";
-                  var startdate = '';
-        var enddate = '';
-        if ($("#myonoffswitch").is(':checked')) {
-            startdate = $("#seasonyear option:selected").val() + "-05-01";
-            enddate = $("#seasonyear option:selected").val() + "-08-31";
-        } else {
-            startdate = $("#seasonyear option:selected").val() + "-09-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+                var startdate = '';
+                var enddate = '';
+                if ($("#myonoffswitch").is(':checked')) {
+                    startdate = $("#seasonyear option:selected").val() + "-05-01";
+                    enddate = $("#seasonyear option:selected").val() + "-08-31";
+                } else {
+                    startdate = $("#seasonyear option:selected").val() + "-09-01";
+                    enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
 
-        }
+                }
                 // ajax_update_database("get-schema-yield-gid", {
                 //     "db": $("#db_table option:selected").val(),
                 //     "schema":$("#schema_table option:selected").val(),
@@ -1430,7 +1440,7 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
                 style = "prec_rainf";
                 break;
             case "rootmoist":
-		style="avg_temp_rev";
+                style = "avg_temp_rev";
                 break;
             case "tmax":
             case "tmin":
@@ -1502,23 +1512,23 @@ $("#poly-lat-lon").val(JSON.stringify(result) );
 
     };
 
-Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
-    var path = [
-        // Arrow stem
-        'M', x + w * 0.5, y,
-        'L', x + w * 0.5, y + h * 0.7,
-        // Arrow head
-        'M', x + w * 0.3, y + h * 0.5,
-        'L', x + w * 0.5, y + h * 0.7,
-        'L', x + w * 0.7, y + h * 0.5,
-        // Box
-        'M', x, y + h * 0.9,
-        'L', x, y + h,
-        'L', x + w, y + h,
-        'L', x + w, y + h * 0.9
-    ];
-    return path;
-};
+    Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
+        var path = [
+            // Arrow stem
+            'M', x + w * 0.5, y,
+            'L', x + w * 0.5, y + h * 0.7,
+            // Arrow head
+            'M', x + w * 0.3, y + h * 0.5,
+            'L', x + w * 0.5, y + h * 0.7,
+            'L', x + w * 0.7, y + h * 0.5,
+            // Box
+            'M', x, y + h * 0.9,
+            'L', x, y + h,
+            'L', x + w, y + h,
+            'L', x + w, y + h * 0.9
+        ];
+        return path;
+    };
 
     function generate_dssat_graph(element, gid, variable) {
         showLoader3();
@@ -1554,7 +1564,7 @@ Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
             "schema": $("#schema_table option:selected").val()
         }).done(function (data) {
             if ("success" in data) {
-                county_name = data["county"].length>0?data["county"][0][0]:"Unknown";
+                county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
             }
         });
         xhr.done(function (data) {
@@ -1614,15 +1624,15 @@ Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
                 lai_high = data.high_lai_series;
                 title = "LAI " + $("#seasonyear option:selected").val() + " :";
                 titletext = "LAI (m2/m2)";
-                 series = [
-                     {
-                    data: input,
-                    name: "Median",
-                    type: 'line',
-                    showInLegend: false,
-                    lineWidth: 5,
-                    color: "green",
-                },
+                series = [
+                    {
+                        data: input,
+                        name: "Median",
+                        type: 'line',
+                        showInLegend: false,
+                        lineWidth: 5,
+                        color: "green",
+                    },
                     {
                         data: lai_low,
                         name: "5th percentile",
@@ -1646,9 +1656,9 @@ Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
                     }
                 ]
             }
-hideLoader3();
-                    hideLoader4();
-                  //   hideLoader();
+            hideLoader3();
+            hideLoader4();
+            //   hideLoader();
 
             if ("error" in data) series = [];
 
@@ -1685,28 +1695,28 @@ hideLoader3();
                         }
 
                     },
-                       // exporting: {
+                    // exporting: {
                     //     enabled: true
                     // },
-                exporting: {
-                    filename: 'event-id-metadata-graph',
-                    buttons: {
-                        contextButton: {
-                            menuItems: ["viewFullscreen", "printChart", "viewData"]
-                        },
-                        'downloadButton': {
-                            symbol: 'download',
-                            symbolFill: '#B5C9DF',
-                            hoverSymbolFill: '#779ABF',
-                            theme: {
-                                class: "downloadButton highcharts-button highcharts-button-normal",
-                                id: "downloadButton"
+                    exporting: {
+                        filename: 'event-id-metadata-graph',
+                        buttons: {
+                            contextButton: {
+                                menuItems: ["viewFullscreen", "printChart", "viewData"]
                             },
-                            menuItems: ["downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "downloadCSV", "downloadXLS"]
+                            'downloadButton': {
+                                symbol: 'download',
+                                symbolFill: '#B5C9DF',
+                                hoverSymbolFill: '#779ABF',
+                                theme: {
+                                    class: "downloadButton highcharts-button highcharts-button-normal",
+                                    id: "downloadButton"
+                                },
+                                menuItems: ["downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "downloadCSV", "downloadXLS"]
 
+                            }
                         }
-                    }
-                },
+                    },
                     series: series,
 
                 },
@@ -1724,8 +1734,8 @@ hideLoader3();
     }
 
     function generate_vic_graph(element, variable, point, polygon) {
- showLoader1();
-                    showLoader2();
+        showLoader1();
+        showLoader2();
         var series = [];
         var graph_data, display_name, units;
         var index = find_var_index(variable, variable_data);
@@ -1735,25 +1745,26 @@ hideLoader3();
         }
         var startdate = '';
         var enddate = '';
-        var dst=$("#time_table option:selected").text();
-      //  if ($("#myonoffswitch").is(':checked') ) {
+        var dst = $("#time_table option:selected").text();
+        //  if ($("#myonoffswitch").is(':checked') ) {
 
 
-            startdate =dst;
-            enddate = (parseInt(dst.substr(0,4))) + "-12-31";
+        startdate = dst;
+        enddate = (parseInt(dst.substr(0, 4))) + "-12-31";
         // } else {
         //     startdate = dst;
         //     enddate = (parseInt(dst.substr(0,4)) + 1) + "-02-28";
         // }
-        var json={
+        var json = {
             "db": $("#db_table option:selected").val(),
             "region": $("#schema_table option:selected").val(),
             "variable": variable,
             "point": point,
             "startdate": startdate,
             "enddate": enddate,
-            "polygon":  polygon
+            "polygon": polygon
         };
+
         var xhr = ajax_update_database("get-vic-plot", json);
         xhr.done(function (data) {
             graph_data = data;
@@ -1764,13 +1775,13 @@ hideLoader3();
                     showInLegend: false
                 }];
 
-            populate_vic_graph(element, display_name, units, point, polygon,graph_data, series);
+            populate_vic_graph(element, display_name, units, point, polygon, graph_data, series);
 
         });
     }
 
 
-    function populate_vic_graph(element, display_name,units, point,polygon,graph_data,series) {
+    function populate_vic_graph(element, display_name, units, point, polygon, graph_data, series) {
 
         var county_name = "Polygon";
         if (gid == undefined || gid == "") gid = 'KE041';
@@ -1780,13 +1791,13 @@ hideLoader3();
             "gid": gid,
             "schema": $("#schema_table option:selected").val()
         }).done(function (data) {
-            if ("success" in data && selected==true) {
+            if ("success" in data && selected == true) {
                 county_name = data["county"][0][0];
             }
 
-            console.log(selected);
-         //   var titletext = point == "" ? ( selected==false?"Polygon":county_name) : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
-            var titletext =  selected==false?"Polygon":county_name;
+          //  console.log(selected);
+            //   var titletext = point == "" ? ( selected==false?"Polygon":county_name) : "At [" + parseFloat(point.split(',')[0]).toFixed(2) + ", " + parseFloat(point.split(',')[1]).toFixed(2) + "]";
+            var titletext = selected == false ? "Polygon" : county_name;
 
             $(element).highcharts({
                     chart: {
@@ -1822,25 +1833,25 @@ hideLoader3();
                     // exporting: {
                     //     enabled: true
                     // },
-                   exporting: {
-                    filename: 'event-id-metadata-graph',
-                    buttons: {
-                        contextButton: {
-                            menuItems: ["viewFullscreen", "printChart", "viewData"]
-                        },
-                        'downloadButton': {
-                            symbol: 'download',
-                            symbolFill: '#B5C9DF',
-                            hoverSymbolFill: '#779ABF',
-                            theme: {
-                                  class: "downloadButton highcharts-button highcharts-button-normal",
-                                id: "downloadButton"
+                    exporting: {
+                        filename: 'event-id-metadata-graph',
+                        buttons: {
+                            contextButton: {
+                                menuItems: ["viewFullscreen", "printChart", "viewData"]
                             },
-                            menuItems: ["downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "downloadCSV", "downloadXLS"]
+                            'downloadButton': {
+                                symbol: 'download',
+                                symbolFill: '#B5C9DF',
+                                hoverSymbolFill: '#779ABF',
+                                theme: {
+                                    class: "downloadButton highcharts-button highcharts-button-normal",
+                                    id: "downloadButton"
+                                },
+                                menuItems: ["downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG", "downloadCSV", "downloadXLS"]
 
+                            }
                         }
-                    }
-                },
+                    },
                     series: series
                 },
                 function (chart) {
@@ -1857,12 +1868,11 @@ hideLoader3();
 
         });
 
-                                       hideLoader1();
+        hideLoader1();
         hideLoader2();
 
 
     }
-
 
 
     /************************************************************************
@@ -1880,27 +1890,27 @@ hideLoader3();
     $(function () {
         init_all();
         $('#vicslider').change(function (e) {
-             wms_layer.setOpacity(this.value);
+            wms_layer.setOpacity(this.value);
 
         }).change();
-$('#dssatslider').change(function (e) {
-  vectorLayer1.setOpacity(this.value);
+        $('#dssatslider').change(function (e) {
+            vectorLayer1.setOpacity(this.value);
         }).change();
+
         function fillVarTables(element, variables) {
             variables.forEach(function (variable, i) {
                 var index = find_var_index(variable, variable_data);
-                if (variable_data[index]!=undefined) {
+                if (variable_data[index] != undefined) {
                     var display_name = variable_data[index]["display_name"];
                     var new_option = new Option(display_name, variable);
                     // if (i == 0) {
                     //    // $(element).append(new_option).trigger('change');
                     //      $(element).append(new_option);
                     // } else {
-                        $(element).append(new_option);
+                    $(element).append(new_option);
                     //}
-                }
-                else{
-                 //   console.log(variable);
+                } else {
+                    //   console.log(variable);
                 }
 
 
@@ -1912,61 +1922,61 @@ $('#dssatslider').change(function (e) {
             $interactionModal.modal('show');
         });
 
-              db=$("#db_table option:selected").val();
-              region= $("#schema_table option:selected").val();
+        db = $("#db_table option:selected").val();
+        region = $("#schema_table option:selected").val();
 
         $("#db_table").change(function () {
-                $("#schema_table").html('');
-                var xhr = ajax_update_database("schemas", {
-                    "db": $("#db_table option:selected").val()
-                });
-                xhr.done(function (data) {
-                    if ("success" in data) {
-                        var schemas = data.schemas;
-                        schemas.forEach(function (schema, i) {
-                            var new_option = new Option(schema, schema);
-                            // if (i == 0) {
-                            //     $("#schema_table").append(new_option).trigger('change');
-                            // } else {
-                            $("#schema_table").append(new_option);
-                            //}
-                            // if(schema=="kenya_tethys"){
-                            //
-                            //
-                            // }
-                        });
-                    if($("#db_table option:selected").val()=="rheas")$("#schema_table").val("ken_tethys2");
-                        $("#schema_table").trigger('change');
+            $("#schema_table").html('');
+            var xhr = ajax_update_database("schemas", {
+                "db": $("#db_table option:selected").val()
+            });
+            xhr.done(function (data) {
+                if ("success" in data) {
+                    var schemas = data.schemas;
+                    schemas.forEach(function (schema, i) {
+                        var new_option = new Option(schema, schema);
+                        // if (i == 0) {
+                        //     $("#schema_table").append(new_option).trigger('change');
+                        // } else {
+                        $("#schema_table").append(new_option);
+                        //}
+                        // if(schema=="kenya_tethys"){
+                        //
+                        //
+                        // }
+                    });
+                    if ($("#db_table option:selected").val() == "rheas") $("#schema_table").val("ken_tethys2");
+                    $("#schema_table").trigger('change');
 
 
-                        if (schemas.length == 0) {
-                            $("#time_table").html('');
-                            $("#var_table1").html('');
-                            $("#var_table2").html('');
-                            $("#map_var_table").html('');
+                    if (schemas.length == 0) {
+                        $("#time_table").html('');
+                        $("#var_table1").html('');
+                        $("#var_table2").html('');
+                        $("#map_var_table").html('');
 
-                            document.getElementsByClassName("cvs")[0].style.display = "none";
-                            document.getElementsByClassName("cvs")[1].style.display = "none";
-                            var polygon = $("#poly-lat-lon").val();
-                            generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
-                            generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
+                        document.getElementsByClassName("cvs")[0].style.display = "none";
+                        document.getElementsByClassName("cvs")[1].style.display = "none";
+                        var polygon = $("#poly-lat-lon").val();
+                        generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+                        generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
 
-                            generate_dssat_graph("#dssat_plotter_1", "", $("#var_table3 option:selected").val());
-                            generate_dssat_graph("#dssat_plotter_2", "", $("#var_table4 option:selected").val());
-                            map.removeLayer(wms_layer);
-                            map.removeLayer(boundaryLayer);
-                            vectorLayer1.setSource(null);
-                           // vectorLayer2.setSource(null);
-
-                        } else {
-                            document.getElementsByClassName("cvs")[0].style.display = "block";
-                            document.getElementsByClassName("cvs1")[0].style.display = "block";
-                        }
+                        generate_dssat_graph("#dssat_plotter_1", "", $("#var_table3 option:selected").val());
+                        generate_dssat_graph("#dssat_plotter_2", "", $("#var_table4 option:selected").val());
+                        map.removeLayer(wms_layer);
+                        map.removeLayer(boundaryLayer);
+                        vectorLayer1.setSource(null);
+                        // vectorLayer2.setSource(null);
 
                     } else {
-                        console.log("error");
+                        document.getElementsByClassName("cvs")[0].style.display = "block";
+                        document.getElementsByClassName("cvs1")[0].style.display = "block";
                     }
-                });
+
+                } else {
+                    console.log("error");
+                }
+            });
 
 
         }).change();
@@ -1987,8 +1997,11 @@ $('#dssatslider').change(function (e) {
                     $("#var_table1").val("rainf").attr("selected", "selected");
                     $("#var_table2").val("evap").attr("selected", "selected");
                     fillVarTables("#map_var_table", vars);
+
                     $("#map_var_table").val("evap").attr("selected", "selected");
-                    $("#map_var_table").trigger('change');
+                  //  $("#map_var_table").trigger('change');
+                    mapchange();
+                    $("#time_table").trigger('change');
                     //     $("#var_table1").trigger('change');
                     //   $("#var_table2").trigger('change');
 
@@ -1997,11 +2010,131 @@ $('#dssatslider').change(function (e) {
                     console.log("error");
                 }
             });
-
         });
-  const unique = (value, index, self) => {
-                            return self.indexOf(value) === index
-                        };
+        const unique = (value, index, self) => {
+            return self.indexOf(value) === index
+        };
+
+        function mapchange()
+        {
+                        showLoader();
+            var variable = $("#map_var_table option:selected").val();
+            variable1 = $("#var_table1 option:selected").val();
+            variable2 = $("#var_table2 option:selected").val();
+
+            var xhr = ajax_update_database("dates", {
+                "variable": variable,
+                "region": $("#schema_table option:selected").val(),
+                "db": $("#db_table option:selected").val()
+            });
+
+            xhr.done(function (data) {
+                var dts = [];
+                if ("success" in data) {
+                    var dates = data.dates;
+                    $("#time_table").html('');
+                    dates.forEach(function (date, i) {
+                        var new_option = new Option(date, date);
+                        $("#time_table").append(new_option);
+                        var d = new Date(date);
+                        dts.push(d.getFullYear());
+                    });
+                    const uniquedts = dts.filter(unique);
+                    $("#seasonyear").html('');
+                    uniquedts.forEach(function (date, i) {
+                        var new_option = new Option(date, date);
+                        if (i == 0) {
+                            if (date == '2014') {
+                                new_option.selected = true;
+                                flagg = false;
+                            }
+                            $("#seasonyear").append(new_option);
+                        } else {
+                            if (date == '2014') {
+                                new_option.selected = true;
+                                flagg = false;
+                            }
+                            $("#seasonyear").append(new_option);
+                        }
+                    });
+                    //   $("#seasonyear").trigger('change');
+                    var startdate = "", enddate = "";
+                    if ($("#myonoffswitch").is(':checked')) {
+                        startdate = $("#seasonyear option:selected").val() + "-03-01";
+                        enddate = $("#seasonyear option:selected").val() + "-08-31";
+                    } else {
+                        startdate = $("#seasonyear option:selected").val() + "-10-01";
+                        enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+
+                    }
+                  $("#time_table").val("2014-11-05").change();
+
+                    if ($("#seasonyear option:selected").val() != undefined) {
+
+
+                        ajax_update_database("get-schema-yield", {
+                            "db": $("#db_table option:selected").val(),
+                            "schema": $("#schema_table option:selected").val(),
+                            "startdate": startdate,
+                            "enddate": enddate,
+                        }).done(function (data) {
+                            if ("success" in data) {
+                                ajax_update_database("scale", {
+                                    "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                                    "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                                }).done(function (data1) {
+                                    if ("success" in data1) {
+                                        vectorLayer1.setSource(null);
+                                        // vectorLayer2.setSource(null);
+                                        add_dssat(data, data1.scale);
+                                    } else {
+                                        $(".error").html('<h3>Error Retrieving the layer</h3>');
+                                    }
+                                });
+                            }
+
+                        });
+                    }
+
+
+                    var gid = $("#gid").val();
+                    if (gid == undefined || gid == "") gid = 'KE041';
+
+                    var point = $("#point-lat-lon").val();
+                    var polygon = $("#poly-lat-lon").val();
+                    generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+                    generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
+                    generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+                    generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
+                    //hideLoader();
+
+
+                    if (dates.length == 0) {
+                        document.getElementsByClassName("cvs")[0].style.display = "none";
+                        document.getElementsByClassName("cvs")[1].style.display = "none";
+                        var polygon = $("#poly-lat-lon").val();
+                        generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+                        generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
+                        generate_dssat_graph("#dssat_plotter_1", "", $("#var_table3 option:selected").val());
+                        generate_dssat_graph("#dssat_plotter_2", "", $("#var_table4 option:selected").val());
+                        map.removeLayer(wms_layer);
+                        map.removeLayer(boundaryLayer);
+                        vectorLayer1.setSource(null);
+                        //  vectorLayer2.setSource(null);
+                    } else {
+                        document.getElementsByClassName("cvs")[0].style.display = "block";
+                        document.getElementsByClassName("cvs1")[0].style.display = "block";
+                    }
+
+                } else {
+                    console.log("error");
+                }
+            }).fail(function (xhr, status, error) {
+
+                alert("There was a problem with the selected variable, please try selecting another map variable");
+                hideLoader();
+            });
+        }
 
         $("#map_var_table").change(function () {
             showLoader();
@@ -2016,120 +2149,92 @@ $('#dssatslider').change(function (e) {
             });
 
             xhr.done(function (data) {
-                 var dts = [];
+                var dts = [];
                 if ("success" in data) {
                     var dates = data.dates;
-                    $("#time_table").html('');
+                 //   $("#time_table").html('');
                     dates.forEach(function (date, i) {
                         var new_option = new Option(date, date);
-                        //if (i == 0) {
-
-                        //
-                        //
-                        //
-                        //    if(date=='2014-11-05') {
-                        //        new_option.selected = true;
-                        //       // $("#time_table").append(new_option).trigger('change');
-                        //   }
-                        //    else  $("#time_table").append(new_option);
-                        // } else {
-                        //
-                        //      if(date=='2014-11-05') {
-                        //         new_option.selected = true;
-                        //        //   $("#time_table").append(new_option).trigger('change');
-                        //     }
-                        //      else
-                        //           $("#time_table").append(new_option);
-                        // }
-                        //      if(date=='2014-11-05') {
-                        //        new_option.selected = true;
-                        //   }
-                         $("#time_table").append(new_option);
+                     //   $("#time_table").append(new_option);
                         var d = new Date(date);
-
-
                         dts.push(d.getFullYear());
-
-
                     });
-                       const uniquedts = dts.filter(unique);
-                         $("#seasonyear").html('');
-                         console.log(uniquedts);
-                        uniquedts.forEach(function (date, i) {
+                    const uniquedts = dts.filter(unique);
+                    $("#seasonyear").html('');
+                    uniquedts.forEach(function (date, i) {
+                        var new_option = new Option(date, date);
+                        if (i == 0) {
+                            if (date == '2014') {
+                                new_option.selected = true;
+                                flagg = false;
+                            }
+                            $("#seasonyear").append(new_option);
+                        } else {
+                            if (date == '2014') {
+                                new_option.selected = true;
+                                flagg = false;
+                            }
+                            $("#seasonyear").append(new_option);
+                        }
+                    });
+                    //   $("#seasonyear").trigger('change');
+                    var startdate = "", enddate = "";
+                    if ($("#myonoffswitch").is(':checked')) {
+                        startdate = $("#seasonyear option:selected").val() + "-03-01";
+                        enddate = $("#seasonyear option:selected").val() + "-08-31";
+                    } else {
+                        startdate = $("#seasonyear option:selected").val() + "-10-01";
+                        enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
-                            var new_option = new Option(date, date);
-                            if (i == 0) {
+                    }
+                  $("#time_table").trigger('change');
+                  // if(!$("#time_table").val()=="2014-11-05")
+                  //     else $("#time_table").val("2014-11-05").change();
 
-                                if (date == '2014') {
-                                    new_option.selected = true;
-                                    flagg = false;
-                                }
-                                $("#seasonyear").append(new_option);
-                            } else {
+                    if ($("#seasonyear option:selected").val() != undefined) {
 
-                                if (date == '2014') {
-                                    new_option.selected = true;
-                                    flagg = false;
-                                }
-                                $("#seasonyear").append(new_option);
+
+                        ajax_update_database("get-schema-yield", {
+                            "db": $("#db_table option:selected").val(),
+                            "schema": $("#schema_table option:selected").val(),
+                            "startdate": startdate,
+                            "enddate": enddate,
+                        }).done(function (data) {
+                            if ("success" in data) {
+                                ajax_update_database("scale", {
+                                    "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                                    "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                                }).done(function (data1) {
+                                    if ("success" in data1) {
+                                        vectorLayer1.setSource(null);
+                                        // vectorLayer2.setSource(null);
+                                        add_dssat(data, data1.scale);
+                                    } else {
+                                        $(".error").html('<h3>Error Retrieving the layer</h3>');
+                                    }
+                                });
                             }
 
-
                         });
-                     //   $("#seasonyear").trigger('change');
-     var startdate="",enddate="";
-                if ($("#myonoffswitch").is(':checked')) {
-                            startdate = $("#seasonyear option:selected").val() + "-03-01";
-                            enddate = $("#seasonyear option:selected").val() + "-08-31";
-                        } else {
-                            startdate = $("#seasonyear option:selected").val() + "-10-01";
-                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
-
-                        }
-
-                    $("#time_table").val("2014-11-05").change();
-                                if($("#seasonyear option:selected").val()!=undefined) {
+                    }
 
 
-                                    ajax_update_database("get-schema-yield", {
-                                        "db": $("#db_table option:selected").val(),
-                                        "schema": $("#schema_table option:selected").val(),
-                                        "startdate": startdate,
-                                        "enddate": enddate,
-                                    }).done(function (data) {
-                                        if ("success" in data) {
-                                            ajax_update_database("scale", {
-                                                "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
-                                                "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
-                                            }).done(function (data1) {
-                                                if ("success" in data1) {
-                                                    vectorLayer1.setSource(null);
-                                                    // vectorLayer2.setSource(null);
-                                                    add_dssat(data, data1.scale);
-                                                } else {
-                                                    $(".error").html('<h3>Error Retrieving the layer</h3>');
-                                                }
-                                            });
-                                        }
+                    var gid = $("#gid").val();
+                    if (gid == undefined || gid == "") gid = 'KE041';
 
-                                    });
-                                }
-            var gid = $("#gid").val();
-            if (gid == undefined || gid == "") gid = 'KE041';
-
-            var point = $("#point-lat-lon").val();
-            var polygon = $("#poly-lat-lon").val();
-            generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
-            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
-            generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
-            generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
+                    var point = $("#point-lat-lon").val();
+                    var polygon = $("#poly-lat-lon").val();
+                    generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+                    generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
+                    generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
+                    generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 //hideLoader();
 
 
                     if (dates.length == 0) {
                         document.getElementsByClassName("cvs")[0].style.display = "none";
                         document.getElementsByClassName("cvs")[1].style.display = "none";
-                         var polygon = $("#poly-lat-lon").val();
+                        var polygon = $("#poly-lat-lon").val();
                         generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
                         generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
                         generate_dssat_graph("#dssat_plotter_1", "", $("#var_table3 option:selected").val());
@@ -2137,7 +2242,7 @@ $('#dssatslider').change(function (e) {
                         map.removeLayer(wms_layer);
                         map.removeLayer(boundaryLayer);
                         vectorLayer1.setSource(null);
-                       //  vectorLayer2.setSource(null);
+                        //  vectorLayer2.setSource(null);
                     } else {
                         document.getElementsByClassName("cvs")[0].style.display = "block";
                         document.getElementsByClassName("cvs1")[0].style.display = "block";
@@ -2146,19 +2251,19 @@ $('#dssatslider').change(function (e) {
                 } else {
                     console.log("error");
                 }
-            }).fail(function(xhr, status, error) {
+            }).fail(function (xhr, status, error) {
 
-           alert("There was a problem with the selected variable, please try selecting another map variable");
- hideLoader();
-        });
+                alert("There was a problem with the selected variable, please try selecting another map variable");
+                hideLoader();
+            });
 //            hideLoader();
 
         });
 
         $("#var_table1").change(function () {
             variable1 = $("#var_table1 option:selected").val();
-              var polygon = $("#poly-lat-lon").val();
-            generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
+            var polygon = $("#poly-lat-lon").val();
+            generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
             // var xhr = ajax_update_database("dates", {
             //     "variable": variable1,
             //     "region": $("#schema_table option:selected").val(),
@@ -2195,9 +2300,9 @@ $('#dssatslider').change(function (e) {
 
         });
         $("#var_table2").change(function () {
-           variable2 = $("#var_table2 option:selected").val();
+            variable2 = $("#var_table2 option:selected").val();
             var polygon = $("#poly-lat-lon").val();
-            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
 
         });
         $("#var_table3").change(function () {
@@ -2225,19 +2330,18 @@ $('#dssatslider').change(function (e) {
             $(".error").html('');
             if (date != undefined) {
                 add_vic();
-      var polygon = $("#poly-lat-lon").val();
-                 variable1 = $("#var_table1 option:selected").val();
+                var polygon = $("#poly-lat-lon").val();
+                variable1 = $("#var_table1 option:selected").val();
 
-                            variable2 = $("#var_table2 option:selected").val();
+                variable2 = $("#var_table2 option:selected").val();
+                generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+                generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
+                //    $("#seasonyear").trigger('change');
 
-            generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
-            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
-                    //    $("#seasonyear").trigger('change');
-
-                    // } else {
-                    //     $(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
-                    // }
-               // });
+                // } else {
+                //     $(".error").append('<h3>Error Processing Request. Please be sure to select an area/schema with data.</h3>');
+                // }
+                // });
             } else {
                 console.log("undefinedd");
             }
@@ -2245,10 +2349,16 @@ $('#dssatslider').change(function (e) {
 
         });
         $("#ens_table").change(function () {
+            console.log($("#poly-lat-lon").val());
             var ens = $("#ens_table option:selected").val();
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
-            var xhr = ajax_update_database("get-ens-values", {"db": $("#db_table option:selected").val(), "gid": gid, "schema": region, "ensemble": ens});
+            var xhr = ajax_update_database("get-ens-values", {
+                "db": $("#db_table option:selected").val(),
+                "gid": gid,
+                "schema": region,
+                "ensemble": ens
+            });
             xhr.done(function (data) {
                 if ("success" in data) {
 
@@ -2258,108 +2368,108 @@ $('#dssatslider').change(function (e) {
             });
         });
         $("#myonoffswitch").change(function () {
-              var startdate="",enddate="";
-                if ($("#myonoffswitch").is(':checked')) {
-                            startdate = $("#seasonyear option:selected").val() + "-03-01";
-                            enddate = $("#seasonyear option:selected").val() + "-08-31";
-                        } else {
-                            startdate = $("#seasonyear option:selected").val() + "-10-01";
-                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+            var startdate = "", enddate = "";
+            if ($("#myonoffswitch").is(':checked')) {
+                startdate = $("#seasonyear option:selected").val() + "-03-01";
+                enddate = $("#seasonyear option:selected").val() + "-08-31";
+            } else {
+                startdate = $("#seasonyear option:selected").val() + "-10-01";
+                enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
-                        }
-                if($("#seasonyear option:selected").val()!=undefined) {
-                    ajax_update_database("get-schema-yield", {
-                        "db": $("#db_table option:selected").val(),
-                        "schema": $("#schema_table option:selected").val(),
-                        "startdate": startdate,
-                        "enddate": enddate,
-                    }).done(function (data) {
+            }
+            if ($("#seasonyear option:selected").val() != undefined) {
+                ajax_update_database("get-schema-yield", {
+                    "db": $("#db_table option:selected").val(),
+                    "schema": $("#schema_table option:selected").val(),
+                    "startdate": startdate,
+                    "enddate": enddate,
+                }).done(function (data) {
 
-                        if ("success" in data) {
-                            ajax_update_database("scale", {
-                                "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
-                                "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
-                            }).done(function (data1) {
-                                if ("success" in data1) {
-                                    vectorLayer1.setSource(null);
-                                    //    vectorLayer2.setSource(null);
-                                    add_dssat(data, data1.scale);
+                    if ("success" in data) {
+                        ajax_update_database("scale", {
+                            "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                            "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                        }).done(function (data1) {
+                            if ("success" in data1) {
+                                vectorLayer1.setSource(null);
+                                //    vectorLayer2.setSource(null);
+                                add_dssat(data, data1.scale);
 
-                                } else {
-                                    $(".error").html('<h3>Error Retrieving the layer</h3>');
-                                }
-                            });
-                        }
-                    });
-                }
+                            } else {
+                                $(".error").html('<h3>Error Retrieving the layer</h3>');
+                            }
+                        });
+                    }
+                });
+            }
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
 
-               var point = $("#point-lat-lon").val();
-        var polygon = $("#poly-lat-lon").val();
-     //     generate_vic_graph("#vic_plotter_1", variable1, point, polygon);
-       //     generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
+            var point = $("#point-lat-lon").val();
+            var polygon = $("#poly-lat-lon").val();
+            //     generate_vic_graph("#vic_plotter_1", variable1, point, polygon);
+            //     generate_vic_graph("#vic_plotter_2", variable2, point, polygon);
 
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 
         });
         $("#seasonyear").change(function () {
-              var startdate="",enddate="";
-                if ($("#myonoffswitch").is(':checked')) {
-                            startdate = $("#seasonyear option:selected").val() + "-03-01";
-                            enddate = $("#seasonyear option:selected").val() + "-08-31";
-                        } else {
-                            startdate = $("#seasonyear option:selected").val() + "-10-01";
-                            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+            var startdate = "", enddate = "";
+            if ($("#myonoffswitch").is(':checked')) {
+                startdate = $("#seasonyear option:selected").val() + "-03-01";
+                enddate = $("#seasonyear option:selected").val() + "-08-31";
+            } else {
+                startdate = $("#seasonyear option:selected").val() + "-10-01";
+                enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
 
-                        }
+            }
 
-                    $("#time_table").val($("#seasonyear option:selected").val() +"-01-01").change();
-                                if($("#seasonyear option:selected").val()!=undefined) {
+            $("#time_table").val($("#seasonyear option:selected").val() + "-01-01").change();
+            if ($("#seasonyear option:selected").val() != undefined) {
 
 
-                                    ajax_update_database("get-schema-yield", {
-                                        "db": $("#db_table option:selected").val(),
-                                        "schema": $("#schema_table option:selected").val(),
-                                        "startdate": startdate,
-                                        "enddate": enddate,
-                                    }).done(function (data) {
-                                        if ("success" in data) {
-                                            ajax_update_database("scale", {
-                                                "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
-                                                "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
-                                            }).done(function (data1) {
-                                                if ("success" in data1) {
-                                                    vectorLayer1.setSource(null);
-                                                    // vectorLayer2.setSource(null);
-                                                    add_dssat(data, data1.scale);
-                                                } else {
-                                                    $(".error").html('<h3>Error Retrieving the layer</h3>');
-                                                }
-                                            });
-                                        }
+                ajax_update_database("get-schema-yield", {
+                    "db": $("#db_table option:selected").val(),
+                    "schema": $("#schema_table option:selected").val(),
+                    "startdate": startdate,
+                    "enddate": enddate,
+                }).done(function (data) {
+                    if ("success" in data) {
+                        ajax_update_database("scale", {
+                            "min": $("#var_table3 option:selected").val() == "GWAD" ? 73 : $("#var_table3 option:selected").val() == "WSGD" ? 0 : 0.06,
+                            "max": $("#var_table3 option:selected").val() == "GWAD" ? 1462 : $("#var_table3 option:selected").val() == "WSGD" ? 954 : 1.36,
+                        }).done(function (data1) {
+                            if ("success" in data1) {
+                                vectorLayer1.setSource(null);
+                                // vectorLayer2.setSource(null);
+                                add_dssat(data, data1.scale);
+                            } else {
+                                $(".error").html('<h3>Error Retrieving the layer</h3>');
+                            }
+                        });
+                    }
 
-                                    });
-                                }
+                });
+            }
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
 
             var point = $("#point-lat-lon").val();
             var polygon = $("#poly-laft-lon").val();
-            generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
-            generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
+            generate_vic_graph("#vic_plotter_1", variable1, "", polygon);
+            generate_vic_graph("#vic_plotter_2", variable2, "", polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
-hideLoader();
+            hideLoader();
 
         });
         $("#typeofchart").change(function () {
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
-              var polygon = $("#poly-lat-lon").val();
-           //   generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
-           // generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
+            var polygon = $("#poly-lat-lon").val();
+            //   generate_vic_graph("#vic_plotter_1", variable1, "",polygon);
+            // generate_vic_graph("#vic_plotter_2", variable2, "",polygon);
             generate_dssat_graph("#dssat_plotter_1", gid, $("#var_table3 option:selected").val());
             generate_dssat_graph("#dssat_plotter_2", gid, $("#var_table4 option:selected").val());
 
@@ -2463,7 +2573,7 @@ hideLoader();
                     map.addLayer(shapeFile);
                     var res = JSON.parse(contents).features[0].geometry.coordinates[0];
                     var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(res) + ']}';
-                    var jobj=JSON.stringify(res);
+                    var jobj = JSON.stringify(res);
                     generate_vic_graph("#vic_plotter_1", variable1, "", jobj);
                     generate_vic_graph("#vic_plotter_2", variable2, "", jobj);
                 };
@@ -2482,43 +2592,51 @@ hideLoader();
 
 
     });
-function showLoader() {
-    $('#loading').show();
-}
-function hideLoader() {
-    $('#loading').hide();
-}
-function hideLoader1() {
-    document.getElementById("chartloading1").style.display="none";
-}
-function hideLoader2() {
-    $('#chartloading2').hide();
-}
-function showLoader1() {
-    document.getElementById("chartloading1").style.display="block";
-}
-function showLoader2() {
-    $('#chartloading2').show();
-}
-function showLoader3() {
-      $('#chartloading3').show();
-}
-function showLoader4() {
-    $('#chartloading4').show();
-}
-function hideLoader3() {
-    $('#chartloading3').hide();
-}
-function hideLoader4() {
-    $('#chartloading4').hide();
-}
 
+    function showLoader() {
+        $('#loading').show();
+    }
 
+    function hideLoader() {
+        $('#loading').hide();
+    }
+
+    function hideLoader1() {
+        document.getElementById("chartloading1").style.display = "none";
+    }
+
+    function hideLoader2() {
+        $('#chartloading2').hide();
+    }
+
+    function showLoader1() {
+        document.getElementById("chartloading1").style.display = "block";
+    }
+
+    function showLoader2() {
+        $('#chartloading2').show();
+    }
+
+    function showLoader3() {
+        $('#chartloading3').show();
+    }
+
+    function showLoader4() {
+        $('#chartloading4').show();
+    }
+
+    function hideLoader3() {
+        $('#chartloading3').hide();
+    }
+
+    function hideLoader4() {
+        $('#chartloading4').hide();
+    }
 
 
 // Strongly recommended: Hide loader after 20 seconds, even if the page hasn't finished loading
 //setTimeout(hideLoader, 5 * 1000);
-	return public_interface;
+    return public_interface;
 
 }()); // End of package wrapper
 // NOTE: that the call operator (open-closed parenthesis) is used to invoke the library wrapper

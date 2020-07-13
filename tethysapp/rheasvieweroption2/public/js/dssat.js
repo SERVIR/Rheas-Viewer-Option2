@@ -80,7 +80,7 @@ var vicmap = new ol.Map({
 	}).fail(function(xhr, status, error) {
             alert(error);
             hideLoader();
-        });;
+        });
 
 
 

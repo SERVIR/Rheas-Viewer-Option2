@@ -2,6 +2,7 @@ from django.shortcuts import render
 from tethys_sdk.gizmos import MVView,MVDraw,MapView
 import tethysapp.rheasvieweroption2.config as cfg
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseRedirect
 from tethysapp.rheasvieweroption2.model import *
 
 def home(request):
