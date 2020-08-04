@@ -152,6 +152,11 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/vicdssat/get-county',
                 controller='rheasvieweroption2.ajax_controllers.get_county'
           ),
+          UrlMap(
+                name='api-dsyield',
+                url='darwin-viewer/api/getDSSATYield',
+                controller='darwin_viewer.api.api_get_schema_yield'
+          ),
         )
 
         return url_maps

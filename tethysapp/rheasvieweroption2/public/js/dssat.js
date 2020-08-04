@@ -1,5 +1,5 @@
-    $("#home").css("background-color","#ddd");
-  $("#home").css("color","black");
+$("#home").css("background-color","#ddd");
+ $("#home").css("color","black");
 
 var wms_url = $("#dssat").attr('data-geoserver-url');
 var wfs_url = $("#dssat").attr('data-geoserverwfs-url');
