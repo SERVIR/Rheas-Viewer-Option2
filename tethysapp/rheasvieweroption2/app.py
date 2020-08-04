@@ -154,8 +154,8 @@ class Rheasvieweroption2(TethysAppBase):
           ),
           UrlMap(
                 name='api-dsyield',
-                url='darwin-viewer/api/getDSSATYield',
-                controller='darwin_viewer.api.api_get_schema_yield'
+                url='rheasvieweroption2/api/getDSSATYield',
+                controller='rheasvieweroption2.api.api_get_schema_yield'
           ),
         )
 
