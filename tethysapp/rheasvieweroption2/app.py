@@ -153,7 +153,7 @@ class Rheasvieweroption2(TethysAppBase):
                 controller='rheasvieweroption2.ajax_controllers.get_county'
           ),
           UrlMap(
-                name='api-dsyield',
+                name='getDSSATYield',
                 url='rheasvieweroption2/api/getDSSATYield',
                 controller='rheasvieweroption2.api.api_get_schema_yield'
           ),

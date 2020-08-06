@@ -1984,6 +1984,7 @@ var LIBRARY_OBJECT = (function () {
         $("#schema_table").change(function () {
             $("#var_table1").html('');
             $("#var_table2").html('');
+            
             ajax_update_database("variables", {
                 "region": $("#schema_table option:selected").val(),
                 "db": $("#db_table option:selected").val()
@@ -2094,6 +2095,8 @@ var LIBRARY_OBJECT = (function () {
                             }
 
                         });
+
+
                     }
 
 

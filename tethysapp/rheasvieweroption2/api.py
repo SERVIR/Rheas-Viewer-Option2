@@ -256,11 +256,7 @@ def api_get_schema_yield(request):
             schema = info.get("schema")
             startdate=info.get("startdate")
             enddate=info.get("enddate")
-
-            yield_data,storename = calculate_yield(db,schema,startdate,enddate)
-
-
-            return_obj["storename"] = storename
+            yield_data,storename = calculate_yield(db,schema,startdate,enddate,'API')
             return_obj["yield"] = yield_data
             return_obj["schema"] = schema
             return_obj["success"] = "success"
