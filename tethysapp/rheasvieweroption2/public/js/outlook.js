@@ -109,7 +109,6 @@ var LIBRARY_OBJECT = (function () {
         $("#outlook").css("color", "black");
          $("#outlook_db_table").select2();
         $("#outlook_ens_table").select2();
-        $("#outlook_seasonyear").select2();
         $("#outlook_typeofchart").select2();
         $("#outlook_var_table3").select2();
         $("#outlook_var_table4").select2();
