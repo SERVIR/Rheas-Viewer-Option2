@@ -238,7 +238,23 @@ def get_database():
     except Exception as e:
         print(e)
         return e
+@csrf_exempt
+def get_outlook_database():
+    try:
+        conn = psycopg2.connect(user=cfg.connection['user'], host=cfg.connection['host'],
+                                password=cfg.connection['password'])
+        cur = conn.cursor()
+        sql = """SELECT datname FROM pg_database WHERE datistemplate = false"""
+        cur.execute(sql)
+        data = cur.fetchall()
 
+        rheas_dbs = [db[0] for db in data if 'postgres' not in db[0]]
+        conn.close()
+        return rheas_dbs
+
+    except Exception as e:
+        print(e)
+        return e
 
 @csrf_exempt
 def get_schemas(db):
