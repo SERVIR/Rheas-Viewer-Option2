@@ -60,6 +60,26 @@ def get_dates(request):
             return_obj["error"] = e
         return JsonResponse(return_obj)
 @csrf_exempt
+def get_start_end_dates(request):
+    return_obj = {}
+
+    if request.is_ajax() and request.method == 'POST':
+        info = request.POST
+        #db = info.get("db")
+        db = info.get("db")
+        #region = info.get("region")
+
+        try:
+            dates = get_start_end(db)
+            return_obj["startdate"] = dates[0][0]
+            return_obj["enddate"] = dates[0][1]
+
+            return_obj["success"] = "success"
+
+        except Exception as e:
+            return_obj["error"] = e
+        return JsonResponse(return_obj)
+@csrf_exempt
 def get_raster(request):
     return_obj = {}
 

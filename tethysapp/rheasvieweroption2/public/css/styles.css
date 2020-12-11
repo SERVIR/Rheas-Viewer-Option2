@@ -224,10 +224,10 @@ float:right;
 	}
 
 	#mappanelbody,
-	#mappanelbody1 {
+	#mappanelbody1,#outlook_mappanelbody1 {
 		height: 100%;
 		position: relative;
-
+padding: 0px;
 
 	}
 

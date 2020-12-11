@@ -63,7 +63,7 @@
                         <label style="display: none">
                      Select a schema of interest
                      </label>
-                     <select class="schema_table" name="schema_table" id="schema_table" style="width: 100%;display: none;">
+                     <select class="schema_table" name="schema_table" id="outlook_schema_table" style="width: 100%;display: none;">
                         {% for schema in db_schemas %}
                         <option value="{{schema}}">{{schema}}</option>
                         {% endfor %}
@@ -71,24 +71,24 @@
                            <label style="display: block">
                      Select a database of interest
                      </label>
-                     <select class="db_table" name="db_table" id="db_table" style="width: 100%;display: block;">
+                     <select class="db_table" name="db_table" id="outlook_db_table" style="width: 100%;display: block;">
                         {% for db in rheas_dbs %}
                         <option value="{{db}}">{{db}}</option>
                         {% endfor %}
                      </select>
                        <br>
-                        <label>Select year
-                     </label><br>
-                     <select class="seasonyear" name="seasonyear" id="seasonyear"  style="width: 100%">
-                         <option>2019</option>
-                         <option>2020</option>
-                         <option>2021</option>
-                     </select>
-                     <br>
+<!--                        <label>Select year-->
+<!--                     </label><br>-->
+<!--                     <select class="seasonyear" name="seasonyear" id="outlook_seasonyear"  style="width: 100%">-->
+<!--                         <option>2019</option>-->
+<!--                         <option>2020</option>-->
+<!--                         <option>2021</option>-->
+<!--                     </select>-->
+<!--                     <br>-->
                        <label>
                      Chart 1
                      </label>
-                     <select class="var_table" name="var_table3" id="var_table3" style="width: 100%">
+                     <select class="var_table" name="var_table3" id="outlook_var_table3" style="width: 100%">
                         <option>GWAD</option>
                         <option>WSGD</option>
                         <option>LAI</option>
@@ -96,7 +96,7 @@
                      <label>
                      Chart 2
                      </label>
-                     <select class="var_table" name="var_table3" id="var_table4" style="width: 100%">
+                     <select class="var_table" name="var_table3" id="outlook_var_table4" style="width: 100%">
                         <option>LAI</option>
                         <option>GWAD</option>
                         <option>WSGD</option>
@@ -105,25 +105,25 @@
                      Select an ensemble
                      </label><br>
                       <input type="text" name="gid" id="gid" hidden>
-                     <select class="ens_table" name="ens_table" id="ens_table"  style="width: 100%">
+                     <select class="ens_table" name="ens_table" id="outlook_ens_table"  style="width: 100%">
                      </select>
                      <br>
                       <label>
                      Rains:
                      </label>
-                  <div class="onoffswitch">
+<!--                  <div class="onoffswitch">-->
 
-       <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch">
-        <label class="onoffswitch-label" for="myonoffswitch">
-            <span class="onoffswitch-inner"></span>
-            <span class="onoffswitch-switch"></span>
-        </label>
-    </div>
+<!--       <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="outlook_myonoffswitch">-->
+<!--        <label class="onoffswitch-label" for="outlook_myonoffswitch">-->
+<!--            <span class="onoffswitch-inner"></span>-->
+<!--            <span class="onoffswitch-switch"></span>-->
+<!--        </label>-->
+<!--    </div>-->
 
 
     <label>  Select Type (for LAI/WSGD):
                   </label><br>
-                     <select class="typeofchart" name="typeofchart" id="typeofchart"  style="width: 100%">
+                     <select class="typeofchart" name="typeofchart" id="outlook_typeofchart"  style="width: 100%">
                         <option>Daily</option>
                         <option>Cumulative</option>
                      </select>
@@ -142,8 +142,7 @@
                      <!--  			 <input type="text" name="point-lat-lon" id="point-lat-lon" hidden>-->
                      <!--                    		<input type="text" name="poly-lat-lon" id="poly-lat-lon" hidden>-->
                      <!--			    <p>Note: The map interaction has to be set to None to be able to view the pixel values for a clicked point.</p>-->
-                     <input type="text" name="point-lat-lon" id="point-lat-lon" hidden>
-                     <input type="text" name="poly-lat-lon" id="poly-lat-lon" hidden>
+
                   </div>
                </div>
             </div>

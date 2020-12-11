@@ -188,10 +188,15 @@ class Rheasvieweroption2(TethysAppBase):
                 controller='rheasvieweroption2.ajax_controllers.get_county'
           ),
           UrlMap(
-            name='schemas1',
-            url='rheasvieweroption2/outlook/schemas1',
-            controller='rheasvieweroption2.ajax_controllers.get_db_schemas'
+                name='schemas1',
+                url='rheasvieweroption2/outlook/schemas1',
+                controller='rheasvieweroption2.ajax_controllers.get_db_schemas'
           ),
+           UrlMap(
+               name='get-start-end-dates',
+               url='rheasvieweroption2/outlook/get-start-end-dates',
+               controller='rheasvieweroption2.ajax_controllers.get_start_end_dates'
+           ),
         )
 
         return url_maps
