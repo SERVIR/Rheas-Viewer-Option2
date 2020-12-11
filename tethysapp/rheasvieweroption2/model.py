@@ -227,7 +227,7 @@ def get_database():
         conn = psycopg2.connect(user=cfg.connection['user'], host=cfg.connection['host'],
                                 password=cfg.connection['password'])
         cur = conn.cursor()
-        sql = """SELECT datname FROM pg_database WHERE datistemplate = false and datname like 'forecast________' order by datname"""
+        sql = """SELECT datname FROM pg_database WHERE datistemplate = false"""
         cur.execute(sql)
         data = cur.fetchall()
 
@@ -244,7 +244,7 @@ def get_outlook_database():
         conn = psycopg2.connect(user=cfg.connection['user'], host=cfg.connection['host'],
                                 password=cfg.connection['password'])
         cur = conn.cursor()
-        sql = """SELECT datname FROM pg_database WHERE datistemplate = false"""
+        sql = """SELECT datname FROM pg_database WHERE datistemplate = false and datname like 'forecast________' order by datname"""
         cur.execute(sql)
         data = cur.fetchall()
 
