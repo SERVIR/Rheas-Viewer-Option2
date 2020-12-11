@@ -22,12 +22,15 @@ def api_get_dbs(request):
         return JsonResponse(return_obj)
 
 def api_get_db_schemas(request):
+    print('ggg')
     return_obj = {}
 
     if request.method == 'GET':
         try:
             info = request.GET
+            print('bef')
             db = info.get("db")
+            print(db)
             schemas = get_schemas(db)
 
 

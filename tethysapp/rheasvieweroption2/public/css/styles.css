@@ -115,7 +115,7 @@ border:#716b62 1px solid;
 	overflow: hidden;
 	margin-bottom: 5px;
 }
-#map1 {
+#map1,#outlook_map1 {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
@@ -126,6 +126,10 @@ border:#716b62 1px solid;
 }
 #mc{
 	width:89.5%;
+margin-right:0px;
+}
+#outlook_mc{
+	width:100%;
 margin-right:0px;
 }
 #chart1,
@@ -161,15 +165,22 @@ margin-right:0px;
 		margin-top: 5px;
 		padding-right: 0px;
 	}
-
+#outlook_paramscontainer{
+	margin-top: 5px;
+}
 	#mapcontainer,
-	#mapcontainer1 {
+	#mapcontainer1{
 		height: 63vh;
 		margin-bottom: 5px;
 		padding: 0;
 
 	}
-
+#outlook_mapcontainer1 {
+		height: 60.5vh;
+		margin-bottom: 5px;
+		padding: 0;
+float:right;
+}
 	.mapcontainerfull
 {
     height: 90%;
@@ -187,6 +198,13 @@ margin-right:0px;
 		overflow: hidden;
 		margin: 5px 5px 5px 0;
 	}
+	#outlook_mappanel1{
+		height: 100%;
+		position: relative;
+		overflow: hidden;
+		margin: 5px 5px 5px 0;
+	}
+
 
 	h2 {
 		margin-top: 0px;
@@ -209,8 +227,10 @@ margin-right:0px;
 	#mappanelbody1 {
 		height: 100%;
 		position: relative;
-		padding: 0 0 15 0;
+
+
 	}
+
 
 	.panel-heading {
 		padding: 3px 5px;
@@ -229,16 +249,21 @@ margin-right:0px;
 		height: 89vh;
 		overflow-x: hidden;
 	}
+	#outlook_params {
+		height: 86.5vh;
+		overflow-x: hidden;
+	}
 
-	#paramspanel {
+	#paramspanel,#outlook_paramspanel {
 		margin-bottom: 0;
 	}
+
 
 	#vic-plot-modal,
 	#vic-plot-modal1,
 	#vic-plot-modal2,
-	#dssat-plot-modal {
-		height: 25vh;
+	#dssat-plot-modal,#dssat-plot-modal1,#dssat-plot-modal2 {
+		height: 23vh;
 		padding: 0px;
 	}
 
@@ -249,11 +274,13 @@ margin-right:0px;
 
 	#cv_vic,
 	#cv_dssat,
+	#outlook_cv_dssat,
 	#curr_vic,
-	#curr_dssat {
+	#outlook_curr_dssat ,#curr_dssat {
 		z-index: 1;
 		margin: 10 0 0 10;
 	}
+
 
 	.cvs {
 		position: absolute;
@@ -296,10 +323,13 @@ margin-right:0px;
 	#vic_plotter_1,
 	#vic_plotter_2,
 	#dssat_plotter_1,
-	#dssat_plotter_2 {
+	#dssat_plotter_2{
 		height: 28vh;
 	}
 
+	#outlook_dssat_plotter_1,#outlook_dssat_plotter_2 {
+	height: 25vh;
+	}
 /*@media screen and (min-width: 1000px) {*/
 	/*#paramscontainer,*/
 	/*#mapcontainer {*/
@@ -482,7 +512,7 @@ margin-right:0px;
 
 
 
-#loading{
+#loading,#outlook_loading{
     background: url('spinner.gif') no-repeat center center;
     position: absolute;
     top: 0;
@@ -491,7 +521,7 @@ margin-right:0px;
     width: 100%;
     z-index: 9999999;
 }
-#chartloading1,#chartloading2,#chartloading3,#chartloading4 {
+#chartloading1,#chartloading2,#chartloading3,#chartloading4,#outlook_chartloading1,#outlook_chartloading2,#outlook_chartloading3,#outlook_chartloading4 {
     position: absolute;
     top: 0;
     left: 0;

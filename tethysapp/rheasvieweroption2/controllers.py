@@ -48,7 +48,9 @@ def outlook(request):
     geoserver_wms_url = cfg.geoserver['wms_url']
     geoserver_rest_url = cfg.geoserver['rest_url']
     geoserver_workspace = cfg.geoserver['workspace']
+    rheas_dbs = get_database()
     context={
+        "rheas_dbs": rheas_dbs,
         "variable_info":json.dumps(variable_info),
         "geoserver_wfs_url":geoserver_wfs_url,
         "geoserver_wms_url":geoserver_wms_url,

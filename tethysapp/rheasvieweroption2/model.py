@@ -208,7 +208,7 @@ def get_database():
     try:
         conn = psycopg2.connect(user=cfg.connection['user'],host= cfg.connection['host'],password=cfg.connection['password'])
         cur = conn.cursor()
-        sql = """SELECT datname FROM pg_database WHERE datistemplate = false"""
+        sql = """SELECT datname FROM pg_database WHERE datistemplate = false and datname like 'forecast________' order by datname"""
         cur.execute(sql)
         data = cur.fetchall()
 
@@ -227,9 +227,7 @@ def get_schemas(db):
         sql = """select schema_name from information_schema.schemata"""
         cur.execute(sql)
         data = cur.fetchall()
-
         regions = [region[0] for region in data if region[0] not in default_schemas]
-
         conn.close()
         regions.sort()
         return regions
@@ -251,7 +249,6 @@ def get_variables(db,region):
         conn.close()
         return variables
     except Exception as e:
-        print(e)
         return e
 @csrf_exempt
 # def get_times(db,region,variable):
@@ -424,6 +421,7 @@ def calculate_yield(db,schema,startdate,enddate):
                                                                cfg.connection['password']))
         cur = conn.cursor()
         storename = str(db+'_'+schema+'_agareas')
+        print(storename)
         # cat = Catalog(cfg.geoserver['rest_url'], username=cfg.geoserver['user'], password=cfg.geoserver['password'],disable_ssl_certificate_validation=True)
         # try:
         #     print('Check if the layer exists')

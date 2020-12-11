@@ -43,7 +43,6 @@ def get_dates(request):
     return_obj = {}
 
     if request.is_ajax() and request.method == 'POST':
-
         info = request.POST
         #db = info.get("db")
         variable = info.get("variable")
@@ -265,7 +264,6 @@ def get_ens_values(request):
 
 
                 wsgd_series,lai_series,low_lai_series,high_lai_series,wsgd_cum_series,lai_cum_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble,startdate,enddate)
-
                 return_obj["gid"] = gid
                 return_obj["schema"] = schema
                 return_obj["ensemble"] = ensemble
@@ -298,6 +296,8 @@ def get_ens_values(request):
         except Exception as e:
 
             return_obj["error"] = "error"
+            type, value, traceback = sys.exc_info()
+            print(value)
             return JsonResponse(return_obj)
 
 @csrf_exempt
@@ -371,25 +371,25 @@ def get_bounds(request):
         workspace = info.get('workspace')
 
         xml_url = None
-
-        if type == 'raster':
-            xml_url = str(rest_url)+'workspaces/'+str(workspace)+'/coveragestores/'+str(store)+'/coverages/'+str(store)+'.xml'
-            r = requests.get(xml_url, auth=(cfg.geoserver['user'], cfg.geoserver['password']))
-            r_json = xmltodict.parse(r.content)
-
-            bbox = r_json['coverage']['latLonBoundingBox']
-            bounds = [float(bbox['minx']), float(bbox['miny']), float(bbox['maxx']), float(bbox['maxy'])]
-            return_obj["bounds"] = bounds
-            return_obj["success"] = "success"
-
-        if type =='vector':
-            xml_url = str(rest_url) + 'workspaces/' + str(workspace) + '/datastores/' + str(store) + '/featuretypes/' + str(store) + '.xml'
-            r = requests.get(xml_url, auth=(cfg.geoserver['user'], cfg.geoserver['password']))
-            r_json = xmltodict.parse(r.content)
-            bbox = r_json['featureType']['latLonBoundingBox']
-            bounds = [float(bbox['minx'])-1.5, float(bbox['miny']), float(bbox['maxx'])-1.5, float(bbox['maxy'])]
-            return_obj["bounds"] = bounds
-            return_obj["success"] = "success"
+        #
+        # if type == 'raster':
+        #     xml_url = str(rest_url)+'workspaces/'+str(workspace)+'/coveragestores/'+str(store)+'/coverages/'+str(store)+'.xml'
+        #     r = requests.get(xml_url, auth=(cfg.geoserver['user'], cfg.geoserver['password']))
+        #     r_json = xmltodict.parse(r.content)
+        #
+        #     bbox = r_json['coverage']['latLonBoundingBox']
+        #     bounds = [float(bbox['minx']), float(bbox['miny']), float(bbox['maxx']), float(bbox['maxy'])]
+        #     return_obj["bounds"] = bounds
+        #     return_obj["success"] = "success"
+        #
+        # if type =='vector':
+        #     xml_url = str(rest_url) + 'workspaces/' + str(workspace) + '/datastores/' + str(store) + '/featuretypes/' + str(store) + '.xml'
+        #     r = requests.get(xml_url, auth=(cfg.geoserver['user'], cfg.geoserver['password']))
+        #     r_json = xmltodict.parse(r.content)
+        #     bbox = r_json['featureType']['latLonBoundingBox']
+        #     bounds = [float(bbox['minx'])-1.5, float(bbox['miny']), float(bbox['maxx'])-1.5, float(bbox['maxy'])]
+        #     return_obj["bounds"] = bounds
+        #     return_obj["success"] = "success"
 
         return JsonResponse(return_obj)
     

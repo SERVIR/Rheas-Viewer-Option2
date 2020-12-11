@@ -96,6 +96,11 @@ class Rheasvieweroption2(TethysAppBase):
                 controller='rheasvieweroption2.ajax_controllers.get_scale'
           ),
           UrlMap(
+                name='scale',
+                url='rheasvieweroption2/outlook/scale',
+                controller='rheasvieweroption2.ajax_controllers.get_scale'
+          ),
+          UrlMap(
                 name='scale1',
                 url='rheasvieweroption2/scale1',
                 controller='rheasvieweroption2.ajax_controllers.get_scale'
@@ -131,10 +136,19 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/vicdssat/get-schema-yield',
                 controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
           ),
-
+          UrlMap(
+                name='dsyield1',
+                url='rheasvieweroption2/outlook/get-schema-yield',
+                controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
+          ),
           UrlMap(
                 name='dsyieldgid',
                 url='rheasvieweroption2/vicdssat/get-schema-yield-gid',
+                controller='rheasvieweroption2.ajax_controllers.get_schema_yield_gid'
+          ),
+          UrlMap(
+                name='dsyieldgid',
+                url='rheasvieweroption2/outlook/get-schema-yield-gid',
                 controller='rheasvieweroption2.ajax_controllers.get_schema_yield_gid'
           ),
           UrlMap(
@@ -147,6 +161,17 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/vicdssat/get-ens-values',
                 controller='rheasvieweroption2.ajax_controllers.get_ens_values'
           ),
+
+          UrlMap(
+                name='dsensval',
+                url='rheasvieweroption2/outlook/get-ens-values',
+                controller='rheasvieweroption2.ajax_controllers.get_ens_values'
+          ),
+          UrlMap(
+                name='dsensemble',
+                url='rheasvieweroption2/outlook/get-ensemble',
+                controller='rheasvieweroption2.ajax_controllers.get_ensemble'
+          ),
           UrlMap(
                 name='getcounty',
                 url='rheasvieweroption2/vicdssat/get-county',
@@ -156,6 +181,16 @@ class Rheasvieweroption2(TethysAppBase):
                 name='getDSSATYield',
                 url='rheasvieweroption2/api/getDSSATYield',
                 controller='rheasvieweroption2.api.api_get_schema_yield'
+          ),
+          UrlMap(
+                name='getcounty',
+                url='rheasvieweroption2/outlook/get-county',
+                controller='rheasvieweroption2.ajax_controllers.get_county'
+          ),
+          UrlMap(
+            name='schemas1',
+            url='rheasvieweroption2/outlook/schemas1',
+            controller='rheasvieweroption2.ajax_controllers.get_db_schemas'
           ),
         )
 
