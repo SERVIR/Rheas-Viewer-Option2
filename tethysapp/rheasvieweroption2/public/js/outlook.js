@@ -564,17 +564,24 @@ var LIBRARY_OBJECT = (function () {
                         }).done(function (data1) {
                             if ("success" in data1) {
 
-                                var county_name = data1["county"].length > 0 ? data1["county"][0][0] : "Unknown";
-                                if (avg_val) {
-                                    var yield_val = Math.round(avg_val).toFixed(2);
-
-
-                                    document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
-                                }
-                                //  overlayt.setPosition(ol.proj.transform(event.mapBrowserEvent.coordinate, 'EPSG:3857', 'EPSG:4326'));
-
-                                map1.addOverlay(overlayt);
-
+                                ajax_update_database("get-schema-yield-gid1", {
+                                    "db": $("#outlook_db_table option:selected").val(),
+                                    "schema": $("#outlook_db_table option:selected").val(),
+                                    "gid": level,
+                                    "startdate": sdate,
+                                    "enddate": edate
+                                }).done(function (data) {
+                                    if ("success" in data) {
+                                        var county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
+                                        if (data.yield[0]) {
+                                           var  yval = Math.round(data.yield[0][0]).toFixed(2);
+                                        }
+                                        document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yval + " kg/ha";
+                                        map1.addOverlay(overlayt);
+                                    } else {
+                                        console.log("error");
+                                    }
+                                });
 
                             }
                         });
@@ -720,8 +727,7 @@ var LIBRARY_OBJECT = (function () {
 
                         if (gid == undefined) gid = 'KE041';
                         document.getElementById("tooltip11").innerHTML = "County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
-
-                        ajax_update_database("get-schema-yield-gid", {
+                        ajax_update_database("get-schema-yield-gid1", {
                             "db": $("#outlook_db_table option:selected").val(),
                             "schema": $("#outlook_db_table option:selected").val(),
                             "gid": gid,
@@ -731,7 +737,7 @@ var LIBRARY_OBJECT = (function () {
                             if ("success" in data) {
                                 county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
                                 if (data.yield[0]) {
-                                    yield_val = Math.round(data.yield[0][2]).toFixed(2);
+                                    yield_val = Math.round(data.yield[0][0]).toFixed(2);
                                 }
                                 document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
                                 map1.addOverlay(overlayt);
@@ -832,10 +838,45 @@ var LIBRARY_OBJECT = (function () {
                     xhr.done(function (data) {
                         hideLoader1();
                         hideLoader2();
-                        var input, title, titletext, gwad_low, gwad_high, series, lai_low, lai_high;
+                        var input, title, titletext, gwad_low, gwad_high, series,LTA_input, LTA_lai_5series, LTA_lai_95series,LTA_gwad_5series,LTA_gwad_95series;
                         series = [];
+
                         if (variable == "GWAD") {
-                            input = data.gwad_series;
+                                               var ranges = [];
+                            var interm = [];
+                            input = $("#outlook_typeofchart option:selected").val() == "Daily" ? data.gwad_series : data.gwad_cum_series;
+                            LTA_input= $("#outlook_typeofchart option:selected").val() == "Daily" ? data.LTA_gwad_series : data.LTA_gwad_cum_series;
+                            LTA_gwad_5series = data.LTA_gwad_5series;
+                            LTA_gwad_95series = data.LTA_gwad_95series;
+                            for (var i = 0; i < LTA_gwad_5series.length; i++) {
+                                interm.push(LTA_gwad_5series[i][0]);
+
+                            }
+                            for (var i = 0; i < LTA_gwad_95series.length; i++) {
+                                interm.push(LTA_gwad_95series[i][0]);
+
+                            }
+                            var newArray = [];
+
+                            interm.forEach((c) => {
+                                if (!newArray.includes(c)) {
+                                    newArray.push(c);
+                                }
+                            });
+
+                            for (var i = 0; i < newArray.length; i++) {
+                                for (var j = 0; j < LTA_gwad_5series.length; j++) {
+                                    for (var k = 0; k < LTA_gwad_95series.length; k++) {
+                                        if (LTA_gwad_5series[j][0] == newArray[i] && LTA_gwad_95series[k][0] == newArray[i]) {
+
+                                            ranges.push([newArray[i], LTA_gwad_5series[j][1], LTA_gwad_95series[k][1]]);
+                                        }
+
+                                    }
+
+
+                                }
+                            }
                             gwad_low = data.low_gwad_series;
                             gwad_high = data.high_gwad_series;
 
@@ -846,29 +887,52 @@ var LIBRARY_OBJECT = (function () {
                                 name: "Median",
                                 type: 'line',
                                 showInLegend: false,
-                                lineWidth: 5,
+                                lineWidth: 2,
                                 color: "green",
                             },
+                                // {
+                                //     data: gwad_low,
+                                //     name: "5th percentile",
+                                //     type: 'line',
+                                //     color: "red",
+                                //     showInLegend: false,
+                                //     fillOpacity: 0.1,
+                                //     zIndex: -1,
+                                //     dashStyle: "Dash"
+                                //
+                                // }, {
+                                //     data: gwad_high,
+                                //     name: "95th percentile",
+                                //     type: 'line',
+                                //     color: "orange",
+                                //     fillOpacity: 0.1,
+                                //     showInLegend: false,
+                                //     zIndex: -2,
+                                //     dashStyle: "Dash"
+                                //
+                                // },
+                                                                  {
+                                    data: LTA_input,
+                                    name: "LTA Median",
+                                    type: 'line',
+                                    showInLegend: false,
+                                    lineWidth: 2,
+                                    color: "#3BB9FF",
+                                    fillOpacity: 0.3,
+                                    dashStyle: "Dash"
+                                },
                                 {
-                                    data: gwad_low,
-                                    name: "5th percentile",
-                                    type: 'line',
-                                    color: "red",
-                                    showInLegend: false,
-                                    fillOpacity: 0.1,
-                                    zIndex: -1,
-                                    dashStyle: "Dash"
-
-                                }, {
-                                    data: gwad_high,
-                                    name: "95th percentile",
-                                    type: 'line',
-                                    color: "orange",
-                                    fillOpacity: 0.1,
-                                    showInLegend: false,
-                                    zIndex: -2,
-                                    dashStyle: "Dash"
-
+                                    name: 'Range',
+                                    data: ranges,
+                                    type: 'arearange',
+                                    lineWidth: 0.2,
+                                    linkedTo: ':previous',
+                                    color: "#3BB9FF",
+                                    fillOpacity: 0.2,
+                                    zIndex: 0,
+                                    marker: {
+                                        enabled: false
+                                    }
                                 }
                             ]
                         }
@@ -880,15 +944,47 @@ var LIBRARY_OBJECT = (function () {
                                 data: input,
                                 name: titletext,
                                 type: 'line',
-                                lineWidth: 5,
+                                lineWidth: 2,
                                 showInLegend: false,
                                 color: "green",
                             }]
                         }
                         else if (variable == "LAI") {
+                            var ranges = [];
+                            var interm = [];
                             input = $("#outlook_typeofchart option:selected").val() == "Daily" ? data.lai_series : data.lai_cum_series;
-                            lai_low = data.low_lai_series;
-                            lai_high = data.high_lai_series;
+                            LTA_input= $("#outlook_typeofchart option:selected").val() == "Daily" ? data.LTA_lai_series : data.LTA_lai_cum_series;
+                            LTA_lai_5series = data.LTA_lai_5series;
+                            LTA_lai_95series = data.LTA_lai_95series;
+                            for (var i = 0; i < LTA_lai_5series.length; i++) {
+                                interm.push(LTA_lai_5series[i][0]);
+
+                            }
+                            for (var i = 0; i < LTA_lai_95series.length; i++) {
+                                interm.push(LTA_lai_95series[i][0]);
+
+                            }
+                            var newArray = [];
+
+                            interm.forEach((c) => {
+                                if (!newArray.includes(c)) {
+                                    newArray.push(c);
+                                }
+                            });
+
+                            for (var i = 0; i < newArray.length; i++) {
+                                for (var j = 0; j < LTA_lai_5series.length; j++) {
+                                    for (var k = 0; k < LTA_lai_95series.length; k++) {
+                                        if (LTA_lai_5series[j][0] == newArray[i] && LTA_lai_95series[k][0] == newArray[i]) {
+
+                                            ranges.push([newArray[i], LTA_lai_5series[j][1], LTA_lai_95series[k][1]]);
+                                        }
+
+                                    }
+
+
+                                }
+                            }
                             title = "LAI :";
                             titletext = "LAI (m2/m2)";
                             series = [
@@ -897,31 +993,37 @@ var LIBRARY_OBJECT = (function () {
                                     name: "Median",
                                     type: 'line',
                                     showInLegend: false,
-                                    lineWidth: 5,
+                                    lineWidth: 2,
                                     color: "green",
+                                    fillOpacity: 0.5,
                                 },
+                                  {
+                                    data: LTA_input,
+                                    name: "LTA Median",
+                                    type: 'line',
+                                    showInLegend: false,
+                                    lineWidth: 2,
+                                    color: "#3BB9FF",
+                                    fillOpacity: 0.3,
+                                    dashStyle: "Dash"
+                                },
+
                                 {
-                                    data: lai_low,
-                                    name: "5th percentile",
-                                    type: 'line',
-                                    color: "red",
-                                    showInLegend: false,
-                                    fillOpacity: 0.1,
-                                    zIndex: -1,
-                                    dashStyle: "Dash"
-
-                                }, {
-                                    data: lai_high,
-                                    name: "95th percentile",
-                                    type: 'line',
-                                    color: "orange",
-                                    fillOpacity: 0.1,
-                                    showInLegend: false,
-                                    zIndex: -2,
-                                    dashStyle: "Dash"
-
+                                    name: 'Range',
+                                    data: ranges,
+                                    type: 'arearange',
+                                    lineWidth: 0.2,
+                                    linkedTo: ':previous',
+                                    color: "#3BB9FF",
+                                    fillOpacity: 0.2,
+                                    zIndex: 0,
+                                    marker: {
+                                        enabled: false
+                                    }
                                 }
                             ]
+
+
                         }
 
 

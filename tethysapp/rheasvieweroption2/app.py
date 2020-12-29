@@ -147,8 +147,8 @@ class Rheasvieweroption2(TethysAppBase):
                 controller='rheasvieweroption2.ajax_controllers.get_schema_yield_gid'
           ),
           UrlMap(
-                name='dsyieldgid',
-                url='rheasvieweroption2/outlook/get-schema-yield-gid',
+                name='dsyieldgid1',
+                url='rheasvieweroption2/outlook/get-schema-yield-gid1',
                 controller='rheasvieweroption2.ajax_controllers.get_schema_yield_gid'
           ),
           UrlMap(
@@ -167,6 +167,7 @@ class Rheasvieweroption2(TethysAppBase):
                 url='rheasvieweroption2/outlook/get-ens-values',
                 controller='rheasvieweroption2.ajax_controllers.get_ens_values'
           ),
+
           UrlMap(
                 name='dsensemble',
                 url='rheasvieweroption2/outlook/get-ensemble',

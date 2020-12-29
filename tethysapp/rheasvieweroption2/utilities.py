@@ -1,10 +1,12 @@
 import os
 import requests
 import urllib.parse
+import csv
 from os import path
 from datetime import datetime
 import time
 import numpy as np
+
 
 #Note really used, but this is an example of uploading a tiff file to a geoserver
 def get_var_tiff(dir,var,prefix):
@@ -96,6 +98,59 @@ def parse_dssat_data(data):
     gwad_series.sort()
 
     return wsgd_series, lai_series, wsgd_cum_series, lai_cum_series, gwad_series
+
+def parse_outlook_dssat_data(data,sdate,edate,gid):
+    startdate=datetime.strptime(sdate, '%Y-%m-%d')
+    enddate=datetime.strptime(edate, '%Y-%m-%d')
+    lai_series, lai_cum_series, gwad_series,lai_95series,lai_5series,gwad_95series,gwad_5series = [], [], [],[],[],[],[]
+    lai_cum=0.0
+    ninetyfifthpercent_LAI=0.0
+    fifthpercent_LAI=0.0
+    ninetyfifthpercent_GWAD=0.0
+    fifthpercent_GWAD=0.0
+    try:
+
+        with open( path.join(path.dirname(path.realpath(__file__)), 'public/data/LTA_allGIDs/LTA_'+str(gid)+'.csv'), mode='r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            line_count = 0
+            for csvrow in csv_reader:
+                for row in data:
+                    d=datetime.strptime(row[1].strftime("%Y-%m-%d"), '%Y-%m-%d')
+                    if int(csvrow["fdate"]) == row[0] and d<enddate and d>startdate:
+                        time_stamp = time.mktime(row[1].timetuple()) * 1000
+                        lai_cum = lai_cum + float(csvrow["Avg_LAI"] ) # cum
+                        lai = float(csvrow["Avg_LAI"])
+                        gwad = float(csvrow["Avg_GWAD"])
+                        lai_sd=float(csvrow["SD_LAI"])
+                        gwad_sd=float(csvrow["SD_GWAD"])
+                        ninetyfifthpercent_LAI=lai+lai_sd
+                        if lai-lai_sd<0:
+                            fifthpercent_LAI=0.0
+                        else:
+                            fifthpercent_LAI=lai-lai_sd
+                        ninetyfifthpercent_GWAD =gwad+gwad_sd
+                        if gwad-gwad_sd<0:
+                            fifthpercent_GWAD = 0.0
+                        else:
+                            fifthpercent_GWAD =gwad-gwad_sd
+                        lai_series.append([time_stamp, lai])
+                        lai_cum_series.append([time_stamp, lai_cum])
+                        lai_95series.append([time_stamp, ninetyfifthpercent_LAI])
+                        lai_5series.append([time_stamp, fifthpercent_LAI])
+                        gwad_95series.append([time_stamp, ninetyfifthpercent_GWAD])
+                        gwad_5series.append([time_stamp, fifthpercent_GWAD])
+                        gwad_series.append([time_stamp, gwad])
+                line_count += 1
+            lai_series.sort()
+            lai_cum_series.sort()
+            lai_5series.sort()
+            lai_95series.sort()
+            gwad_5series.sort()
+            gwad_95series.sort()
+            gwad_series.sort()
+    except Exception as e:
+        print(e)
+    return lai_series, lai_cum_series, lai_95series,lai_5series,gwad_series,gwad_95series,gwad_5series
 
 def calc_color_range(min,max):
     interval = abs((float(max) - float(min)) / 20)

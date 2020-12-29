@@ -280,10 +280,7 @@ def get_ens_values(request):
                 ensemble = info.get("ensemble")
                 startdate = info.get("startdate")
                 enddate = info.get("enddate")
-                # if "avg" in ensemble:
-
-
-                wsgd_series,lai_series,low_lai_series,high_lai_series,wsgd_cum_series,lai_cum_series,gwad_series,low_gwad_series,high_gwad_series,ensemble_info = get_dssat_values(db,gid,schema,ensemble,startdate,enddate)
+                wsgd_series,lai_series,low_lai_series,high_lai_series,wsgd_cum_series,lai_cum_series,gwad_series,low_gwad_series,high_gwad_series,LTA_lai_series, LTA_lai_cum_series, LTA_lai_95series,LTA_lai_5series,LTA_gwad_series,LTA_gwad_95series,LTA_gwad_5series,ensemble_info = get_dssat_values(db,gid,schema,ensemble,startdate,enddate)
                 return_obj["gid"] = gid
                 return_obj["schema"] = schema
                 return_obj["ensemble"] = ensemble
@@ -296,23 +293,60 @@ def get_ens_values(request):
                 return_obj["gwad_series"] = gwad_series
                 return_obj["low_gwad_series"] = low_gwad_series
                 return_obj["high_gwad_series"] = high_gwad_series
+                return_obj["LTA_lai_series"] = LTA_lai_series
+                return_obj["LTA_lai_cum_series"] = LTA_lai_cum_series
+                return_obj["LTA_lai_95series"] = LTA_lai_95series
+                return_obj["LTA_lai_5series"] = LTA_lai_5series
+                return_obj["LTA_gwad_series"] = LTA_gwad_series
+                return_obj["LTA_gwad_95series"] = LTA_gwad_95series
+                return_obj["LTA_gwad_5series"] = LTA_gwad_5series
                 return_obj["ensemble_info"] = ensemble_info
                 return_obj["success"] = "success"
                 return JsonResponse(return_obj)
             else:
                 return_obj["error"] = "error"
                 return JsonResponse(return_obj)
-            # else:
-            #     wsgd_series, lai_series, gwad_series = get_dssat_values(db,gid, schema, ensemble)
-            #     return_obj["gid"] = gid
-            #     return_obj["schema"] = schema
-            #     return_obj["ensemble"] = ensemble
-            #     return_obj["wsgd_series"] = wsgd_series
-            #     return_obj["lai_series"] = lai_series
-            #     return_obj["gwad_series"] = gwad_series
-            #     return_obj["success"] = "success"
-            #     return JsonResponse(return_obj)
+        except Exception as e:
+            return_obj["error"] = "error"
+            type, value, traceback = sys.exc_info()
+            print(value)
+            return JsonResponse(return_obj)
 
+@csrf_exempt
+def get_outlook_ens_values(request):
+    return_obj = {}
+
+    if request.is_ajax() and request.method == 'POST':
+        info = request.POST
+
+        try:
+            if info.get("gid") != "-1":
+                db = info.get("db")
+                gid = info.get("gid")
+                schema = info.get("schema")
+                ensemble = info.get("ensemble")
+                startdate = info.get("startdate")
+                enddate = info.get("enddate")
+                # if "avg" in ensemble:
+
+
+                lai_series, lai_cum_series, lai_95series,lai_5series,gwad_series,gwad_95series,gwad_5series,ensemble_info = get_outlook_dssat_values(db,gid,schema,ensemble,startdate,enddate)
+                return_obj["gid"] = gid
+                return_obj["schema"] = schema
+                return_obj["ensemble"] = ensemble
+                return_obj["lai_series"] = lai_series
+                return_obj["lai_cum_series"] = lai_cum_series
+                return_obj["gwad_series"] = gwad_series
+                return_obj["low_gwad_series"] = gwad_5series
+                return_obj["high_gwad_series"] = gwad_95series
+                return_obj["low_lai_series"] = lai_5series
+                return_obj["high_lai_series"] = lai_95series
+                return_obj["ensemble_info"] = ensemble_info
+                return_obj["success"] = "success"
+                return JsonResponse(return_obj)
+            else:
+                return_obj["error"] = "error"
+                return JsonResponse(return_obj)
         except Exception as e:
 
             return_obj["error"] = "error"
