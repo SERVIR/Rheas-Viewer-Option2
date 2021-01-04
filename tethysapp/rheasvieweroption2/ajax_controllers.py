@@ -387,7 +387,28 @@ def get_schema_yield(request):
         schema = info.get("schema")
         startdate=info.get("startdate")
         enddate=info.get("enddate")
-        yield_data,storename = calculate_yield(db,schema,startdate,enddate)
+        ensemble=info.get("ensemble")
+        gid=info.get("gid")
+        yield_data,storename = calculate_yield_main(db,schema,startdate,enddate,ensemble,gid)
+        return_obj["storename"] = storename
+        return_obj["yield"] = yield_data
+        return_obj["schema"] = schema
+        return_obj["success"] = "success"
+
+        return JsonResponse(return_obj)
+@csrf_exempt
+def get_schema_yield_home(request):
+    return_obj = {}
+
+    if request.is_ajax() and request.method == 'POST':
+        info = request.POST
+
+        db = info.get("db")
+
+        schema = info.get("schema")
+        startdate=info.get("startdate")
+        enddate=info.get("enddate")
+        yield_data,storename = calculate_yield_home(db,schema,startdate,enddate)
         return_obj["storename"] = storename
         return_obj["yield"] = yield_data
         return_obj["schema"] = schema

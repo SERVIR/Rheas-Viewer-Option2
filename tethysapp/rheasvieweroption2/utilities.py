@@ -167,5 +167,4 @@ def calc_color_range1(min,max):
         scale = [0] * 5
     else:
         scale = np.arange(min, max, interval).tolist()
-
     return scale

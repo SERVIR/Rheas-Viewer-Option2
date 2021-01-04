@@ -511,20 +511,27 @@ def get_county_name(db, gid, schema):
 
 
 @csrf_exempt
-def calculate_yield(db, schema, startdate, enddate):
+def calculate_yield_main(db, schema, startdate, enddate,ensemble,gid):
     try:
         conn = psycopg2.connect(
             "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
         storename = str(db + '_' + schema + '_agareas')
+        if "avg" in ensemble:
+            cur = conn.cursor()
+            ensemble_sql = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT dssat_all.ensemble,MAX(dssat_all.gwad) FROM {0}.dssat dssat,{0}.dssat_all dssat_all WHERE dssat.gid=dssat_all.gid and ccode={1} AND fdate>={2} AND fdate<={3} GROUP BY dssat_all.ensemble) as foo""".format(
+                schema, "'"+gid+"'", "'" + startdate + "'", "'" + enddate + "'")
+            cur.execute(ensemble_sql)
+            ensemble_data = cur.fetchall()
+            ensemble = ensemble_data[math.ceil(len(ensemble_data) / 2) - 1]
         # sql = """SELECT gid,max(gwad) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
         if len(startdate) > 9:
             # sql="""select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss,(select gid,max(fdate) maxdate from {0}.dssat_all where fdate>={1} and fdate<={2} group by gid) y,{0}.yield z
             #    where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate and y.gwad<>0 group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
-            sql = """select y.ccode,max(y.gwad),max(y.lai),max(y.fdate) from (select ccode,max(dssat_all.gwad) gwad,max(dssat_all.lai) lai,dssat_all.fdate from {0}.dssat_all dssat_all,{0}.dssat dssat where dssat.gid=dssat_all.gid and fdate>={1} and fdate<={2} group by ccode,dssat_all.fdate)  y
-                        group by y.ccode""".format(schema, "'" + startdate + "'", "'" + enddate + "'")
-           # print(sql)
+            sql = """select y.ccode,max(y.gwad),max(y.lai),max(y.fdate) from (select ccode,max(dssat_all.gwad) gwad,max(dssat_all.lai) lai,dssat_all.fdate from {0}.dssat_all dssat_all,{0}.dssat dssat where dssat.gid=dssat_all.gid and fdate>={1} and fdate<={2} and dssat_all.ensemble={3} group by ccode,dssat_all.fdate)  y
+                        group by y.ccode""".format(schema, "'" + startdate + "'", "'" + enddate + "'",int(ensemble[1]))
+            print(sql)
 
         else:
             sql = """select dss.ccode,max(avg_yield) yield,max(x.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss, (select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
@@ -544,6 +551,37 @@ def calculate_yield(db, schema, startdate, enddate):
         return e
 
 
+@csrf_exempt
+def calculate_yield_home(db, schema, startdate, enddate):
+    try:
+        conn = psycopg2.connect(
+            "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
+                                                               cfg.connection['password']))
+        cur = conn.cursor()
+        storename = str(db + '_' + schema + '_agareas')
+        # sql = """SELECT gid,max(gwad) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
+        if len(startdate) > 9:
+            # sql="""select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss,(select gid,max(fdate) maxdate from {0}.dssat_all where fdate>={1} and fdate<={2} group by gid) y,{0}.yield z
+            #    where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate and y.gwad<>0 group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
+            sql = """select y.ccode,max(y.gwad),max(y.lai),max(y.fdate) from (select ccode,max(dssat_all.gwad) gwad,max(dssat_all.lai) lai,dssat_all.fdate from {0}.dssat_all dssat_all,{0}.dssat dssat where dssat.gid=dssat_all.gid and fdate>={1} and fdate<={2} and dssat_all.ensemble={3} group by ccode,dssat_all.fdate)  y
+                        group by y.ccode""".format(schema, "'" + startdate + "'", "'" + enddate + "'")
+
+        else:
+            sql = """select dss.ccode,max(avg_yield) yield,max(x.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss, (select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
+                         where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate group by dss.ccode,x.fdate order by x.fdate""".format(
+                schema, "'" + str(startdate) + "'", "'" + str(enddate) + "'")
+        # sql = """SELECT gid,avg_yield FROM {0}.yield""".format(schema)
+        cur.execute(sql)
+        data = cur.fetchall()
+
+        data.sort()
+
+        conn.close()
+
+        return data, storename
+    except Exception as e:
+        print(e)
+        return e
 @csrf_exempt
 def calculate_yield(db, schema, startdate='', enddate='', API=''):
     try:

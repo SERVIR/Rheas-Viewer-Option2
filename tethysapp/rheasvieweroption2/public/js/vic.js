@@ -2071,12 +2071,15 @@ var LIBRARY_OBJECT = (function () {
 
                     if ($("#seasonyear option:selected").val() != undefined) {
 
+        if (gid == undefined || gid == "") gid = 'KE041';
 
                         ajax_update_database("get-schema-yield", {
                             "db": $("#db_table option:selected").val(),
                             "schema": $("#schema_table option:selected").val(),
                             "startdate": startdate,
                             "enddate": enddate,
+                            "ensemble":$("#ens_table").val(),
+                            "gid":gid
                         }).done(function (data) {
                             if ("success" in data) {
                                 ajax_update_database("scale", {
@@ -2195,12 +2198,15 @@ var LIBRARY_OBJECT = (function () {
 
                     if ($("#seasonyear option:selected").val() != undefined) {
 
+        if (gid == undefined || gid == "") gid = 'KE041';
 
                         ajax_update_database("get-schema-yield", {
                             "db": $("#db_table option:selected").val(),
                             "schema": $("#schema_table option:selected").val(),
                             "startdate": startdate,
                             "enddate": enddate,
+                                                        "ensemble":$("#ens_table").val(),
+                            "gid":gid
                         }).done(function (data) {
                             if ("success" in data) {
                                 ajax_update_database("scale", {
@@ -2380,11 +2386,15 @@ var LIBRARY_OBJECT = (function () {
 
             }
             if ($("#seasonyear option:selected").val() != undefined) {
+                        if (gid == undefined || gid == "") gid = 'KE041';
+
                 ajax_update_database("get-schema-yield", {
                     "db": $("#db_table option:selected").val(),
                     "schema": $("#schema_table option:selected").val(),
                     "startdate": startdate,
                     "enddate": enddate,
+                                                "ensemble":$("#ens_table").val(),
+                            "gid":gid
                 }).done(function (data) {
 
                     if ("success" in data) {
@@ -2430,12 +2440,15 @@ var LIBRARY_OBJECT = (function () {
             $("#time_table").val($("#seasonyear option:selected").val() + "-01-01").change();
             if ($("#seasonyear option:selected").val() != undefined) {
 
+        if (gid == undefined || gid == "") gid = 'KE041';
 
                 ajax_update_database("get-schema-yield", {
                     "db": $("#db_table option:selected").val(),
                     "schema": $("#schema_table option:selected").val(),
                     "startdate": startdate,
                     "enddate": enddate,
+                                                "ensemble":$("#ens_table").val(),
+                            "gid":gid
                 }).done(function (data) {
                     if ("success" in data) {
                         ajax_update_database("scale", {

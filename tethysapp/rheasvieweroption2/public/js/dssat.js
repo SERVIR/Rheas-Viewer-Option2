@@ -117,11 +117,12 @@ function add_dssat(data, scale) {
 	}));
 
 }
-var xhr = ajax_update_database("get-schema-yield", {
+var xhr = ajax_update_database("get-schema-yield-home", {
 	"db": "rheas",
 	"schema": "ken_tethys2",
 	  "startdate": "",
                     "enddate": "",
+
 });
 xhr.done(function (data) {
 	if ("success" in data) {
@@ -465,9 +466,9 @@ var dssatmap = new ol.Map({
 	target: 'dssatmap',
 	layers: [baseLayer1, vectorLayer1],
 	view: new ol.View({
-		center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
+		center: ol.proj.transform([39.669571, -1.036878], 'EPSG:4326', 'EPSG:3857'),
 		projection: projection,
-		zoom: 7
+		zoom: 6
 	})
 });
 
