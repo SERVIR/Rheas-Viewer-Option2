@@ -18,7 +18,7 @@ var baseLayer = new ol.layer.Tile({
 var view = new ol.View({
 	center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
 	projection: projection,
-	zoom: 7
+	zoom: 6
 });
 
 var vector_source = new ol.source.Vector({
