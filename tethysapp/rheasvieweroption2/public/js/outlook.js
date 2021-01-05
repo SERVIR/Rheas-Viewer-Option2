@@ -320,6 +320,7 @@ var LIBRARY_OBJECT = (function () {
                     index = i;
                     break;
                 }
+
             }
 
             if (index == "-1") {
@@ -504,7 +505,10 @@ var LIBRARY_OBJECT = (function () {
 
         }));
         vectorLayer1.setZIndex(3);
+                              document.getElementById("outlook_loading").style.display = "none";
+
         map1.addLayer(vectorLayer1);
+
         map1.crossOrigin = 'anonymous';
         select_interaction = new ol.interaction.Select({
             layers: [vectorLayer1],//selected==false && vectorLayer2.getSource()!=null?[vectorLayer2]:[vectorLayer1],
@@ -534,8 +538,6 @@ var LIBRARY_OBJECT = (function () {
         });
         selectedFeatures = select_interaction.getFeatures();
         selectedFeatures.on('add', function (event) {
-            showLoader();
-
             var feature = event.target.item(0);
             try {
 
@@ -563,6 +565,7 @@ var LIBRARY_OBJECT = (function () {
                     var yield_val = "unavailable";
 
                     if (gid == undefined) gid = 'KE041';
+
                     document.getElementById("tooltip11").innerHTML = "County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
                     ajax_update_database("get-schema-yield-gid1", {
                         "db": $("#outlook_db_table option:selected").val(),
@@ -577,7 +580,10 @@ var LIBRARY_OBJECT = (function () {
                                 yield_val = Math.round(data.yield[0][0]).toFixed(2);
                             }
                             document.getElementById("tooltip11").innerHTML = "County: " + county_name + "<br>" + "Yield: " + yield_val + " kg/ha";
+
+
                             map1.addOverlay(overlayt);
+
                         } else {
                             console.log("error");
                         }
@@ -609,7 +615,6 @@ var LIBRARY_OBJECT = (function () {
                 });
             } catch (e) {
             }
-            hideLoader();
         });
 
 
@@ -1026,12 +1031,14 @@ var LIBRARY_OBJECT = (function () {
             }).fail(function () {
                 vectorLayer1.setSource(null);
                 alert('No data for selected forecast');
+                document.getElementById("outlook_loading").style.display = "none";
+                document.getElementById("tooltip11").innerHTML = "County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
+
                 generate_dssat_graph("#outlook_dssat_plotter_1", "-1", $("#outlook_var_table3 option:selected").val());
                 generate_dssat_graph("#outlook_dssat_plotter_2", "-1", $("#outlook_var_table4 option:selected").val());
 
             });
             $("#outlook_seasonyear").trigger('change');
-            hideLoader();
         }).change();
 
         const unique = (value, index, self) => {
@@ -1059,6 +1066,7 @@ var LIBRARY_OBJECT = (function () {
                             vectorLayer1.setSource(null);
                             // vectorLayer2.setSource(null);
                             add_dssat(data, data1.scale);
+
                         } else {
                             alert('Cannot retrieve map');
                         }
@@ -1076,7 +1084,6 @@ var LIBRARY_OBJECT = (function () {
 
             generate_dssat_graph("#outlook_dssat_plotter_1", gid, $("#outlook_var_table3 option:selected").val());
             generate_dssat_graph("#outlook_dssat_plotter_2", gid, $("#outlook_var_table4 option:selected").val());
-            hideLoader();
 
         }
 
@@ -1172,7 +1179,7 @@ var LIBRARY_OBJECT = (function () {
     }
 
     function hideLoader() {
-        $('#outlook_loading').hide();
+        document.getElementById("outlook_loading").style.display = "none";
     }
 
     function hideLoader1() {
@@ -1193,7 +1200,7 @@ var LIBRARY_OBJECT = (function () {
 
 
 // Strongly recommended: Hide loader after 20 seconds, even if the page hasn't finished loading
-//setTimeout(hideLoader, 5 * 500);
+//setTimeout(hideLoader, 10 * 1000);
     return public_interface;
 
 }());
