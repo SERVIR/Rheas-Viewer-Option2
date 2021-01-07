@@ -1164,7 +1164,8 @@ var LIBRARY_OBJECT = (function () {
         // }));
         //   vectorLayer2.setZIndex(4);
         //     map1.addLayer(vectorLayer2);
-
+                hideLoader();
+hideLoader();
         map1.crossOrigin = 'anonymous';
 
         select_interaction = new ol.interaction.Select({
@@ -1217,7 +1218,6 @@ var LIBRARY_OBJECT = (function () {
         });
         selectedFeatures = select_interaction.getFeatures();
         selectedFeatures.on('add', function (event) {
-            showLoader();
 
             var feature = event.target.item(0);
             try {
@@ -1231,7 +1231,6 @@ var LIBRARY_OBJECT = (function () {
                 var json_object = '{"type":"Polygon","coordinates":[' + JSON.stringify(result) + ']}';
                 // $("#poly-lat-lon").val(json_object);
                 $("#poly-lat-lon").val(JSON.stringify(result));
-                console.log($("#poly-lat-lon").val());
                 var gid = feature.getProperties().countyid;//feature.getId().split(".")[1];
                 $("#gid").val(gid);
                 var schema = $("#schema_table option:selected").val();
@@ -1324,7 +1323,7 @@ var LIBRARY_OBJECT = (function () {
 
             } catch (e) {
             }
-            hideLoader();
+          //  hideLoader();
         });
 
         var hoverFeatures = hoverInteraction.getFeatures();
@@ -1498,7 +1497,7 @@ var LIBRARY_OBJECT = (function () {
         var div = document.getElementById("vic_leg");
         div.innerHTML =
             '<img src="' + link + '" alt="legend">';
-        hideLoader();
+    //    hideLoader();
 
     };
 
@@ -2139,6 +2138,8 @@ var LIBRARY_OBJECT = (function () {
                 alert("There was a problem with the selected variable, please try selecting another map variable");
                 hideLoader();
             });
+                           // hideLoader();
+
         }
 
         $("#map_var_table").change(function () {
@@ -2427,6 +2428,7 @@ var LIBRARY_OBJECT = (function () {
 
         });
         $("#seasonyear").change(function () {
+
             var startdate = "", enddate = "";
             if ($("#myonoffswitch").is(':checked')) {
                 startdate = $("#seasonyear option:selected").val() + "-03-01";

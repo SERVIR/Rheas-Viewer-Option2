@@ -133,7 +133,7 @@ class Rheasvieweroption2(TethysAppBase):
           UrlMap(
                 name='dsyield1',
                 url='rheasvieweroption2/vicdssat/get-schema-yield',
-                controller='rheasvieweroption2.ajax_controllers.get_schema_yield'
+                controller='rheasvieweroption2.ajax_controllers.get_schema_yield_home'
           ),
           UrlMap(
                 name='dsyield1',
