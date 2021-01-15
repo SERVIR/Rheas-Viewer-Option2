@@ -473,8 +473,8 @@ def get_outlook_dssat_ens_values(cur, ccode, schema, ensemble, startdate, enddat
     try:
         gid=get_gid(cur,schema,ccode)
         if len(startdate) > 9 and len(enddate) > 9:
-            sql = """SELECT distinct DATE_PART('week',fdate) weeknumber,fdate FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat_all.ensemble={2} AND fdate>={3} AND fdate<={4}""".format(
-                schema, "'" + ccode + "'", int(ensemble),  "'" + startdate + "'",  "'" + enddate + "'")
+            sql = """SELECT distinct DATE_PART('week',fdate) weeknumber,fdate FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND fdate>={2} AND fdate<={3}""".format(
+                schema, "'" + ccode + "'",  "'" + startdate + "'",  "'" + enddate + "'")
         else:
             sql = """SELECT distinct DATE_PART('week',fdate) weeknumber,fdate FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat_all.ensemble={2}""".format(
                 schema, "'" + ccode + "'", int(ensemble))

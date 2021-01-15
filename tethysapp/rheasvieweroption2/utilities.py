@@ -113,11 +113,14 @@ def parse_outlook_dssat_data(data,sdate,edate,gid):
         with open( path.join(path.dirname(path.realpath(__file__)), 'public/data/LTA_allGIDs/LTA_'+str(gid)+'.csv'), mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             line_count = 0
+            weeknums=[]
             for csvrow in csv_reader:
                 for row in data:
-                    d=datetime.strptime(row[1].strftime("%Y-%m-%d"), '%Y-%m-%d')
-                    if int(csvrow["fdate"]) == row[0] and d<enddate and d>startdate:
-                        time_stamp = time.mktime(row[1].timetuple()) * 1000
+                    d = datetime.strptime(row[1].strftime("%Y-%m-%d"), '%Y-%m-%d')
+                    wee = d.isocalendar()[1]
+                    if wee not in weeknums and int(csvrow["fdate"]) == wee and d<enddate and d>startdate:
+                        weeknums.append(wee)
+                        time_stamp = time.mktime(d.timetuple()) * 1000
                         lai_cum = lai_cum + float(csvrow["Avg_LAI"] ) # cum
                         lai = float(csvrow["Avg_LAI"])
                         gwad = float(csvrow["Avg_GWAD"])
