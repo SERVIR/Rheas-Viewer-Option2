@@ -1220,7 +1220,7 @@ hideLoader();
         selectedFeatures.on('add', function (event) {
 
             var feature = event.target.item(0);
-            try {
+        try {
 
                 $(".error").html('');
 
