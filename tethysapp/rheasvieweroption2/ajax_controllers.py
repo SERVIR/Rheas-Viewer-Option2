@@ -65,12 +65,12 @@ def get_start_end_dates(request):
 
     if request.is_ajax() and request.method == 'POST':
         info = request.POST
-        #db = info.get("db")
         db = info.get("db")
+        schema = info.get("schema")
         #region = info.get("region")
 
         try:
-            dates = get_start_end(db)
+            dates = get_start_end(db,schema)
             return_obj["startdate"] = dates[0][0]
             return_obj["enddate"] = dates[0][1]
 

@@ -518,8 +518,9 @@ def calculate_yield_main(db, schema, startdate, enddate,ensemble,gid):
                                                                cfg.connection['password']))
         cur = conn.cursor()
         storename = str(db + '_' + schema + '_agareas')
-        ensemble_sql = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT dssat_all.ensemble,MAX(dssat_all.gwad) FROM {0}.dssat dssat,{0}.dssat_all dssat_all WHERE dssat.gid=dssat_all.gid and ccode={1} AND fdate>={2} AND fdate<={3} GROUP BY dssat_all.ensemble) as foo""".format(
-            schema, "'" + gid + "'", "'" + startdate + "'", "'" + enddate + "'")
+        ensemble_sql = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT dssat_all.ensemble,MAX(dssat_all.gwad) 
+                            FROM {0}.dssat dssat,{0}.dssat_all dssat_all WHERE dssat.gid=dssat_all.gid and ccode={1} AND fdate>={2} AND fdate<={3} 
+                            GROUP BY dssat_all.ensemble) as foo""".format(schema, "'" + gid + "'", "'" + startdate + "'", "'" + enddate + "'")
         cur.execute(ensemble_sql)
         ensemble_data = cur.fetchall()
         medianens = ensemble_data[math.ceil(len(ensemble_data) / 2) - 1]
@@ -527,7 +528,7 @@ def calculate_yield_main(db, schema, startdate, enddate,ensemble,gid):
         if len(startdate) > 9:
             # sql="""select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss,(select gid,max(fdate) maxdate from {0}.dssat_all where fdate>={1} and fdate<={2} group by gid) y,{0}.yield z
             #    where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate and y.gwad<>0 group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
-            sql = """select * from get_yield({0},{1},{2})""".format("'" + db+ "'","'''" + startdate+ "'''","'''" + enddate+ "'''");
+            sql = """select * from get_yield({0},{1},{2})""".format("'" + schema+ "'","'''" + startdate+ "'''","'''" + enddate+ "'''");
             #print(sql)
 
         else:
@@ -822,13 +823,13 @@ def get_times(variable):
 
 
 @csrf_exempt
-def get_start_end(db):
+def get_start_end(db,schema):
     dates=[]
     try:
         conn = psycopg2.connect("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
-        sql = """select min(planting),max(last_harvest) from {0}.yield""".format(db)
+        sql = """select min(planting),max(last_harvest) from {0}.yield""".format(schema)
         cur.execute(sql)
         data = cur.fetchall()
         conn.close()

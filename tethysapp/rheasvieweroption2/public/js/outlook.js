@@ -109,7 +109,7 @@ var LIBRARY_OBJECT = (function () {
     init_dropdown = function () {
         $("#outlook").css("background-color", "#ddd");
         $("#outlook").css("color", "black");
-        $("#outlook_db_table").select2();
+        // $("#outlook_db_table").select2();
         $("#outlook_ens_table").select2();
         $("#outlook_typeofchart").select2();
         $("#outlook_var_table3").select2();
@@ -408,15 +408,15 @@ var LIBRARY_OBJECT = (function () {
 
 
                     ajax_update_database("get-county", {
-                        "db": $("#outlook_db_table option:selected").val(),
+                        "db": "rheas",
                         "gid": level,
-                        "schema": $("#outlook_db_table option:selected").val(),
+                        "schema": "current_forecast",
                     }).done(function (data1) {
                         if ("success" in data1) {
 
                             ajax_update_database("get-schema-yield-gid1", {
-                                "db": $("#outlook_db_table option:selected").val(),
-                                "schema": $("#outlook_db_table option:selected").val(),
+                                "db":"rheas",
+                                "schema":"current_forecast",
                                 "gid": level,
                                 "startdate": sdate,
                                 "enddate": edate
@@ -552,7 +552,7 @@ var LIBRARY_OBJECT = (function () {
                 $("#poly-lat-lon").val(JSON.stringify(result));
                 var gid = feature.getProperties().countyid;//feature.getId().split(".")[1];
                 $("#gid").val(gid);
-                var schema = $("#outlook_db_table option:selected").val();
+                var schema = "current_forecast";
 
                 if (gid == undefined) gid = "KE041";
                 $("#schema").val(schema);
@@ -568,8 +568,8 @@ var LIBRARY_OBJECT = (function () {
 
                     document.getElementById("tooltip11").innerHTML = "County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
                     ajax_update_database("get-schema-yield-gid1", {
-                        "db": $("#outlook_db_table option:selected").val(),
-                        "schema": $("#outlook_db_table option:selected").val(),
+                        "db": "rheas",
+                        "schema": "current_forecast",
                         "gid": gid,
                         "startdate": sdate,
                         "enddate": edate
@@ -593,9 +593,9 @@ var LIBRARY_OBJECT = (function () {
                     document.getElementById("tooltip11").style.display = 'none';
                 }
                 var json_obj = {
-                    "db": $("#outlook_db_table option:selected").val(),
+                    "db": "rheas",
                     "gid": gid,
-                    "schema": $("#outlook_db_table option:selected").val()
+                    "schema":"current_forecast"
                 };
                 var xhr = ajax_update_database("get-ensemble", json_obj);
                 xhr.done(function (data) {
@@ -645,15 +645,16 @@ var LIBRARY_OBJECT = (function () {
         var county_name = "";
         var ens = $("#outlook_ens_table option:selected").val();
         ajax_update_database("get-start-end-dates", {
-            "db": $("#outlook_db_table option:selected").val(),
+            "db": "rheas",
+            "schema": "current_forecast",
         }).done(function (data) {
             if ("success" in data) {
                 sdate = data.startdate;
                 edate = data.enddate;
                 var jsonObj = {
-                    "db": $("#outlook_db_table option:selected").val(),
+                    "db": "rheas",
                     "gid": gid,
-                    "schema": $("#outlook_db_table option:selected").val(),
+                    "schema": "current_forecast",
                     "ensemble": ens,
                     "startdate": sdate,
                     "enddate": edate
@@ -664,9 +665,9 @@ var LIBRARY_OBJECT = (function () {
                 if (gid == undefined || gid == "") gid = 'KE041';
 
                 ajax_update_database("get-county", {
-                    "db": $("#outlook_db_table option:selected").val(),
+                    "db": "rheas",
                     "gid": gid,
-                    "schema": $("#outlook_db_table option:selected").val()
+                    "schema": "current_forecast"
                 }).done(function (data) {
                     if ("success" in data) {
                         county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
@@ -1015,12 +1016,14 @@ var LIBRARY_OBJECT = (function () {
         //db = $("#outlook_db_table option:selected").val();
         db = $("#outlook_db_table option:selected").val();
         region = $("#outlook_db_table option:selected").val();
+        $("#outlook_db_table").val("current_forecast");
         $("#outlook_db_table").trigger('change');
         $("#outlook_db_table").change(function () {
             showLoader();
             $("#outlook_schema_table").html('');
             ajax_update_database("get-start-end-dates", {
-                "db": $("#outlook_db_table option:selected").val(),
+                "db": "rheas",
+                "schema":"current_forecast",
             }).done(function (data) {
                 if ("success" in data) {
                     console.log(data);
@@ -1049,8 +1052,8 @@ var LIBRARY_OBJECT = (function () {
             showLoader();
             if (gid == undefined) gid = 'KE041';
             ajax_update_database("get-schema-yield", {
-                "db": $("#outlook_db_table option:selected").val(),
-                "schema": $("#outlook_db_table option:selected").val(),
+                "db": "rheas",
+                "schema": "current_forecast",
                 "startdate": sdate,
                 "enddate": edate,
                 "ensemble": $("#outlook_ens_table").val(),
@@ -1104,9 +1107,9 @@ var LIBRARY_OBJECT = (function () {
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
             var xhr = ajax_update_database("get-ens-values", {
-                "db": $("#outlook_db_table option:selected").val(),
+                "db": "rheas",
                 "gid": gid,
-                "schema": $("#outlook_db_table option:selected").val(),
+                "schema": "current_forecast",
                 "ensemble": ens,
                 "startdate": sdate,
                 "enddate": edate

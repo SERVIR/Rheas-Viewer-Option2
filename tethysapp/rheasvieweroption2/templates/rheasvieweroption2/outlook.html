@@ -62,7 +62,7 @@
                       <br>
                        Opacity: <input id="dssatslider" type="range" min="0" max="1" step="0.1" value="0.7"/>
 
-                     <br>
+
                         <label style="display: none">
                      Select a schema of interest
                      </label>
@@ -71,10 +71,10 @@
                         <option value="{{schema}}">{{schema}}</option>
                         {% endfor %}
                      </select>
-                           <label style="display: block">
+                           <label style="display: none">
                      Select a database of interest
                      </label>
-                     <select class="db_table" name="db_table" id="outlook_db_table" style="width: 100%;display: block;">
+                     <select class="db_table" name="db_table" id="outlook_db_table" style="width: 100%;display: none;">
                         {% for db in rheas_dbs %}
                         <option value="{{db}}">{{db}}</option>
                         {% endfor %}

@@ -121,21 +121,21 @@ def parse_outlook_dssat_data(data,sdate,edate,gid):
                     if wee not in weeknums and int(csvrow["fdate"]) == wee and d<enddate and d>startdate:
                         weeknums.append(wee)
                         time_stamp = time.mktime(d.timetuple()) * 1000
-                        lai_cum = lai_cum + float(csvrow["Avg_LAI"] ) # cum
-                        lai = float(csvrow["Avg_LAI"])
-                        gwad = float(csvrow["Avg_GWAD"])
-                        lai_sd=float(csvrow["SD_LAI"])
-                        gwad_sd=float(csvrow["SD_GWAD"])
-                        ninetyfifthpercent_LAI=lai+lai_sd
+                        lai_cum = round(lai_cum + float(csvrow["Avg_LAI"] ),2) # cum
+                        lai = round(float(csvrow["Avg_LAI"]),2)
+                        gwad = round(float(csvrow["Avg_GWAD"]))
+                        lai_sd=round(float(csvrow["SD_LAI"]),2)
+                        gwad_sd=round(float(csvrow["SD_GWAD"]))
+                        ninetyfifthpercent_LAI=round(lai+lai_sd,2)
                         if lai-lai_sd<0:
                             fifthpercent_LAI=0.0
                         else:
-                            fifthpercent_LAI=lai-lai_sd
-                        ninetyfifthpercent_GWAD =gwad+gwad_sd
+                            fifthpercent_LAI=round(lai-lai_sd,2)
+                        ninetyfifthpercent_GWAD =round(gwad+gwad_sd)
                         if gwad-gwad_sd<0:
                             fifthpercent_GWAD = 0.0
                         else:
-                            fifthpercent_GWAD =gwad-gwad_sd
+                            fifthpercent_GWAD =round(gwad-gwad_sd)
                         lai_series.append([time_stamp, lai])
                         lai_cum_series.append([time_stamp, lai_cum])
                         lai_95series.append([time_stamp, ninetyfifthpercent_LAI])
