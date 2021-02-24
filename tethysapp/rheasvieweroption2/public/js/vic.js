@@ -1387,7 +1387,7 @@ hideLoader();
     }
 
     add_vic = function () {
-        showLoader();
+       // showLoader();
         map.removeLayer(wms_layer);
         //    var layer_name = wms_workspace + ":" + data.storename;
 
@@ -2016,7 +2016,7 @@ hideLoader();
 
         function mapchange()
         {
-                        showLoader();
+                        //showLoader();
             var variable = $("#map_var_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
             variable2 = $("#var_table2 option:selected").val();
@@ -2143,7 +2143,7 @@ hideLoader();
         }
 
         $("#map_var_table").change(function () {
-            showLoader();
+            //showLoader();
             var variable = $("#map_var_table option:selected").val();
             variable1 = $("#var_table1 option:selected").val();
             variable2 = $("#var_table2 option:selected").val();
@@ -2325,7 +2325,7 @@ hideLoader();
 
 
         $("#time_table").change(function () {
-            showLoader();
+           // showLoader();
             var variable = $("#map_var_table option:selected").val();
             var date = $("#time_table option:selected").val();
 
