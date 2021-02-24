@@ -1275,7 +1275,7 @@ hideLoader();
 
                             county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
                             if (data.yield[0]) {
-                                yield_val = Math.round(data.yield[0][2]).toFixed(2);
+                                yield_val = Math.round(data.yield[0]).toFixed(2);
 
 
                             }
