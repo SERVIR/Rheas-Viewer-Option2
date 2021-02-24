@@ -16,7 +16,7 @@ var baseLayer = new ol.layer.Tile({
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
             })});
 var view = new ol.View({
-	center: ol.proj.transform([39.669571, -4.036878], 'EPSG:4326', 'EPSG:3857'),
+	center: ol.proj.transform([39.669571, -1.036878], 'EPSG:4326', 'EPSG:3857'),
 	projection: projection,
 	zoom: 6
 });
