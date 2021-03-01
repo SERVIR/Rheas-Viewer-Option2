@@ -1247,11 +1247,11 @@ hideLoader();
                     var startdate = '';
                     var enddate = '';
                     if ($("#myonoffswitch").is(':checked')) {
-                        startdate = $("#seasonyear option:selected").val() + "-05-01";
+                        startdate = $("#seasonyear option:selected").val() + "-03-01";
                         enddate = $("#seasonyear option:selected").val() + "-08-31";
                     } else {
-                        startdate = $("#seasonyear option:selected").val() + "-09-01";
-                        enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+                   startdate = (parseInt($("#seasonyear option:selected").val()) - 1) + "-10-01";
+                enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
 
                     }
                     if (gid == undefined) gid = 'KE041';
@@ -1338,8 +1338,8 @@ hideLoader();
                     startdate = $("#seasonyear option:selected").val() + "-05-01";
                     enddate = $("#seasonyear option:selected").val() + "-08-31";
                 } else {
-                    startdate = $("#seasonyear option:selected").val() + "-09-01";
-                    enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-07-31";
+                   startdate = (parseInt($("#seasonyear option:selected").val()) - 1) + "-10-01";
+                enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
 
                 }
                 // ajax_update_database("get-schema-yield-gid", {
@@ -1412,50 +1412,50 @@ hideLoader();
         var style = variable_data[index]["color1"] + variable_data[index]["color2"] + variable_data[index]["color3"];
         var range = parseFloat(variable_data[index]["min"]).toFixed(2) + "," + parseFloat(variable_data[index]["max"]).toFixed(2);
         switch (variable) {
-            case "albedo":
-            case "baseflow":
-            case "cdi":
-            case "dryspells":
-            case "evap":
-            case "par":
-            case "rel_humid":
+            case "albedo_4":
+            case "baseflow_4":
+            case "cdi_4":
+            case "dryspells_4":
+            case "evap_4":
+            case "par_4":
+            case "rel_humid_4":
                 style = variable;
                 break;
-            case "grnd_flux":
-            case "latent":
-            case "sensible":
-            case "net_short":
-            case "net_long":
+            case "grnd_flux_4":
+            case "latent_4":
+            case "sensible_4":
+            case "net_short_4":
+            case "net_long_4":
                 style = "net_short_long";
                 break;
-            case "pet_short":
-            case "pet_tall":
-            case "transp_veg":
+            case "pet_short_4":
+            case "pet_tall_4":
+            case "transp_veg_4":
                 style = "evap";
                 break;
-            case "prec":
-            case "rainf":
-            case "runoff":
+            case "prec_4":
+            case "rainf_4":
+            case "runoff_4":
                 style = "prec_rainf";
                 break;
-            case "rootmoist":
+            case "rootmoist_4":
                 style = "avg_temp_rev";
                 break;
-            case "tmax":
-            case "tmin":
-            case "surf_temp":
+            case "tmax_4":
+            case "tmin_4":
+            case "surf_temp_4":
                 style = "avg_temp";
                 break;
-            case "severity":
+            case "severity_4":
                 style = "dryspells";
                 break;
-            case "smdi":
-            case "spi1":
-            case "spi3":
-            case "spi6":
-            case "sri1":
-            case "sri3":
-            case "sri6":
+            case "smdi_4":
+            case "spi1_4":
+            case "spi3_4":
+            case "spi6_4":
+            case "sri1_4":
+            case "sri3_4":
+            case "sri6_4":
                 style = "cwg";
                 break;
             default:
@@ -1473,9 +1473,9 @@ hideLoader();
         // }
         var time = $("#time_table option:selected").val() + 'T00:00:00.000Z';
         wms_source = new ol.source.ImageWMS({
-            url: 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc?',
+            url: 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable.split('_')[0] + '_final.nc?',
             params: {
-                'LAYERS': variable,
+                'LAYERS': variable.split('_')[0],
                 'TIME': time,
                 'STYLES': 'boxfill/' + style,
                 'ABOVEMAXCOLOR': 'extend',
@@ -1492,7 +1492,7 @@ hideLoader();
 
         wms_layer.setZIndex(2);
         map.addLayer(wms_layer);
-        var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
+        var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable.split('_')[0] + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable.split('_')[0] + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
         //   map.addLayer(boundaryLayer);
         var div = document.getElementById("vic_leg");
         div.innerHTML =
@@ -1535,11 +1535,11 @@ hideLoader();
         var startdate = '';
         var enddate = '';
         if ($("#myonoffswitch").is(':checked')) {
-            startdate = $("#seasonyear option:selected").val() + "-03-01";
+            startdate =  $("#seasonyear option:selected").val() + "-03-01";
             enddate = $("#seasonyear option:selected").val() + "-08-31";
         } else {
-            startdate = $("#seasonyear option:selected").val() + "-10-01";
-            enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+            startdate = (parseInt($("#seasonyear option:selected").val()) - 1)+ "-10-01";
+            enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
 
         }
         var county_name = "";
@@ -1548,7 +1548,7 @@ hideLoader();
         var jsonObj = {
             "db": $("#db_table option:selected").val(),
             "gid": gid,
-            "schema": $("#schema_table option:selected").val(),
+            "schema": 'kenya_longterm',
             "ensemble": ens,
             "startdate": startdate,
             "enddate": enddate
@@ -1560,7 +1560,7 @@ hideLoader();
         ajax_update_database("get-county", {
             "db": $("#db_table option:selected").val(),
             "gid": gid,
-            "schema": $("#schema_table option:selected").val()
+            "schema":'kenya_longterm'
         }).done(function (data) {
             if ("success" in data) {
                 county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
@@ -1745,19 +1745,22 @@ hideLoader();
         var startdate = '';
         var enddate = '';
         var dst = $("#time_table option:selected").text();
-        //  if ($("#myonoffswitch").is(':checked') ) {
+        if ($("#myonoffswitch").is(':checked') ) {
 
+        //
+        // startdate = dst;
+        // enddate = (parseInt(dst.substr(0, 4))) + "-12-31";
 
-        startdate = dst;
-        enddate = (parseInt(dst.substr(0, 4))) + "-12-31";
-        // } else {
-        //     startdate = dst;
-        //     enddate = (parseInt(dst.substr(0,4)) + 1) + "-02-28";
-        // }
+                 startdate = parseInt(dst.substr(0, 4))+ "-03-01";
+                        enddate =parseInt(dst.substr(0, 4)) + "-08-31";
+        } else {
+          startdate = (parseInt(dst.substr(0, 4))-1)  + "-10-01";
+            enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
+        }
         var json = {
             "db": $("#db_table option:selected").val(),
             "region": $("#schema_table option:selected").val(),
-            "variable": variable,
+            "variable": variable.split('_')[0],
             "point": point,
             "startdate": startdate,
             "enddate": enddate,
@@ -1943,7 +1946,7 @@ hideLoader();
                         //
                         // }
                     });
-                    if ($("#db_table option:selected").val() == "rheas") $("#schema_table").val("ken_tethys2");
+                    if ($("#db_table option:selected").val() == "rheas") $("#schema_table").val("kenya_longterm");
                     $("#schema_table").trigger('change');
 
 
@@ -1984,7 +1987,7 @@ hideLoader();
             $("#var_table2").html('');
             
             ajax_update_database("variables", {
-                "region": $("#schema_table option:selected").val(),
+                "region": "kenya_longterm",
                 "db": $("#db_table option:selected").val()
             }).done(function (data) {
                 if ("success" in data) {
@@ -1993,11 +1996,11 @@ hideLoader();
                     fillVarTables("#var_table1", vars);
 
                     fillVarTables("#var_table2", vars);
-                    $("#var_table1").val("rainf").attr("selected", "selected");
-                    $("#var_table2").val("evap").attr("selected", "selected");
+                    $("#var_table1").val("rainf_4").attr("selected", "selected");
+                    $("#var_table2").val("evap_4").attr("selected", "selected");
                     fillVarTables("#map_var_table", vars);
 
-                    $("#map_var_table").val("evap").attr("selected", "selected");
+                    $("#map_var_table").val("evap_4").attr("selected", "selected");
                   //  $("#map_var_table").trigger('change');
                     mapchange();
                     $("#time_table").trigger('change');
@@ -2014,16 +2017,18 @@ hideLoader();
             return self.indexOf(value) === index
         };
 
+
         function mapchange()
         {
                         //showLoader();
             var variable = $("#map_var_table option:selected").val();
+            console.log(variable);
             variable1 = $("#var_table1 option:selected").val();
             variable2 = $("#var_table2 option:selected").val();
 
             var xhr = ajax_update_database("dates", {
                 "variable": variable,
-                "region": $("#schema_table option:selected").val(),
+                "region": "kenya_longterm",
                 "db": $("#db_table option:selected").val()
             });
 
@@ -2043,16 +2048,16 @@ hideLoader();
                     uniquedts.forEach(function (date, i) {
                         var new_option = new Option(date, date);
                         if (i == 0) {
-                            if (date == '2014') {
-                                new_option.selected = true;
-                                flagg = false;
-                            }
+                            // if (date == '2014') {
+                                 new_option.selected = true;
+                            //     flagg = false;
+                            // }
                             $("#seasonyear").append(new_option);
                         } else {
-                            if (date == '2014') {
-                                new_option.selected = true;
-                                flagg = false;
-                            }
+                            // if (date == '2014') {
+                            //     new_option.selected = true;
+                            //     flagg = false;
+                            // }
                             $("#seasonyear").append(new_option);
                         }
                     });
@@ -2062,11 +2067,11 @@ hideLoader();
                         startdate = $("#seasonyear option:selected").val() + "-03-01";
                         enddate = $("#seasonyear option:selected").val() + "-08-31";
                     } else {
-                        startdate = $("#seasonyear option:selected").val() + "-10-01";
-                        enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+                        startdate =  (parseInt($("#seasonyear option:selected").val()) - 1) + "-10-01";
+                        enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
 
                     }
-                  $("#time_table").val("2014-11-05").change();
+                  $("#time_table").trigger('change');
 
                     if ($("#seasonyear option:selected").val() != undefined) {
 
@@ -2170,16 +2175,16 @@ hideLoader();
                     uniquedts.forEach(function (date, i) {
                         var new_option = new Option(date, date);
                         if (i == 0) {
-                            if (date == '2014') {
-                                new_option.selected = true;
-                                flagg = false;
-                            }
+                            // if (date == '2014') {
+                                 new_option.selected = true;
+                            //     flagg = false;
+                            // }
                             $("#seasonyear").append(new_option);
                         } else {
-                            if (date == '2014') {
-                                new_option.selected = true;
-                                flagg = false;
-                            }
+                            // if (date == '2014') {
+                            //     new_option.selected = true;
+                            //     flagg = false;
+                            // }
                             $("#seasonyear").append(new_option);
                         }
                     });
@@ -2189,8 +2194,8 @@ hideLoader();
                         startdate = $("#seasonyear option:selected").val() + "-03-01";
                         enddate = $("#seasonyear option:selected").val() + "-08-31";
                     } else {
-                        startdate = $("#seasonyear option:selected").val() + "-10-01";
-                        enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+                        startdate = (parseInt($("#seasonyear option:selected").val()) - 1)  + "-10-01";
+                        enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
 
                     }
                   $("#time_table").trigger('change');
@@ -2328,7 +2333,6 @@ hideLoader();
            // showLoader();
             var variable = $("#map_var_table option:selected").val();
             var date = $("#time_table option:selected").val();
-
             var index = find_var_index(variable, variable_data);
             var min = variable_data[index]["min"];
             var max = variable_data[index]["max"];
@@ -2382,8 +2386,8 @@ hideLoader();
                 startdate = $("#seasonyear option:selected").val() + "-03-01";
                 enddate = $("#seasonyear option:selected").val() + "-08-31";
             } else {
-                startdate = $("#seasonyear option:selected").val() + "-10-01";
-                enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+                startdate = (parseInt($("#seasonyear option:selected").val()) - 1) + "-10-01";
+                enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
 
             }
             if ($("#seasonyear option:selected").val() != undefined) {
@@ -2434,12 +2438,12 @@ hideLoader();
                 startdate = $("#seasonyear option:selected").val() + "-03-01";
                 enddate = $("#seasonyear option:selected").val() + "-08-31";
             } else {
-                startdate = $("#seasonyear option:selected").val() + "-10-01";
-                enddate = (parseInt($("#seasonyear option:selected").val()) + 1) + "-02-28";
+                startdate = (parseInt($("#seasonyear option:selected").val()) - 1) + "-10-01";
+                enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
 
             }
 
-            $("#time_table").val($("#seasonyear option:selected").val() + "-01-01").change();
+            $("#time_table").val($("#seasonyear option:selected").val() + "-02-01").change();
             if ($("#seasonyear option:selected").val() != undefined) {
 
         if (gid == undefined || gid == "") gid = 'KE041';

@@ -45,6 +45,7 @@ def get_dates(request):
     if request.is_ajax() and request.method == 'POST':
         info = request.POST
         #db = info.get("db")
+        print(info.get("variable"))
         variable = info.get("variable")
         #region = info.get("region")
 
@@ -53,7 +54,7 @@ def get_dates(request):
 
             return_obj["variable"] = variable
             #return_obj["region"] = region
-            return_obj["dates"] = dates
+            return_obj["dates"] = sorted(dates, reverse=True)
             return_obj["success"] = "success"
 
         except Exception as e:

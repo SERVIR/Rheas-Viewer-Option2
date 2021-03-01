@@ -58,8 +58,8 @@ var vicmap = new ol.Map({
 
 
 	var xhr = ajax_update_database("dates", {
-		"variable": "spi3",
-		"region": "ken_tethys2",
+		"variable": "spi3_4",
+		"region": "kenya_longterm",
 		"db": "rheas"
 	});
 
@@ -68,7 +68,7 @@ var vicmap = new ol.Map({
 			var dates = data.dates;
 			date = dates.slice(-1);
 			document.getElementById("vicdate").innerHTML = dates.slice(-1);
-			var index = find_var_index("spi3", var_data);
+			var index = find_var_index("spi3_4", var_data);
 			var min = var_data[index]["min"];
 			var max = var_data[index]["max"];
 
@@ -119,7 +119,7 @@ function add_dssat(data, scale) {
 }
 var xhr = ajax_update_database("get-schema-yield-home", {
 	"db": "rheas",
-	"schema": "ken_tethys2",
+	"schema": "kenya_longterm",
 	  "startdate": "",
                     "enddate": "",
 
@@ -395,7 +395,7 @@ get_styling = function (variable, scale, cv) {
 };
 add_wms_vic = function (data,date) {
 	try {
-		var variable = "spi3";
+		var variable = "spi3_4";
 		var index = find_var_index(variable, var_data);
 
 		var style = "cwg";
@@ -403,9 +403,9 @@ add_wms_vic = function (data,date) {
 
 		var time = date + 'T00:00:00.000Z';
 		wms_source = new ol.source.ImageWMS({
-			url: 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc?',
+			url: 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable.split('_')[0] + '_final.nc?',
 			params: {
-				'LAYERS': variable,
+				'LAYERS': variable.split('_')[0],
 				'TIME': time,
 				'STYLES': 'boxfill/' + style,
 				'ABOVEMAXCOLOR': 'extend',
@@ -422,7 +422,7 @@ add_wms_vic = function (data,date) {
 
 		wms_layer.setZIndex(2);
 		vicmap.addLayer(wms_layer);
-		var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/' + variable + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
+		var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable.split('_')[0] + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable.split('_')[0] + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
 		//   map.addLayer(boundaryLayer);
 		var div = document.getElementById("vic_legend");
 		div.innerHTML =

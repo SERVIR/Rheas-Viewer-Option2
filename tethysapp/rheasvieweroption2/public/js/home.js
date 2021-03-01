@@ -98,7 +98,7 @@ var init_all = function () {
                             //
                             // }
                         });
-                    if($("#db_table option:selected").val()=="rheas")$("#schema_table").val("ken_tethys2");
+                    if($("#db_table option:selected").val()=="rheas")$("#schema_table").val("kenya_longterm");
                         $("#schema_table").trigger('change');
 
 
@@ -135,14 +135,16 @@ var init_all = function () {
         }).change();
 
         $("#schema_table").change(function () {
+            console.log("in schema chage");
             $("#var_table1").html('');
             $("#var_table2").html('');
             ajax_update_database("variables", {
-                "region": $("#schema_table option:selected").val(),
+                "region": "kenya_longterm",
                 "db": $("#db_table option:selected").val()
             }).done(function (data) {
                 if ("success" in data) {
                     var vars = data.variables;
+                    console.log(vars);
 
                     fillVarTables("#var_table1", vars);
 

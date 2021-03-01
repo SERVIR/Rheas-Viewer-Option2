@@ -716,7 +716,6 @@ def get_vic_polygon_working(s_var, geom_data, sd, ed):
             chunks=True,
         )
         clipped = ds.rio.clip(geometries=poly_geojson, crs=4326)
-        print('.............................')
     except Exception as e:
         print(e)
     print(clipped)
@@ -724,6 +723,7 @@ def get_vic_polygon_working(s_var, geom_data, sd, ed):
 
 @csrf_exempt
 def get_vic_polygon(s_var, geom_data, sd, ed):
+
     json_obj = {}
     # Defining the lat and lon from the coords string
     poly_geojson = Polygon(json.loads(geom_data))
@@ -737,12 +737,13 @@ def get_vic_polygon(s_var, geom_data, sd, ed):
     arr = ks_sat3[s_var].sel(time=slice(sd, ed)).sel(lon=slice(miny, maxy), lat=slice(minx, maxx)).mean(
         dim=['lat', 'lon'])
     # print(arr.time.values)
-    # print(arr.values)
     vals = arr.values.tolist()
+
     values = [0 if ((s_var == 'prec' or s_var == 'evap') and float(val) < 0) else round(float(val), 3) for val in vals]
     times2 = arr['time'].dt.strftime('%Y-%m-%d %H:%M:%S').values.tolist()
     times1 = [datetime.strptime(t, '%Y-%m-%d %H:%M:%S') for t in times2]
     times = [(calendar.timegm(st.utctimetuple()) * 1000) for st in times1]
+
     ts_plot = [[i, j] for i, j in zip(times, values)]
     return ts_plot
 
@@ -805,8 +806,7 @@ def get_vic_polygon_old(s_var, geom_data, sd, ed):
 @csrf_exempt
 def get_times(variable):
     times = []
-    infile = os.path.join(cfg.data['path'], variable + "_final.nc")
-
+    infile = os.path.join(cfg.data['path'], variable.split('_')[0] + "_final.nc")
     nc_fid = netCDF4.Dataset(infile, 'r', )  # Reading the netCDF file
     time = nc_fid.variables['time'][:]
     lis_var = nc_fid.variables
@@ -830,6 +830,7 @@ def get_start_end(db,schema):
                                                                cfg.connection['password']))
         cur = conn.cursor()
         sql = """select min(planting),max(last_harvest) from {0}.yield""".format(schema)
+        print(sql)
         cur.execute(sql)
         data = cur.fetchall()
         conn.close()

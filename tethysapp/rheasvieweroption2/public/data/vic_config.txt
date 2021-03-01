@@ -1,64 +1,64 @@
 Variable_Id|Variable_Display_Name|Description|Units
-net_long|Net Downward Longwave Flux|W/m2|blue|yellow|crimson|-110.63|-28.21
-net_short|Net Downward Shortwave Flux|W/m2|blue|yellow|crimson|104.17|274.74
-snow_cover|Fractional Area of Snow Cover|fraction|crimson|yellow|blue|0|0
-salbedo|Snow Pack Albedo|fraction|blue|crimson|white|0|0
-snow_depth|Depth of Snow Pack|cm|crimson|yellow|blue|0|0
-tdepth|Depth of Thawing Fronts |cm for each thawing front|crimson|blue|white|0|0
-fdepth|Depth of Freezing Fronts |cm for each freezing front|crimson|blue|white|0|0
-rootmoist|Root Zone Soil Moisture|mm|crimson|yellow|blue|0|974.01
-smfrozfrac|Fraction of Soil Moisture (by mass)|ice, for each soil layer|crimson|blue|white|0|0
-smliqfrac|Fraction of Soil Moisture (by mass)|liquid, for each soil layer|crimson|blue|white|0|0
-snow_canopy|Snow Interception Storage in Canopy|mm|crimson|blue|white|0|0
-soil_moist|Soil Total Moisture Content|mm for each soil layer|crimson|yellow|blue|6.41|46.35
-soil_wet|Vertical Average of (Soil Moisture - Wilting Point)/(Maximum Soil Moisture - Wilting Point)|mm/mm|crimson|blue|white|0|0
-surfstor|Storage of Liquid Water and Ice (not snow) on Surface (ponding)|mm|crimson|yellow|blue|0|0
-swe|Snow Water Equivalent in Snow Pack (including vegetation-intercepted snow)|mm|crimson|yellow|blue|0|0
-wdew|Total Moisture Interception Storage in Canopy|mm|crimson|blue|white|0|0
-baseflow|Baseflow out of the bottom layer|mm|crimson|yellow|blue|0.01|1.37
-evap|Total Net Evaporation|mm|crimson|yellow|green|0|13.55
-evap_bare|Net Evaporation from Bare Soil|mm|crimson|green|white|0|0
-evap_canop|Net Evaporation from Canopy Interception|mm|crimson|green|white|0|0
-rainf|Rainfall|mm|crimson|yellow|blue|0.01|54.58
-refreeze|Refreezing of Water in the Snow|mm|blue|crimson|white|0|0
-runoff|Surface Runoff|mm|crimson|yellow|blue|0.01|5.66
-snow_melt|Snow Melt|mm|crimson|blue|white|0|0
-snowf|Snowfall|mm|crimson|yellow|blue|0|0
-transp_veg|Net Transpiration from Vegetation|mm|crimson|yellow|blue|0|6.87
-albedo|Average Surface Albedo|fraction|crimson|yellow|green|0.11|0.2
-baresoilt|Bare Soil Surface Temperature|C|blue|yellow|crimson|0|0
-snow_surf_temp|Snow Surface Temperature|C|blue|yellow|crimson|0|0
-soil_temp|Soil Temperature|C for each soil layer|blue|yellow|crimson|17.69|30.09
-surf_temp|Average Surface Temperature|C|blue|yellow|crimson|13.8|30.18
-vegt|Average Vegetation Canopy Temperature|C|blue|yellow|crimson|0|0
-advection|Advected Energy|W/m2|yellow|crimson|black|0|0
-grnd_flux|Net Heat Flux into Ground|W/m2|blue|yellow|crimson|-5.22|3.26
-latent|Net Upward Latent Heat Flux|W/m2|blue|yellow|crimson|0|382.48
-melt_energy|Energy of Fusion (melting) in Snowpack|W/m2|yellow|crimson|black|0|0
-rfrz_energy|Net Energy used to refreeze liquid water in snowpack|W/m2|yellow|crimson|black|0|0
-sensible|Net Upward sensible heat flux|W/m2 |blue|yellow|crimson|0|0
-air_temp|Air Temperature|C|blue|yellow|crimson|0|0
-longwave|Incoming Longwave|W/m2|blue|yellow|crimson|0|0
-shortwave|Incoming Shortwave|W/m2|blue|yellow|crimson|0|0
-spi|Standardized Precipitation Index|Index|crimson|blue|white|0|0
-spi1|1 Month Standardized Precipitation Index|Index|crimson|blue|white|-3.09|3.09
-spi6|6 Month Standardized Precipitation Index|Index|crimson|blue|white|-2.66|2.09
-spi3|3 Month Standardized Precipitation Index|Index|crimson|blue|white|-3.09|2.77
-spi12|12 Month Standardized Precipitation Index|Index|crimson|blue|white|-2.65|2.04
-sri|Standardized Runoff Index|Index|crimson|blue|white|0|0
-sri1|1 Month Standardized Runoff Index|Index|crimson|blue|white|-3.09|3.09
-sri3|3 Month Standardized Runoff Index|Index|crimson|blue|white|-3.79|3.09
-sri6|6 Month Standardized Runoff Index|Index|crimson|blue|white|-2.94|2.13
-sri12|12 Month Standardized Runoff Index|Index|crimson|blue|white|-2.78|1.96
-dryspells|Dry Spells|Number of Dry Spells|blue|crimson|white|1|22
-tmax|Temperature Max|k|blue|yellow|crimson|20.72|37.82
-tmin|Temperature Min|k|blue|yellow|crimson|10.74|25.79
-severity|Drought Severity|Index|crimson|blue|white|0.47|99.36
-smdi|Soil Moisture Deficit Index|Index|crimson|blue|white|-2.02|1.99
-cdi|Composite Drought Index|Index|crimson|blue|white|0|4
-par|PAR|Index|crimson|blue|green|0|0
-pet_natveg|Potential Evapotranspiration of Natural Vegetation|Index|crimson|yellow|green|0.8|10.38
-pet_short|Potential Evapotranspiration of Short Vegetation|Index|crimson|yellow|green|2.22|8.33
-pet_tall|Potential Evapotranspiration of Tall Vegetation|Index|crimson|yellow|green|2.5|11.53
-rel_humid|Relative Humidity|Index|blue|yellow|crimson|18.36|82.48
+net_long_4|Net Downward Longwave Flux|W/m2|blue|yellow|crimson|-110.63|-28.21
+net_short_4|Net Downward Shortwave Flux|W/m2|blue|yellow|crimson|104.17|274.74
+snow_cover_4|Fractional Area of Snow Cover|fraction|crimson|yellow|blue|0|0
+salbedo_4|Snow Pack Albedo|fraction|blue|crimson|white|0|0
+snow_depth_4|Depth of Snow Pack|cm|crimson|yellow|blue|0|0
+tdepth_4|Depth of Thawing Fronts |cm for each thawing front|crimson|blue|white|0|0
+fdepth_4|Depth of Freezing Fronts |cm for each freezing front|crimson|blue|white|0|0
+rootmoist_4|Root Zone Soil Moisture|mm|crimson|yellow|blue|0|974.01
+smfrozfrac_4|Fraction of Soil Moisture (by mass)|ice, for each soil layer|crimson|blue|white|0|0
+smliqfrac_4|Fraction of Soil Moisture (by mass)|liquid, for each soil layer|crimson|blue|white|0|0
+snow_canopy_4|Snow Interception Storage in Canopy|mm|crimson|blue|white|0|0
+soil_moist_4|Soil Total Moisture Content|mm for each soil layer|crimson|yellow|blue|6.41|46.35
+soil_wet_4|Vertical Average of (Soil Moisture - Wilting Point)/(Maximum Soil Moisture - Wilting Point)|mm/mm|crimson|blue|white|0|0
+surfstor_4|Storage of Liquid Water and Ice (not snow) on Surface (ponding)|mm|crimson|yellow|blue|0|0
+swe_4|Snow Water Equivalent in Snow Pack (including vegetation-intercepted snow)|mm|crimson|yellow|blue|0|0
+wdew_4|Total Moisture Interception Storage in Canopy|mm|crimson|blue|white|0|0
+baseflow_4|Baseflow out of the bottom layer|mm|crimson|yellow|blue|0.01|1.37
+evap_4|Total Net Evaporation|mm|crimson|yellow|green|0|13.55
+evap_bare_4|Net Evaporation from Bare Soil|mm|crimson|green|white|0|0
+evap_canop_4|Net Evaporation from Canopy Interception|mm|crimson|green|white|0|0
+rainf_4|Rainfall|mm|crimson|yellow|blue|0.01|54.58
+refreeze_4|Refreezing of Water in the Snow|mm|blue|crimson|white|0|0
+runoff_4|Surface Runoff|mm|crimson|yellow|blue|0.01|5.66
+snow_melt_4|Snow Melt|mm|crimson|blue|white|0|0
+snowf_4|Snowfall|mm|crimson|yellow|blue|0|0
+transp_veg_4|Net Transpiration from Vegetation|mm|crimson|yellow|blue|0|6.87
+albedo_4|Average Surface Albedo|fraction|crimson|yellow|green|0.11|0.2
+baresoilt_4|Bare Soil Surface Temperature|C|blue|yellow|crimson|0|0
+snow_surf_temp_4|Snow Surface Temperature|C|blue|yellow|crimson|0|0
+soil_temp_4|Soil Temperature|C for each soil layer|blue|yellow|crimson|17.69|30.09
+surf_temp_4|Average Surface Temperature|C|blue|yellow|crimson|13.8|30.18
+vegt_4|Average Vegetation Canopy Temperature|C|blue|yellow|crimson|0|0
+advection_4|Advected Energy|W/m2|yellow|crimson|black|0|0
+grnd_flux_4|Net Heat Flux into Ground|W/m2|blue|yellow|crimson|-5.22|3.26
+latent_4|Net Upward Latent Heat Flux|W/m2|blue|yellow|crimson|0|382.48
+melt_energy_4|Energy of Fusion (melting) in Snowpack|W/m2|yellow|crimson|black|0|0
+rfrz_energy_4|Net Energy used to refreeze liquid water in snowpack|W/m2|yellow|crimson|black|0|0
+sensible_4|Net Upward sensible heat flux|W/m2 |blue|yellow|crimson|0|0
+air_temp_4|Air Temperature|C|blue|yellow|crimson|0|0
+longwave_4|Incoming Longwave|W/m2|blue|yellow|crimson|0|0
+shortwave_4|Incoming Shortwave|W/m2|blue|yellow|crimson|0|0
+spi_4|Standardized Precipitation Index|Index|crimson|blue|white|0|0
+spi1_4|1 Month Standardized Precipitation Index|Index|crimson|blue|white|-3.09|3.09
+spi6_4|6 Month Standardized Precipitation Index|Index|crimson|blue|white|-2.66|2.09
+spi3_4|3 Month Standardized Precipitation Index|Index|crimson|blue|white|-3.09|2.77
+spi12_4|12 Month Standardized Precipitation Index|Index|crimson|blue|white|-2.65|2.04
+sri_4|Standardized Runoff Index|Index|crimson|blue|white|0|0
+sri1_4|1 Month Standardized Runoff Index|Index|crimson|blue|white|-3.09|3.09
+sri3_4|3 Month Standardized Runoff Index|Index|crimson|blue|white|-3.79|3.09
+sri6_4|6 Month Standardized Runoff Index|Index|crimson|blue|white|-2.94|2.13
+sri12_4|12 Month Standardized Runoff Index|Index|crimson|blue|white|-2.78|1.96
+dryspells_4|Dry Spells|Number of Dry Spells|blue|crimson|white|1|22
+tmax_4|Temperature Max|k|blue|yellow|crimson|20.72|37.82
+tmin_4|Temperature Min|k|blue|yellow|crimson|10.74|25.79
+severity_4|Drought Severity|Index|crimson|blue|white|0.47|99.36
+smdi_4|Soil Moisture Deficit Index|Index|crimson|blue|white|-2.02|1.99
+cdi_4|Composite Drought Index|Index|crimson|blue|white|0|4
+par_4|PAR|Index|crimson|blue|green|0|0
+pet_natveg_4|Potential Evapotranspiration of Natural Vegetation|Index|crimson|yellow|green|0.8|10.38
+pet_short_4|Potential Evapotranspiration of Short Vegetation|Index|crimson|yellow|green|2.22|8.33
+pet_tall_4|Potential Evapotranspiration of Tall Vegetation|Index|crimson|yellow|green|2.5|11.53
+rel_humid_4|Relative Humidity|Index|blue|yellow|crimson|18.36|82.48
 dssat|dssat|Index|crimson|yellow|green|0|1
