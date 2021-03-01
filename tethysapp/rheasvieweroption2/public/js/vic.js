@@ -1472,10 +1472,13 @@ hideLoader();
         //     range = Math.round(variable_data[index]["min"]).toFixed(2) + "," + Math.round(variable_data[index]["max"]).toFixed(2);
         // }
         var time = $("#time_table option:selected").val() + 'T00:00:00.000Z';
+        var lastIndex = variable.lastIndexOf("_");
+
+         variable = variable.substring(0, lastIndex);
         wms_source = new ol.source.ImageWMS({
-            url: 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable.split('_')[0] + '_final.nc?',
+            url: 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable + '_final.nc?',
             params: {
-                'LAYERS': variable.split('_')[0],
+                'LAYERS': variable,
                 'TIME': time,
                 'STYLES': 'boxfill/' + style,
                 'ABOVEMAXCOLOR': 'extend',
@@ -1492,7 +1495,7 @@ hideLoader();
 
         wms_layer.setZIndex(2);
         map.addLayer(wms_layer);
-        var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable.split('_')[0] + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable.split('_')[0] + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
+        var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
         //   map.addLayer(boundaryLayer);
         var div = document.getElementById("vic_leg");
         div.innerHTML =
@@ -1757,10 +1760,13 @@ hideLoader();
           startdate = (parseInt(dst.substr(0, 4))-1)  + "-10-01";
             enddate = (parseInt($("#seasonyear option:selected").val())) + "-02-28";
         }
+              var lastIndex = variable.lastIndexOf("_");
+
+         variable = variable.substring(0, lastIndex);
         var json = {
             "db": $("#db_table option:selected").val(),
             "region": $("#schema_table option:selected").val(),
-            "variable": variable.split('_')[0],
+            "variable": variable,
             "point": point,
             "startdate": startdate,
             "enddate": enddate,

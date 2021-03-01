@@ -806,7 +806,7 @@ def get_vic_polygon_old(s_var, geom_data, sd, ed):
 @csrf_exempt
 def get_times(variable):
     times = []
-    infile = os.path.join(cfg.data['path'], variable.split('_')[0] + "_final.nc")
+    infile = os.path.join(cfg.data['path'], variable.rsplit('_', 1)[0]+ "_final.nc")
     nc_fid = netCDF4.Dataset(infile, 'r', )  # Reading the netCDF file
     time = nc_fid.variables['time'][:]
     lis_var = nc_fid.variables
