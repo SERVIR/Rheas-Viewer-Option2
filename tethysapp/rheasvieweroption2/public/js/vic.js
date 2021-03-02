@@ -1411,6 +1411,9 @@ hideLoader();
 
         var style = variable_data[index]["color1"] + variable_data[index]["color2"] + variable_data[index]["color3"];
         var range = parseFloat(variable_data[index]["min"]).toFixed(2) + "," + parseFloat(variable_data[index]["max"]).toFixed(2);
+   var lastIndex = variable.lastIndexOf("_");
+
+         var st_variable = variable.substring(0, lastIndex);
         switch (variable) {
             case "albedo_4":
             case "baseflow_4":
@@ -1419,7 +1422,7 @@ hideLoader();
             case "evap_4":
             case "par_4":
             case "rel_humid_4":
-                style = variable;
+                style = st_variable;
                 break;
             case "grnd_flux_4":
             case "latent_4":
