@@ -530,7 +530,6 @@ def calculate_yield_main(db, schema, startdate, enddate,ensemble,gid):
             #    where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate and y.gwad<>0 group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
             sql = """select * from get_yield({0},{1},{2})""".format("'" + schema+ "'","'''" + startdate+ "'''","'''" + enddate+ "'''");
             #print(sql)
-
         else:
             sql = """select dss.ccode,max(avg_yield) yield,max(x.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss, (select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z
                          where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate group by dss.ccode,x.fdate order by x.fdate""".format(
