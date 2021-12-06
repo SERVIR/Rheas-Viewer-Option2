@@ -66,8 +66,8 @@ var vicmap = new ol.Map({
 	xhr.done(function (data) {
 		if ("success" in data) {
 			var dates = data.dates;
-			date = dates.slice(-1);
-			document.getElementById("vicdate").innerHTML = dates.slice(-1);
+			date = dates[0];
+			document.getElementById("vicdate").innerHTML = dates[0];
 			var index = find_var_index("spi3_4", var_data);
 			var min = var_data[index]["min"];
 			var max = var_data[index]["max"];
