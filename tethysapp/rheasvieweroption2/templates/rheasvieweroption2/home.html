@@ -29,6 +29,11 @@
       <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
       <script src='https://kit.fontawesome.com/a076d05399.js'></script>
             <script src="{% static 'rheasvieweroption2/js/boundaries.js' %}" type="text/javascript"></script>
+        <script src="{% static 'rheasvieweroption2/js/TZA.js' %}" type="text/javascript"></script>
+       <script src="{% static 'rheasvieweroption2/js/RWA.js' %}" type="text/javascript"></script>
+       <script src="{% static 'rheasvieweroption2/js/UGA.js' %}" type="text/javascript"></script>
+       <script src="{% static 'rheasvieweroption2/js/ETH.js' %}" type="text/javascript"></script>
+       <script src="{% static 'rheasvieweroption2/js/KEN.js' %}" type="text/javascript"></script>
              <script src="{% static 'rheasvieweroption2/js/vic.js' %}" type="text/javascript"></script>
 
 
@@ -64,22 +69,28 @@
                <div class="panel panel-primary" id="paramspanel"  style="height:100%;">
                   <div class="panel-heading">Parameters</div>
                   <div class="panel-body"  id="params">
-                     <label style="display: none">
-                     Select a database of interest
+                      <div style="background:#bbb7b7;
+    padding: 10px;
+    border: 2px #0000000a solid;
+    border-radius: 15px;">
+                     <label>
+                     Select country
                      </label>
-                     <select class="db_table" name="db_table" id="db_table" style="width: 100%;display: none;">
-                        {% for db in rheas_dbs %}
-                        <option value="{{db}}">{{db}}</option>
-                        {% endfor %}
+                     <select class="db_table" name="db_table" id="db_table" style="width: 100%;">
+<!--                        {% for db in rheas_dbs %}-->
+                        <option value="{{rheas_dbs.1}}">{{rheas_dbs.1}}</option>
+<!--                        {% endfor %}-->
                      </select>
-                     <label style="display: none">
-                     Select a schema of interest
+                     <label>
+                     Select schema
                      </label>
-                     <select class="schema_table" name="schema_table" id="schema_table" style="width: 100%;display: none;">
+                     <select class="schema_table" name="schema_table" id="schema_table" style="width: 100%;">
                         {% for schema in db_schemas %}
                         <option value="{{schema}}">{{schema}}</option>
                         {% endfor %}
                      </select>
+                      </div>
+                      <br>
                <div style="background:#bbb7b7;
     padding: 10px;
     border: 2px #0000000a solid;

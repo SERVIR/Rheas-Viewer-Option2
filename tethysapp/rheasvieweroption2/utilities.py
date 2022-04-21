@@ -19,7 +19,7 @@ def get_var_tiff(dir,var,prefix):
             data = open(dir + file, 'rb').read()  # Read the file
             name = file.split("_")
             store_name = prefix+"_"+var+"_"+name[1]
-            request_url = '{0}workspaces/{1}/coveragestores/{2}/file.geotiff'.format("http://tethys.servirglobal.net:8181/geoserver/rest/", "rheas",
+            request_url = '{0}workspaces/{1}/coveragestores/{2}/file.geotiff'.format("http://tethys.servirglobal.net:8181/geoserver/rest/", "kenya",
                                                                                      store_name)  # Creating the rest url
             requests.put(request_url, headers=headers, data=data,
                          auth=("admin", "geoserver"))  # Creating the resource on the geoserver. Update the credentials based on your own geoserver instance.
@@ -37,8 +37,8 @@ def get_var_dates(dir,var,prefix):
 
 def parse_bbox(response):
     olurl = response['result']['wms']['openlayers']
-    parsedkml = urlparse.urlparse(olurl)
-    bbox = urlparse.parse_qs(parsedkml.query)['bbox']
+    parsedkml = urllib.urlparse.urlparse(olurl)
+    bbox = urllib.urlparse.parse_qs(parsedkml.query)['bbox']
 
     print(bbox)
 

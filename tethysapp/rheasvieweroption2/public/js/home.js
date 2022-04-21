@@ -152,7 +152,7 @@ var init_all = function () {
                     $("#var_table1").val("rainf").attr("selected", "selected");
                     $("#var_table2").val("evap").attr("selected", "selected");
                     fillVarTables("#map_var_table", vars);
-                    $("#map_var_table").val("evap").attr("selected", "selected");
+                    $("#map_var_table").val("soil_moist").attr("selected", "selected");
                     $("#map_var_table").trigger('change');
                     //     $("#var_table1").trigger('change');
                     //   $("#var_table2").trigger('change');

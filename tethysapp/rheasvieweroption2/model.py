@@ -259,21 +259,25 @@ def get_outlook_database():
 @csrf_exempt
 def get_schemas(db):
     try:
+        print(db)
+        print("dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
+                                                               cfg.connection['password']))
         conn = psycopg2.connect(
             "dbname={0} user={1} host={2} password={3}".format(db, cfg.connection['user'], cfg.connection['host'],
                                                                cfg.connection['password']))
         cur = conn.cursor()
-        sql = """select schema_name from information_schema.schemata"""
+        sql = """select schema_name from information_schema.schemata where catalog_name ='{0}' and schema_name like '%_n_25'""".format(db)
         cur.execute(sql)
         data = cur.fetchall()
         regions = [region[0] for region in data if region[0] not in default_schemas]
         conn.close()
         regions.sort()
+        print(regions)
         return regions
 
     except Exception as e:
-        print(e)
-        return e
+        pass
+        return []
 
 
 @csrf_exempt
@@ -457,6 +461,7 @@ def get_dssat_ens_values(cur, gid, schema, ensemble, startdate, enddate):
         if len(startdate) > 9 and len(enddate) > 9:
             sql = """SELECT fdate,dssat_all.wsgd,dssat_all.lai,dssat_all.gwad FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat_all.ensemble={2} AND fdate>={3} AND fdate<={4} ORDER BY fdate;""".format(
                 schema, "'" + gid + "'", int(ensemble), str(startdate), str(enddate))
+            print(sql)
         else:
             sql = """SELECT fdate,dssat_all.wsgd,dssat_all.lai,dssat_all.gwad FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat_all.ensemble={2} ORDER BY fdate;""".format(
                 schema, "'" + gid + "'", int(ensemble))
@@ -505,6 +510,7 @@ def get_county_name(db, gid, schema):
                                                            cfg.connection['password']))
     cur = conn.cursor()
     sql = """SELECT DISTINCT cname FROM {0}.dssat WHERE ccode={1}""".format(schema, "'" + gid + "'")
+    print(sql)
     cur.execute(sql)
     data = cur.fetchall()
     return data
@@ -805,7 +811,10 @@ def get_vic_polygon_old(s_var, geom_data, sd, ed):
 @csrf_exempt
 def get_times(variable):
     times = []
-    infile = os.path.join(cfg.data['path'], variable.rsplit('_', 1)[0]+ "_final.nc")
+    print(variable)
+    infile = os.path.join(cfg.data['path'], variable.rsplit('_', 1)[0]+'_'+ variable.rsplit('_', 1)[1]+ "_final.nc")
+    print(infile)
+
     nc_fid = netCDF4.Dataset(infile, 'r', )  # Reading the netCDF file
     time = nc_fid.variables['time'][:]
     lis_var = nc_fid.variables

@@ -13,6 +13,8 @@ def get_db_schemas(request):
             info = request.POST
             db = info.get("db")
             schemas = get_schemas(db)
+            print("fdfdfd")
+            print(schemas)
             return_obj["schemas"] = schemas
             return_obj["success"] = "success"
         except Exception as e:
@@ -44,18 +46,15 @@ def get_dates(request):
 
     if request.is_ajax() and request.method == 'POST':
         info = request.POST
-        #db = info.get("db")
-        print(info.get("variable"))
+        #db = info.get("db")```
         variable = info.get("variable")
         #region = info.get("region")
 
         try:
             dates = get_times(variable)
-
             return_obj["variable"] = variable
             #return_obj["region"] = region
             return_obj["dates"] = sorted(dates, reverse=True)
-            return_obj["success"] = "success"
 
         except Exception as e:
             return_obj["error"] = e
