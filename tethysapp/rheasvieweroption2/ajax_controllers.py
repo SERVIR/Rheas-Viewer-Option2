@@ -74,7 +74,7 @@ def get_start_end_dates(request):
             return_obj["startdate"] = dates[0][0]
             return_obj["enddate"] = dates[0][1]
 
-            return_obj["success"] = "success"
+          #  return_obj["success"] = "success"
 
         except Exception as e:
             return_obj["error"] = e

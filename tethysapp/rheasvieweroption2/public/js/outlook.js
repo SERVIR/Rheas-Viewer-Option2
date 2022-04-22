@@ -408,15 +408,15 @@ var LIBRARY_OBJECT = (function () {
 
 
                     ajax_update_database("get-county", {
-                        "db": "rheas",
+                        "db": "kenya",
                         "gid": level,
-                        "schema": "current_forecast",
+                        "schema": "ken_n_25",
                     }).done(function (data1) {
                         if ("success" in data1) {
 
                             ajax_update_database("get-schema-yield-gid1", {
-                                "db":"rheas",
-                                "schema":"current_forecast",
+                                "db":"kenya",
+                                "schema":"ken_n_25",
                                 "gid": level,
                                 "startdate": sdate,
                                 "enddate": edate
@@ -552,7 +552,7 @@ var LIBRARY_OBJECT = (function () {
                 $("#poly-lat-lon").val(JSON.stringify(result));
                 var gid = feature.getProperties().countyid;//feature.getId().split(".")[1];
                 $("#gid").val(gid);
-                var schema = "current_forecast";
+                var schema = "ken_n_25";
 
                 if (gid == undefined) gid = "KE041";
                 $("#schema").val(schema);
@@ -568,8 +568,8 @@ var LIBRARY_OBJECT = (function () {
 
                     document.getElementById("tooltip11").innerHTML = "County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
                     ajax_update_database("get-schema-yield-gid1", {
-                        "db": "rheas",
-                        "schema": "current_forecast",
+                        "db": "kenya",
+                        "schema": "ken_n_25",
                         "gid": gid,
                         "startdate": sdate,
                         "enddate": edate
@@ -593,9 +593,9 @@ var LIBRARY_OBJECT = (function () {
                     document.getElementById("tooltip11").style.display = 'none';
                 }
                 var json_obj = {
-                    "db": "rheas",
+                    "db": "kenya",
                     "gid": gid,
-                    "schema":"current_forecast"
+                    "schema":"ken_n_25"
                 };
                 var xhr = ajax_update_database("get-ensemble", json_obj);
                 xhr.done(function (data) {
@@ -645,16 +645,16 @@ var LIBRARY_OBJECT = (function () {
         var county_name = "";
         var ens = $("#outlook_ens_table option:selected").val();
         ajax_update_database("get-start-end-dates", {
-            "db": "rheas",
-            "schema": "current_forecast",
+            "db": "kenya",
+            "schema": "ken_n_25",
         }).done(function (data) {
-            if ("success" in data) {
+            if (data) {
                 sdate = data.startdate;
                 edate = data.enddate;
                 var jsonObj = {
-                    "db": "rheas",
+                    "db": "kenya",
                     "gid": gid,
-                    "schema": "current_forecast",
+                    "schema": "ken_n_25",
                     "ensemble": ens,
                     "startdate": sdate,
                     "enddate": edate
@@ -665,9 +665,9 @@ var LIBRARY_OBJECT = (function () {
                 if (gid == undefined || gid == "") gid = 'KE041';
 
                 ajax_update_database("get-county", {
-                    "db": "rheas",
+                    "db": "kenya",
                     "gid": gid,
-                    "schema": "current_forecast"
+                    "schema": "ken_n_25"
                 }).done(function (data) {
                     if ("success" in data) {
                         county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
@@ -1016,14 +1016,14 @@ var LIBRARY_OBJECT = (function () {
         //db = $("#outlook_db_table option:selected").val();
         db = $("#outlook_db_table option:selected").val();
         region = $("#outlook_db_table option:selected").val();
-        $("#outlook_db_table").val("current_forecast");
+        $("#outlook_db_table").val("ken_n_25");
         $("#outlook_db_table").trigger('change');
         $("#outlook_db_table").change(function () {
             showLoader();
             $("#outlook_schema_table").html('');
             ajax_update_database("get-start-end-dates", {
-                "db": "rheas",
-                "schema":"current_forecast",
+                "db": "kenya",
+                "schema":"ken_n_25",
             }).done(function (data) {
                 if ("success" in data) {
                     console.log(data);
@@ -1052,8 +1052,8 @@ var LIBRARY_OBJECT = (function () {
             showLoader();
             if (gid == undefined) gid = 'KE041';
             ajax_update_database("get-schema-yield", {
-                "db": "rheas",
-                "schema": "current_forecast",
+                "db": "kenya",
+                "schema": "ken_n_25",
                 "startdate": sdate,
                 "enddate": edate,
                 "ensemble": $("#outlook_ens_table").val(),
@@ -1107,9 +1107,9 @@ var LIBRARY_OBJECT = (function () {
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
             var xhr = ajax_update_database("get-ens-values", {
-                "db": "rheas",
+                "db": "kenya",
                 "gid": gid,
-                "schema": "current_forecast",
+                "schema": "ken_n_25",
                 "ensemble": ens,
                 "startdate": sdate,
                 "enddate": edate

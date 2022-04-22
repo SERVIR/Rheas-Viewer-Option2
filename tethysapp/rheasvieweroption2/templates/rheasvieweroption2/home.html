@@ -77,9 +77,9 @@
                      Select country
                      </label>
                      <select class="db_table" name="db_table" id="db_table" style="width: 100%;">
-<!--                        {% for db in rheas_dbs %}-->
-                        <option value="{{rheas_dbs.1}}">{{rheas_dbs.1}}</option>
-<!--                        {% endfor %}-->
+                        {% for db in rheas_dbs %}
+                        <option value="{{db}}">{{db}}</option>
+                        {% endfor %}
                      </select>
                      <label>
                      Select schema
@@ -335,9 +335,9 @@
             </div>
                  </div>
               </div>
-            <div id="variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-geoserver-url="{{geoserver_wms_url}}" data-rest-url="{{geoserver_rest_url}}" data-geoserver-workspace="{{geoserver_workspace}}"></div>
+            <div id="variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-thredds-url="{{thredds_wms_url}}"></div>
 <!--          <script src="{% static 'rheasvieweroption2/js/home.js' %}" type="text/javascript"></script>-->
-            <div id="dssat" class="dssat" name="dssat" style="display:none;" data-geoserver-url="{{geoserver_wfs_url}}" data-geoserver-workspace="{{geoserver_workspace}}" data-rest-url="{{geoserver_rest_url}}"></div>
+            <div id="dssat" class="dssat" name="dssat" style="display:none;"></div>
 
 <!--              <script src="{% static 'rheasvieweroption2/js/generategraphs.js' %}" type="text/javascript"></script>-->
 <!--                <script src="{% static 'rheasvieweroption2/js/dssatmap.js' %}" type="text/javascript"></script>-->

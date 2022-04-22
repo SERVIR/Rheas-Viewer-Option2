@@ -3,8 +3,6 @@ import json
 from tethysapp.rheasvieweroption2.utilities import *
 import math
 import tethysapp.rheasvieweroption2.config as cfg
-from geoserver.catalog import Catalog
-import geoserver
 import shapely
 import shapely.geometry
 from shapely.geometry import Polygon
@@ -231,7 +229,7 @@ def get_database():
         cur.execute(sql)
         data = cur.fetchall()
 
-        rheas_dbs = [db[0] for db in data if 'postgres' not in db[0]]
+        rheas_dbs = [db[0] for db in data if ('postgres'  not in db[0]) and ('rheas' not in db[0]) and ('benson' not in db[0])]
         conn.close()
         return rheas_dbs
 
@@ -461,7 +459,7 @@ def get_dssat_ens_values(cur, gid, schema, ensemble, startdate, enddate):
         if len(startdate) > 9 and len(enddate) > 9:
             sql = """SELECT fdate,dssat_all.wsgd,dssat_all.lai,dssat_all.gwad FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat_all.ensemble={2} AND fdate>={3} AND fdate<={4} ORDER BY fdate;""".format(
                 schema, "'" + gid + "'", int(ensemble), str(startdate), str(enddate))
-            print(sql)
+            #print(sql)
         else:
             sql = """SELECT fdate,dssat_all.wsgd,dssat_all.lai,dssat_all.gwad FROM {0}.dssat_all dssat_all,{0}.dssat dssat WHERE dssat.gid=dssat_all.gid and ccode={1} AND dssat_all.ensemble={2} ORDER BY fdate;""".format(
                 schema, "'" + gid + "'", int(ensemble))
@@ -510,7 +508,6 @@ def get_county_name(db, gid, schema):
                                                            cfg.connection['password']))
     cur = conn.cursor()
     sql = """SELECT DISTINCT cname FROM {0}.dssat WHERE ccode={1}""".format(schema, "'" + gid + "'")
-    print(sql)
     cur.execute(sql)
     data = cur.fetchall()
     return data
@@ -838,7 +835,6 @@ def get_start_end(db,schema):
                                                                cfg.connection['password']))
         cur = conn.cursor()
         sql = """select min(planting),max(last_harvest) from {0}.yield""".format(schema)
-        print(sql)
         cur.execute(sql)
         data = cur.fetchall()
         conn.close()

@@ -4,7 +4,6 @@
         map,
         popup,
         $plotModal,
-        rest_url,
         db,
         region,
         db_enabled,
@@ -49,11 +48,9 @@ var init_all = function () {
         var $var_element = $("#variable");
         variable_data = $var_element.attr('data-variable-info');
         variable_data = JSON.parse(variable_data);
-        wms_url = $var_element.attr('data-geoserver-url');
-        rest_url = $var_element.attr('data-rest-url');
+        wms_url = $var_element.attr('data-thredds-url');
         db_enabled=$var_element.attr('data-db-enabled');
         // wms_url = JSON.parse(wms_url);
-        wms_workspace = $var_element.attr('data-geoserver-workspace');
         // wms_workspace = JSON.parse(wms_workspace);
 
     };
