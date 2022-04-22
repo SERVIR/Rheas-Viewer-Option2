@@ -192,12 +192,11 @@ vicmap.on('singleclick', function (evt) {
 	for (i = 0; i < k.length; i++) {
 		var isinside = inside(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'), k[i].geometry.coordinates[0][0]);
 		if (isinside == true) {
-			console.log(k[i].properties)
 			var name =k[i].properties["NAME_0"];
 			sessionStorage.setItem("country", name);
 						sessionStorage.setItem("db", "ken_n_25");
 
-			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			window.location.href="https://tethys.servirglobal.net/apps/rheasvieweroption2/vicdssat/";
 			break;
 
 		}
@@ -211,7 +210,7 @@ vicmap.on('singleclick', function (evt) {
 			sessionStorage.setItem("country", name);
 						sessionStorage.setItem("db", "rwa_n_25");
 
-			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			window.location.href="https://tethys.servirglobal.net/apps/rheasvieweroption2/vicdssat/";
 			break;
 
 		}
@@ -225,7 +224,7 @@ vicmap.on('singleclick', function (evt) {
 			sessionStorage.setItem("country", name);
 						sessionStorage.setItem("db", "tza_n_25");
 
-			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			window.location.href="https://tethys.servirglobal.net/apps/rheasvieweroption2/vicdssat/";
 			break;
 
 		}
@@ -239,7 +238,7 @@ vicmap.on('singleclick', function (evt) {
 			sessionStorage.setItem("country", name);
 						sessionStorage.setItem("db", "eth_n_25");
 
-			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			window.location.href="https://tethys.servirglobal.net/rheasvieweroption2/vicdssat/";
 			break;
 
 		}
@@ -252,7 +251,7 @@ vicmap.on('singleclick', function (evt) {
 			var name =k[i].properties["NAME_0"];
 			sessionStorage.setItem("country", name);
 			sessionStorage.setItem("db", "uga_n_25");
-			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			window.location.href="https://tethys.servirglobal.net/apps/rheasvieweroption2/vicdssat/";
 			break;
 
 		}
