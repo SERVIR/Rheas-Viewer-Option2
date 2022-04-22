@@ -134,6 +134,11 @@ var LIBRARY_OBJECT = (function () {
         $(".typeofchart").select2();
 
         $("#ens_table").append(new Option("Median", "avg")).trigger('change');
+        if (sessionStorage.getItem("country")==null || sessionStorage.getItem("db")==null ){}
+        else{
+            $("#db_table").val(sessionStorage.getItem("country").toLowerCase());
+            $("#db_table").trigger('change');
+        }
     };
 
     init_map = function () {
@@ -154,9 +159,29 @@ var LIBRARY_OBJECT = (function () {
 
         var fullScreenControl = new ol.control.FullScreen();
 
-
-        var view = new ol.View({
+var view;
+        var view_ken = new ol.View({
             center: ol.proj.transform([39.669571, -1.036878], 'EPSG:4326', 'EPSG:3857'),
+            projection: projection,
+            zoom: 6
+        });
+        var view_tza = new ol.View({
+            center: ol.proj.transform([34.7, -5.9], 'EPSG:4326', 'EPSG:3857'),
+            projection: projection,
+            zoom: 6
+        });
+        var view_eth = new ol.View({
+            center: ol.proj.transform([39.5, 9.1], 'EPSG:4326', 'EPSG:3857'),
+            projection: projection,
+            zoom: 6
+        });
+           var view_rwa = new ol.View({
+            center: ol.proj.transform([29.9, -1.9], 'EPSG:4326', 'EPSG:3857'),
+            projection: projection,
+            zoom: 6
+        });
+              var view_uga = new ol.View({
+            center: ol.proj.transform([32.4, 1.7], 'EPSG:4326', 'EPSG:3857'),
             projection: projection,
             zoom: 6
         });
@@ -272,6 +297,22 @@ var LIBRARY_OBJECT = (function () {
             }
         });
 
+         if(sessionStorage.getItem("country")&&sessionStorage.getItem("country").toLowerCase()=="tanzania") {
+           view = view_tza;
+        }
+         else if(sessionStorage.getItem("country")&&sessionStorage.getItem("country").toLowerCase()=="rwanda") {
+           view = view_rwa;
+        }
+          else if(sessionStorage.getItem("country")&&sessionStorage.getItem("country").toLowerCase()=="uganda") {
+           view = view_uga;
+        }
+           else if(sessionStorage.getItem("country")&&sessionStorage.getItem("country").toLowerCase()=="ethiopia") {
+           view = view_eth;
+        }
+           else{
+            view = view_ken;
+
+        }
         map = new ol.Map({
             target: document.getElementById("map"),
             layers: layers,
@@ -1917,12 +1958,8 @@ var LIBRARY_OBJECT = (function () {
         }).change();
 
         function fillVarTables(element, variables) {
-            console.log(variables)
             variables.forEach(function (variable, i) {
-                console.log(variable_data)
-                console.log(variable)
                 var index = find_var_index(variable+'_4', variable_data);
-                console.log(index)
                 if (variable_data[index] != undefined) {
                     var display_name = variable_data[index]["display_name"];
                     var new_option = new Option(display_name, variable);
@@ -1950,6 +1987,7 @@ var LIBRARY_OBJECT = (function () {
 
         $("#db_table").change(function () {
             $("#schema_table").html('');
+
             var xhr = ajax_update_database("schemas", {
                 "db": $("#db_table option:selected").val()
             });
@@ -1969,7 +2007,10 @@ var LIBRARY_OBJECT = (function () {
                         //
                         // }
                     });
-                    if ($("#db_table option:selected").val() == "kenya") $("#schema_table").val("ken_n_25");
+
+                    if(sessionStorage.getItem("db")!=null){
+                        $("#schema_table").val(sessionStorage.getItem("db"));
+                    }
                     $("#schema_table").trigger('change');
 
 
@@ -2077,10 +2118,8 @@ var LIBRARY_OBJECT = (function () {
                 var dts = [];
                 if (true) {
                     var dates = data.dates;
-                    console.log(dates);
                     $("#time_table").html('');
                     dates.forEach(function (date, i) {
-                        console.log(date)
                         var new_option = new Option(date, date);
                         $("#time_table").append(new_option);
                         var d = new Date(date);

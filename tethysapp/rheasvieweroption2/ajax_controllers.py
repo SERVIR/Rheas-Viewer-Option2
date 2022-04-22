@@ -13,8 +13,6 @@ def get_db_schemas(request):
             info = request.POST
             db = info.get("db")
             schemas = get_schemas(db)
-            print("fdfdfd")
-            print(schemas)
             return_obj["schemas"] = schemas
             return_obj["success"] = "success"
         except Exception as e:
@@ -468,6 +466,11 @@ def get_bounds(request):
 
         return JsonResponse(return_obj)
     
-    
+def test():
+    from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+    """
+    Controller for the app home page.
+    """
+    return HttpResponseRedirect('https://tethys.servirglobal.net/apps/carbonmonitoring/')
         
 

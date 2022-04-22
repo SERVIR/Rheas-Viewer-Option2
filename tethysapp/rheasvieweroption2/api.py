@@ -28,14 +28,9 @@ def api_get_db_schemas(request):
         try:
             info = request.GET
             db = info.get("db")
-            print(db)
             schemas = get_schemas(db)
-
-
             return_obj["schemas"] = schemas
             return_obj["success"] = "success"
-
-
         except Exception as e:
             return_obj["error"] = e
 

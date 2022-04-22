@@ -1,3 +1,4 @@
+
 //Get a CSRF cookie for request
 function getCookie(name) {
     var cookieValue = null;

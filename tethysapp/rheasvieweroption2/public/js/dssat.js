@@ -57,7 +57,6 @@ var vicmap = new ol.Map({
 	layers: layers,
 	view: view
 });
-
  var default_sty = new ol.style.Style({
 
         stroke: new ol.style.Stroke({
@@ -163,4 +162,103 @@ var vectorLayerBoundaries = new ol.layer.Vector({
 	alert(err.toString())
 	hideLoader();
 }
+
+function inside(point, vs) {
+    // ray-casting algorithm based on
+    // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+
+    var x = point[0], y = point[1];
+
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+};
+
+vicmap.on('singleclick', function (evt) {
+	var coords = ol.proj.toLonLat(evt.coordinate);
+	var lat = coords[1];
+	var lon = coords[0];
+	alert(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'));
+	var i;
+	var k=ken.features;
+	for (i = 0; i < k.length; i++) {
+		var isinside = inside(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'), k[i].geometry.coordinates[0][0]);
+		if (isinside == true) {
+			console.log(k[i].properties)
+			var name =k[i].properties["NAME_0"];
+			sessionStorage.setItem("country", name);
+						sessionStorage.setItem("db", "ken_n_25");
+
+			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			break;
+
+		}
+	}
+		var k=rwa.features;
+	for (i = 0; i < k.length; i++) {
+		var isinside = inside(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'), k[i].geometry.coordinates[0][0]);
+		if (isinside == true) {
+			console.log(k[i].properties)
+			var name =k[i].properties["NAME_0"];
+			sessionStorage.setItem("country", name);
+						sessionStorage.setItem("db", "rwa_n_25");
+
+			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			break;
+
+		}
+	}
+		var k=tanz.features;
+	for (i = 0; i < k.length; i++) {
+		var isinside = inside(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'), k[i].geometry.coordinates[0][0]);
+		if (isinside == true) {
+			console.log(k[i].properties)
+			var name =k[i].properties["NAME_0"];
+			sessionStorage.setItem("country", name);
+						sessionStorage.setItem("db", "tza_n_25");
+
+			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			break;
+
+		}
+	}
+		var k=eth.features;
+	for (i = 0; i < k.length; i++) {
+		var isinside = inside(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'), k[i].geometry.coordinates[0][0]);
+		if (isinside == true) {
+			console.log(k[i].properties)
+			var name =k[i].properties["NAME_0"];
+			sessionStorage.setItem("country", name);
+						sessionStorage.setItem("db", "eth_n_25");
+
+			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			break;
+
+		}
+	}
+		var k=uga.features;
+	for (i = 0; i < k.length; i++) {
+		var isinside = inside(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'), k[i].geometry.coordinates[0][0]);
+		if (isinside == true) {
+			console.log(k[i].properties)
+			var name =k[i].properties["NAME_0"];
+			sessionStorage.setItem("country", name);
+			sessionStorage.setItem("db", "uga_n_25");
+			window.location.href="http://127.0.0.1:8000/apps/rheasvieweroption2/vicdssat/";
+			break;
+
+		}
+	}
+
+      });
+
+
 
