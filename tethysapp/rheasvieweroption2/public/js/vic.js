@@ -1455,6 +1455,7 @@ var view;
         //    var layer_name = wms_workspace + ":" + data.storename;
 
         var variable = $("#map_var_table option:selected").val();
+          var ctry = $("#db_table option:selected").val();
         var index = find_var_index(variable, variable_data);
 
         var style = variable_data[index]["color1"] + variable_data[index]["color2"] + variable_data[index]["color3"];
@@ -1527,7 +1528,7 @@ var view;
 
          variable = variable.substring(0, lastIndex);
         wms_source = new ol.source.ImageWMS({
-            url: 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable + '_final.nc?',
+            url: 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/'+ctry+'/' + variable + '_final.nc?',
             params: {
                 'LAYERS': variable,
                 'TIME': time,
@@ -1546,7 +1547,7 @@ var view;
 
         wms_layer.setZIndex(2);
         map.addLayer(wms_layer);
-        var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' + variable + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
+        var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/' +ctry+'/'+ variable + '_final.nc' + "?SERVICE=WMS&VERSION=1.3.0&time=" + time + "&REQUEST=GetLegendGraphic&LAYER=" + variable + "&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
         //   map.addLayer(boundaryLayer);
         var div = document.getElementById("vic_leg");
         div.innerHTML =
