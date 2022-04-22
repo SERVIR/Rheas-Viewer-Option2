@@ -278,7 +278,7 @@ padding: 0px;
 	#curr_vic,
 	#outlook_curr_dssat ,#curr_dssat {
 		z-index: 1;
-		margin: 10 0 0 10;
+		margin: 10px 0 0 10px;
 	}
 
 
@@ -288,7 +288,7 @@ padding: 0px;
 		bottom: 5%;
 		border: 1px solid #337ab7;
 		display: inline-block;
-		margin: 10 10 10 10;
+		margin: 10px 10px 70px 10px;
 		right: 20px;
 	}
 
@@ -299,7 +299,7 @@ padding: 0px;
 		border: 1px solid #337ab7;
 		border-radius: 3px;
 		display: inline-block;
-		margin: 10 10 10 10;
+		margin: 10px 10px 10px 10px;
 		padding: 5px;
 	}
 
@@ -309,7 +309,7 @@ padding: 0px;
 		bottom: 5%;
 		border: 1px solid #337ab7;
 		display: inline-block;
-		margin: 10 10 10 10;
+		margin: 10px 10px 10px 10px;
 		right: 20px;
 		height: 250px;
 		width:100px;

@@ -20,7 +20,7 @@ var baseLayer = new ol.layer.Tile({
 var view = new ol.View({
 	center: ol.proj.transform([39.669571, -1.036878], 'EPSG:4326', 'EPSG:3857'),
 	projection: projection,
-	zoom: 5
+	zoom: 5,
 });
 
 var vector_source = new ol.source.Vector({
@@ -88,7 +88,6 @@ try {
 	var index = find_var_index("soil_moist_4", var_data);
 	var range = Math.round(var_data[index]["min"]).toFixed(2) + "," + Math.round(var_data[index]["max"]).toFixed(2);
 	var link = 'https://thredds.servirglobal.net/thredds/wms/rheas/nc/soil_moist_2021-12-31.nc' + "?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Band1&colorscalerange=" + range + "&PALETTE=" + style + "&transparent=TRUE";
-	console.log(link);
 
 	wms_layer.setZIndex(2);
 	vicmap.addLayer(wms_layer);
@@ -186,7 +185,7 @@ vicmap.on('singleclick', function (evt) {
 	var coords = ol.proj.toLonLat(evt.coordinate);
 	var lat = coords[1];
 	var lon = coords[0];
-	alert(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'));
+	// alert(ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'));
 	var i;
 	var k=ken.features;
 	for (i = 0; i < k.length; i++) {

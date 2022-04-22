@@ -31,7 +31,7 @@ def vicdssat(request):
 def outlook(request):
     variable_info = get_variables_meta()
     thredds_wms_url = cfg.thredds_server['wms_url']
-    rheas_dbs = get_outlook_database()
+    rheas_dbs = get_database()
     context={
         "rheas_dbs": rheas_dbs,
         "variable_info":json.dumps(variable_info),

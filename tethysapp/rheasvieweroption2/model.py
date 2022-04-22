@@ -246,7 +246,7 @@ def get_outlook_database():
         cur.execute(sql)
         data = cur.fetchall()
 
-        rheas_dbs = [db[0] for db in data if 'postgres' not in db[0]]
+        rheas_dbs = rheas_dbs = [db[0] for db in data if ('postgres'  not in db[0]) and ('rheas' not in db[0]) and ('benson' not in db[0])]
         conn.close()
         return rheas_dbs
 
@@ -524,14 +524,16 @@ def calculate_yield_main(db, schema, startdate, enddate,ensemble,gid):
         ensemble_sql = """SELECT max,ensemble,ntile(100) over(order by max) AS percentile FROM(SELECT dssat_all.ensemble,MAX(dssat_all.gwad) 
                             FROM {0}.dssat dssat,{0}.dssat_all dssat_all WHERE dssat.gid=dssat_all.gid and ccode={1} AND fdate>={2} AND fdate<={3} 
                             GROUP BY dssat_all.ensemble) as foo""".format(schema, "'" + gid + "'", "'" + startdate + "'", "'" + enddate + "'")
+        print(ensemble_sql)
         cur.execute(ensemble_sql)
         ensemble_data = cur.fetchall()
         medianens = ensemble_data[math.ceil(len(ensemble_data) / 2) - 1]
         # sql = """SELECT gid,max(gwad) as max  FROM(SELECT gid,ensemble,max(gwad) FROM {0}.dssat GROUP BY gid,ensemble ORDER BY gid,ensemble)  as foo GROUP BY gid""".format(schema)
         if len(startdate) > 9:
-            # sql="""select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss,(select gid,max(fdate) maxdate from {0}.dssat_all where fdate>={1} and fdate<={2} group by gid) y,{0}.yield z
-            #    where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate and y.gwad<>0 group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
-            sql = """select * from get_yield({0},{1},{2})""".format("'" + schema+ "'","'''" + startdate+ "'''","'''" + enddate+ "'''");
+            sql="""select dss.ccode,max(avg_yield) yield,max(dss.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss,(select gid,max(fdate) maxdate from {0}.dssat_all where fdate>={1} and fdate<={2} group by gid) y,{0}.yield z
+                where x.gid=y.gid and z.gid=x.gid and dss.gid=x.gid and x.fdate=y.maxdate and x.gwad<>0 group by dss.ccode,x.fdate""".format(schema,"'"+str(startdate)+"'","'"+str(enddate)+"'")
+            #sql = """select * from get_yield({0},{1},{2})""".format("'" + schema+ "'","'''" + startdate+ "'''","'''" + enddate+ "'''");
+
             #print(sql)
         else:
             sql = """select dss.ccode,max(avg_yield) yield,max(x.lai) lai, x.fdate from {0}.dssat_all x,{0}.dssat dss, (select gid,max(fdate) maxdate from {0}.dssat_all group by gid) y,{0}.yield z

@@ -65,6 +65,7 @@ def get_start_end_dates(request):
         info = request.POST
         db = info.get("db")
         schema = info.get("schema")
+
         #region = info.get("region")
 
         try:

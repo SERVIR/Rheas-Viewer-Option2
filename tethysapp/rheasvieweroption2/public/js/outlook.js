@@ -109,7 +109,8 @@ var LIBRARY_OBJECT = (function () {
     init_dropdown = function () {
         $("#outlook").css("background-color", "#ddd");
         $("#outlook").css("color", "black");
-        // $("#outlook_db_table").select2();
+        $("#outlook_db_table").select2();
+          $("#outlook_schema_table").select2();
         $("#outlook_ens_table").select2();
         $("#outlook_typeofchart").select2();
         $("#outlook_var_table3").select2();
@@ -408,15 +409,15 @@ var LIBRARY_OBJECT = (function () {
 
 
                     ajax_update_database("get-county", {
-                        "db": "kenya",
+                        "db": $("#outlook_db_table option:selected").val(),
                         "gid": level,
-                        "schema": "ken_n_25",
+                        "schema": $("#outlook_schema_table option:selected").val(),
                     }).done(function (data1) {
                         if ("success" in data1) {
 
                             ajax_update_database("get-schema-yield-gid1", {
-                                "db":"kenya",
-                                "schema":"ken_n_25",
+                                "db":$("#outlook_db_table option:selected").val(),
+                                "schema":$("#outlook_schema_table option:selected").val(),
                                 "gid": level,
                                 "startdate": sdate,
                                 "enddate": edate
@@ -552,7 +553,7 @@ var LIBRARY_OBJECT = (function () {
                 $("#poly-lat-lon").val(JSON.stringify(result));
                 var gid = feature.getProperties().countyid;//feature.getId().split(".")[1];
                 $("#gid").val(gid);
-                var schema = "ken_n_25";
+                var schema = $("#outlook_schema_table option:selected").val();
 
                 if (gid == undefined) gid = "KE041";
                 $("#schema").val(schema);
@@ -568,8 +569,8 @@ var LIBRARY_OBJECT = (function () {
 
                     document.getElementById("tooltip11").innerHTML = "County: " + "Loading..." + "<br>" + "Yield: " + "Loading...";
                     ajax_update_database("get-schema-yield-gid1", {
-                        "db": "kenya",
-                        "schema": "ken_n_25",
+                        "db":$("#outlook_db_table option:selected").val(),
+                        "schema": $("#outlook_schema_table option:selected").val(),
                         "gid": gid,
                         "startdate": sdate,
                         "enddate": edate
@@ -593,9 +594,9 @@ var LIBRARY_OBJECT = (function () {
                     document.getElementById("tooltip11").style.display = 'none';
                 }
                 var json_obj = {
-                    "db": "kenya",
+                    "db":$("#outlook_db_table option:selected").val(),
                     "gid": gid,
-                    "schema":"ken_n_25"
+                    "schema":$("#outlook_schema_table option:selected").val(),
                 };
                 var xhr = ajax_update_database("get-ensemble", json_obj);
                 xhr.done(function (data) {
@@ -645,16 +646,16 @@ var LIBRARY_OBJECT = (function () {
         var county_name = "";
         var ens = $("#outlook_ens_table option:selected").val();
         ajax_update_database("get-start-end-dates", {
-            "db": "kenya",
-            "schema": "ken_n_25",
+            "db": $("#outlook_db_table option:selected").val(),
+            "schema":$("#outlook_schema_table option:selected").val(),
         }).done(function (data) {
             if (data) {
                 sdate = data.startdate;
                 edate = data.enddate;
                 var jsonObj = {
-                    "db": "kenya",
+                    "db": $("#outlook_db_table option:selected").val(),
                     "gid": gid,
-                    "schema": "ken_n_25",
+                    "schema": $("#outlook_schema_table option:selected").val(),
                     "ensemble": ens,
                     "startdate": sdate,
                     "enddate": edate
@@ -665,9 +666,9 @@ var LIBRARY_OBJECT = (function () {
                 if (gid == undefined || gid == "") gid = 'KE041';
 
                 ajax_update_database("get-county", {
-                    "db": "kenya",
+                    "db": $("#outlook_db_table option:selected").val(),
                     "gid": gid,
-                    "schema": "ken_n_25"
+                    "schema": $("#outlook_schema_table option:selected").val(),
                 }).done(function (data) {
                     if ("success" in data) {
                         county_name = data["county"].length > 0 ? data["county"][0][0] : "Unknown";
@@ -1015,22 +1016,23 @@ var LIBRARY_OBJECT = (function () {
 
         //db = $("#outlook_db_table option:selected").val();
         db = $("#outlook_db_table option:selected").val();
-        region = $("#outlook_db_table option:selected").val();
-        $("#outlook_db_table").val("ken_n_25");
+        region = $("#outlook_schema_table option:selected").val();
+        console.log(db);
+        console.log(region);
         $("#outlook_db_table").trigger('change');
         $("#outlook_db_table").change(function () {
             showLoader();
-            $("#outlook_schema_table").html('');
+            // $("#outlook_schema_table").html('');
             ajax_update_database("get-start-end-dates", {
-                "db": "kenya",
-                "schema":"ken_n_25",
+                "db": $("#outlook_db_table option:selected").val(),
+                "schema":$("#outlook_schema_table option:selected").val(),
             }).done(function (data) {
-                if ("success" in data) {
+
                     console.log(data);
                     sdate = data.startdate;
                     edate = data.enddate;
                     mapchange(sdate, edate);
-                }
+
             }).fail(function () {
                 vectorLayer1.setSource(null);
                 alert('No data for selected forecast');
@@ -1052,8 +1054,8 @@ var LIBRARY_OBJECT = (function () {
             showLoader();
             if (gid == undefined) gid = 'KE041';
             ajax_update_database("get-schema-yield", {
-                "db": "kenya",
-                "schema": "ken_n_25",
+                "db": $("#outlook_db_table option:selected").val(),
+                "schema": $("#outlook_schema_table option:selected").val(),
                 "startdate": sdate,
                 "enddate": edate,
                 "ensemble": $("#outlook_ens_table").val(),
@@ -1107,9 +1109,9 @@ var LIBRARY_OBJECT = (function () {
             var gid = $("#gid").val();
             if (gid == undefined || gid == "") gid = 'KE041';
             var xhr = ajax_update_database("get-ens-values", {
-                "db": "kenya",
+                "db": $("#outlook_db_table option:selected").val(),
                 "gid": gid,
-                "schema": "ken_n_25",
+                "schema": $("#outlook_schema_table option:selected").val(),
                 "ensemble": ens,
                 "startdate": sdate,
                 "enddate": edate

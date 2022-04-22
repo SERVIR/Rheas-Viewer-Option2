@@ -63,21 +63,24 @@
                        Opacity: <input id="dssatslider" type="range" min="0" max="1" step="0.1" value="0.7"/>
 
 
-                        <label style="display: none">
-                     Select a schema of interest
+
+                           <label>
+                     Select database
                      </label>
-                     <select class="schema_table" name="schema_table" id="outlook_schema_table" style="width: 100%;display: none;">
-                        {% for schema in db_schemas %}
-                        <option value="{{schema}}">{{schema}}</option>
-                        {% endfor %}
-                     </select>
-                           <label style="display: none">
-                     Select a database of interest
-                     </label>
-                     <select class="db_table" name="db_table" id="outlook_db_table" style="width: 100%;display: none;">
+                     <select class="db_table" name="db_table" id="outlook_db_table" style="width: 100%;">
                         {% for db in rheas_dbs %}
                         <option value="{{db}}">{{db}}</option>
                         {% endfor %}
+                     </select>
+                       <br>
+                         <label>
+                     Select schema
+                     </label>
+                     <select class="schema_table" name="schema_table" id="outlook_schema_table" style="width: 100%;">
+<!--                        {% for schema in db_schemas %}-->
+<!--                        <option value="{{schema}}">{{schema}}</option>-->
+<!--                        {% endfor %}-->
+                            <option value="current_forecast">current_forecast</option>
                      </select>
                        <br>
 <!--                        <label>Select year-->
@@ -223,6 +226,7 @@
             <div id="outlook_variable" class="variable" name="variable" style="display: none" data-variable-info="{{variable_info}}" data-thredds-url="{{thredds_wms_url}}" ></div>
 <!--          <script src="{% static 'rheasvieweroption2/js/home.js' %}" type="text/javascript"></script>-->
             <div id="outlook_dssat" class="dssat" name="dssat" style="display:none;" ></div>
+
 
 <!--              <script src="{% static 'rheasvieweroption2/js/generategraphs.js' %}" type="text/javascript"></script>-->
 <!--                <script src="{% static 'rheasvieweroption2/js/dssatmap.js' %}" type="text/javascript"></script>-->
